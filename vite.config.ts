@@ -18,7 +18,7 @@ export default defineConfig({
           "purpose": "maskable"
         },
         {
-          "src": "/public/android-chrome-192x192.png",
+          "src": "/public/android-chrome-144x144.png",
           "sizes": "144x144",
           "type": "image/png",
           "purpose": "any"
