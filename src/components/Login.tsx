@@ -1,8 +1,10 @@
 // import { useForm } from '../hooks/useForm';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Avatar, Box, Button, Container, Flex, Text } from '@radix-ui/themes';
+import { Avatar, Box, Button, Container, Flex, Heading, Text } from '@radix-ui/themes';
 import logo from '../assets/logo.png';
+import { RiGoogleFill } from "react-icons/ri";
+
 export const Login = () => {
 
     // const { handleLoginWithGoogle, handleLoginWithCredentials } = useContext(AuthContext)
@@ -46,7 +48,8 @@ export const Login = () => {
                 </Flex>
             </form>
         </div> */}
-            <Box style={{ background: 'var(--gray-a2)', borderRadius: 'var(--radius-3)' }}>
+            <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'
+        , position:"fixed", zIndex:"100", width:"96%"}}>
                 <Container size="1">
                     <Flex gap="2" align="center">
                         <Avatar
@@ -57,12 +60,20 @@ export const Login = () => {
                     </Flex>
                 </Container>
             </Box>
-            <Box style={{ background: 'var(--gray-a2)', borderRadius: 'var(--radius-3)' }}>
+            <Box >
                 <Container size="1">
-                    <Box py="9" />
-                    <Button variant="soft" type="button" onClick={handleLoginWithGoogle}>
-                        Google
+                <Flex gap="2" align="center">
+                    <Box style={{paddingBlock:"50%"}}></Box>
+                    <Box>
+                    <Heading size="7" weight={"light"}>Login to DeckHouse to access your account.</Heading>
+                    <Box style={{paddingBlock:"3%"}}></Box>
+                    <Button variant="solid" radius="full" size="3" type="button" onClick={handleLoginWithGoogle}
+                    style={{width:"100%"}} color='green'>
+                        <RiGoogleFill size="23" />Login with Google
                     </Button>
+                    </Box>
+                    <Box style={{paddingBlock:"50%"}}></Box>
+                    </Flex>
                 </Container>
             </Box>
 
