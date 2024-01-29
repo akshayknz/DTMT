@@ -5,7 +5,7 @@ import { Avatar, Box, Button, Container, Flex, Heading, Text } from '@radix-ui/t
 import logo from '../assets/logo.png';
 import { RiGoogleFill } from "react-icons/ri";
 
-export const Login = () => {
+const Login = () => {
 
     // const { handleLoginWithGoogle, handleLoginWithCredentials } = useContext(AuthContext)
     const { handleLoginWithGoogle } = useContext(AuthContext)
@@ -80,3 +80,4 @@ export const Login = () => {
         </>
     )
 }
+export default Login;

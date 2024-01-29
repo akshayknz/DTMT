@@ -1,9 +1,10 @@
 import './App.css'
 import { useContext } from "react"
-import { Login } from "./components"
+import Login from './components/Login';
 import { AuthContext } from './context/AuthContext';
 import { Link } from "react-router-dom";
 import { Spinner } from './assets/Spinner';
+import Dashboard from './pages/Dashboard';
 
 export const AuthPage = () => {
   return (
@@ -23,7 +24,7 @@ const App = () => {
     <main>
       {
         (status === 'authenticated' && userId)
-          ? <HomePage />
+          ? <Dashboard />
           : <AuthPage />
       }
     </main>
