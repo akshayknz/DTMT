@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { userId, handleLogOut } = useContext(AuthContext)
+  const { handleLogOut } = useContext(AuthContext)
   return(
         <>
         <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'

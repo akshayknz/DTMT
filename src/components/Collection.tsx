@@ -1,5 +1,4 @@
-import { Box, Container, Flex, Avatar, Text, Heading, Button, DropdownMenu } from "@radix-ui/themes";
-import logo from '../assets/logo.png';
+import { Flex, Heading, Button, DropdownMenu } from "@radix-ui/themes";
 import { getUsers } from "../db";
 import { useState, useEffect } from "react";
 import { RiMore2Fill } from "react-icons/ri";
