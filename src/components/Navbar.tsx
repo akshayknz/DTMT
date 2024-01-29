@@ -9,7 +9,7 @@ const Navbar = () => {
         <>
         <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'
         , position:"sticky", zIndex:"100", width:"100%", top:"10px"}}>
-                <Container size="1">
+                <Container>
                     <Flex gap="2" align="center">
                         <Avatar
                             src={logo} size="2"

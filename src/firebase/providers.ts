@@ -5,12 +5,7 @@ import {
 import { AuthStateContext } from '../context/AuthContext'
 import { FirebaseAuth } from './config'
 import { saveUser } from "../db";
-interface User {
-    uid: string;
-    displayName: string;
-    email: string;
-    photoURL: string;
-  }
+
 const googleProvider = new GoogleAuthProvider()
 
 export const singInWithGoogle = async () => {
@@ -18,7 +13,9 @@ export const singInWithGoogle = async () => {
         const result = await signInWithPopup(FirebaseAuth, googleProvider)
 
         const { displayName, email, photoURL, uid } = result.user
-        saveUser({displayName, email, photoURL, uid});
+        if (displayName != null && email != null && photoURL != null) {
+            saveUser({ displayName, email, photoURL, uid });
+        }
         return uid
 
     } catch (e) {

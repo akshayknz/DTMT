@@ -1,12 +1,11 @@
-import { collection, addDoc, getDocs, doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
-import firebase from "firebase/compat/app";
 import { UserProps } from "./interfaces/interfaces";
 
-export const getUsers = async (): Promise<any[]> => {
+export const getUsers = async (): Promise<UserProps[]> => {
     const querySnapshot = await getDocs(collection(db, "Organizations"));
     
-    return querySnapshot.docs.map((doc) => doc.data());
+    return querySnapshot.docs.map((doc) => doc.data()) as [UserProps];
 };
 
 export const saveUser = async ({displayName, email, photoURL, uid}:UserProps): Promise<UserProps> => {

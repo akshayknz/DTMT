@@ -2,13 +2,12 @@ import { Box, Container, Flex, Avatar, Text, Heading, Button, DropdownMenu } fro
 import logo from '../assets/logo.png';
 import { getUsers } from "../db";
 import { useState, useEffect } from "react";
-interface User {
-    id: string;
-    name: string;
-  }
+import { RiMore2Fill } from "react-icons/ri";
+import { UserProps } from "../interfaces/interfaces";
+
 const Collection = () => {
 
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<UserProps[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -29,15 +28,12 @@ const Collection = () => {
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>
       <Button variant="soft" size="2">
-        Options
+      <RiMore2Fill />
       </Button>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content size="2">
       <DropdownMenu.Item>Edit</DropdownMenu.Item>
-      <DropdownMenu.Item>Duplicate</DropdownMenu.Item>
-      <DropdownMenu.Separator />
       <DropdownMenu.Item>Archive</DropdownMenu.Item>
-
       <DropdownMenu.Separator />
       <DropdownMenu.Item color="red">
         Delete
@@ -48,7 +44,7 @@ const Collection = () => {
 iitems
 <ul>
         {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
+          <li key={user.uid}>{user.displayName}</li>
         ))}
       </ul>
         </>
