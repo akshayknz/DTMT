@@ -11,9 +11,14 @@
   },
   "dependencies": {
     "@radix-ui/themes": "^2.0.3",
+    "firebase": "^10.7.2",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-masonry": "^1.0.7"
+    "react-masonry": "^1.0.7",
+    "react-router-dom": "^6.21.3",
+    "sort-by": "^1.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
