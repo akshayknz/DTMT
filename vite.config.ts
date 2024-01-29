@@ -12,37 +12,37 @@ export default defineConfig({
       "short_name": "DH",
       "icons": [
         {
-          "src": "/public/maskable_icon_x512.png",
+          "src": "/maskable_icon_x512.png",
           "sizes": "200x200",
           "type": "image/png",
           "purpose": "maskable"
         },
         {
-          "src": "/public/android-chrome-144x144.png",
+          "src": "/android-chrome-144x144.png",
           "sizes": "144x144",
           "type": "image/png",
           "purpose": "any"
         },
         {
-          "src": "/public/android-chrome-192x192.png",
+          "src": "/android-chrome-192x192.png",
           "sizes": "192x192",
           "type": "image/png",
           "purpose": "any"
         },
         {
-          "src": "/public/android-chrome-512x512.png",
+          "src": "/android-chrome-512x512.png",
           "sizes": "512x512",
           "type": "image/png",
           "purpose": "any"
         },
         {
-          "src": "/public/android-chrome-256x256.png",
+          "src": "/android-chrome-256x256.png",
           "sizes": "256x256",
           "type": "image/png",
           "purpose": "any"
         },
         {
-          "src": "/public/android-chrome-384x384.png",
+          "src": "/android-chrome-384x384.png",
           "sizes": "384x384",
           "type": "image/png",
           "purpose": "any"
