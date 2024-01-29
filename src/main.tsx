@@ -4,7 +4,7 @@ import App, { AuthPage } from './App.tsx'
 import './index.css'
 import { Theme } from '@radix-ui/themes';
 import '@radix-ui/themes/styles.css';
-import { AuthProvider } from './context/authContext'
+import { AuthProvider } from './context/AuthContext'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ProtectedRoutes from './ProtectedRoutes.tsx';
 

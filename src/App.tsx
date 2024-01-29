@@ -2,7 +2,7 @@ import './App.css'
 import { Flex, Text, Button } from '@radix-ui/themes';
 import { useContext } from "react"
 import { Login, Register } from "./components"
-import { AuthContext, AuthProvider } from './context/authContext';
+import { AuthContext, AuthProvider } from './context/AuthContext';
 import type { LoaderFunctionArgs } from "react-router-dom";
 import {
   Form,
