@@ -1,22 +1,8 @@
 import './App.css'
-import { Flex, Text, Button } from '@radix-ui/themes';
 import { useContext } from "react"
-import { Login, Register } from "./components"
-import { AuthContext, AuthProvider } from './context/AuthContext';
-import type { LoaderFunctionArgs } from "react-router-dom";
-import {
-  Form,
-  Link,
-  Outlet,
-  RouterProvider,
-  createBrowserRouter,
-  redirect,
-  useActionData,
-  useFetcher,
-  useLocation,
-  useNavigation,
-  useRouteLoaderData,
-} from "react-router-dom";
+import { Login } from "./components"
+import { AuthContext } from './context/AuthContext';
+import { Link } from "react-router-dom";
 
 export const AuthPage = () => {
   return (
