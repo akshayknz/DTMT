@@ -53,7 +53,7 @@ export default defineConfig({
       "description": "DTMT",
       "display": "standalone",
       "scope": "/",
-      "start_url": "/"
+      "start_url": "https://dtmt-project.web.app/"
     }
   })]
 })
