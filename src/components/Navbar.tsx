@@ -8,18 +8,20 @@ const Navbar = () => {
   return(
         <>
         <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'
-        , position:"sticky", zIndex:"100", width:"100%", top:"10px"}}>
+        , position:"sticky", zIndex:"100", top:"10px", margin: "-28px 0px"}} mx={"2"}>
                 <Container>
                     <Flex gap="2" align="center">
                         <Avatar
                             src={logo} size="2"
                             fallback="A"
+                            onClick={handleLogOut}
                         />
                         <Text>DeckHouse</Text>
-                        <button className="btn-logout" onClick={handleLogOut}>Log out</button>
+                        {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
                     </Flex>
                 </Container>
             </Box>
+            <Box style={{height:"28px"}}></Box>
         </>
     )
 }

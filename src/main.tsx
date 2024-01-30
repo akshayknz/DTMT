@@ -7,7 +7,8 @@ import '@radix-ui/themes/styles.css';
 import { AuthProvider } from './context/AuthContext'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ProtectedRoutes from './ProtectedRoutes.tsx';
-
+type DynamicImportType = () => Promise<{ default: React.ComponentType<any>; }>;
+type LazyComponentType = React.LazyExoticComponent<React.ComponentType<any>>;
 export const router = createBrowserRouter(
   [
     {
@@ -22,9 +23,14 @@ export const router = createBrowserRouter(
       element: <ProtectedRoutes />,
       children: [
         {
-          path: "/route3",
-          element: <>protected 3</>,
-        },
+          path: "/create-organization",
+          async loader({ request, params }) {
+            let { loader }:any = await import("./pages/CreateOrganization");
+            return loader({ request, params });
+          },
+          errorElement: <>ds</>,
+          lazy: () => import("./pages/CreateOrganization"),
+        }
       ],
     },
   ], { basename: "/" },
@@ -34,7 +40,7 @@ export const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
-      <Theme>
+    <Theme appearance="light" accentColor="green" radius="small">
         <RouterProvider router={router} />
       </Theme>
     </AuthProvider>
