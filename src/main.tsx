@@ -20,6 +20,15 @@ export const router = createBrowserRouter(
       element: <AuthPage />,
     },
     {
+      path: "/create-organization",
+      async loader({ request, params }) {
+        let { loader }:any = await import("./pages/CreateOrganization");
+        return loader({ request, params });
+      },
+      errorElement: <>ds</>,
+      lazy: () => import("./pages/CreateOrganization"),
+    },
+    {
       element: <ProtectedRoutes />,
       children: [
         {

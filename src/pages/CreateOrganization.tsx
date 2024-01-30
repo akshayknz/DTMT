@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
-export default function CreateOrganizatoin(): JSX.Element {
+export function Component() {
     return (
         <>
             <Navbar />
