@@ -13,6 +13,7 @@ const Navbar = () => {
         , padding:"10px"}} mx={"2"}>
             <Box style={{marginBottom:"5px", }}>
                 <Container>
+                    <Flex gap="2" align="stretch" justify={"between"}>
                     <Flex gap="2" align="center">
                         <Avatar
                             src={logo} size="2"
@@ -20,6 +21,11 @@ const Navbar = () => {
                             onClick={handleLogOut}
                         />
                         <Text>DeckHouse</Text>
+                        </Flex>
+                        <Avatar
+                            size="2"
+                            fallback="A"
+                        />
                         {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
                     </Flex>
                 </Container></Box>

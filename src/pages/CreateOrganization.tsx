@@ -14,11 +14,16 @@ export function Component() {
                     </Button>
                 </Link>
                 <Box>
-                    <div contentEditable style={{
+                    <textarea autoFocus style={{
                         fontSize: "30px",
-                        boxShadow: "0px 3px 0 -1px #000",
+                        boxShadow: "rgb(0 0 0 / 57%) 0px 2px 0px -1px",
                         margin: "25px 0px",
-                    }}></div>
+                        width: "100%",
+                        background: "transparent",
+                        border: "none",
+                        color:"#000",
+                        boxSizing:"border-box"
+                    }}></textarea>
                 </Box>
                 <Box>
                     <Button>

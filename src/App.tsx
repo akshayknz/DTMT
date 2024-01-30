@@ -5,6 +5,7 @@ import { AuthContext } from './context/AuthContext';
 import { Link } from "react-router-dom";
 import { Spinner } from './assets/Spinner';
 import Dashboard from './pages/Dashboard';
+import Loading from './components/Loading';
 
 
 export const AuthPage = () => {
@@ -19,7 +20,7 @@ const App = () => {
 
   const { status, userId } = useContext(AuthContext)
 
-  if (status === 'checking') return <p className="loading"><span><Spinner /> Checking credentials, wait a moment...</span></p>
+  if (status === 'checking') return <Loading/>
 
   return (
     <main>
