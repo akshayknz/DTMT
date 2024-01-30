@@ -9,7 +9,7 @@ const Navbar = () => {
   return(
         <>
         <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'
-        , position:"sticky", zIndex:"100", top:"10px", margin: "-28px 0px"}} mx={"2"}>
+        , position:"sticky", zIndex:"100", top:"10px"}} mx={"2"}>
                 <Container>
                     <Flex gap="2" align="center">
                         <Avatar
@@ -22,7 +22,6 @@ const Navbar = () => {
                     </Flex>
                 </Container>
             </Box>
-            <Box style={{height:"28px"}}></Box>
             <Outlet/>
         </>
     )

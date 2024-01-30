@@ -8,8 +8,8 @@ import { AuthProvider } from './context/AuthContext'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ProtectedRoutes from './ProtectedRoutes.tsx';
 import Navbar from './components/Navbar.tsx';
-type DynamicImportType = () => Promise<{ default: React.ComponentType<any>; }>;
-type LazyComponentType = React.LazyExoticComponent<React.ComponentType<any>>;
+import { Box } from '@radix-ui/themes';
+import background from "./assets/background.jpg";
 export const router = createBrowserRouter(
   [
     {
@@ -44,7 +44,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
     <Theme appearance="light" accentColor="green" radius="small">
+    <Box style={{height: "100vh", background:`url("${background}")`}}>
         <RouterProvider router={router} />
+        </Box>
       </Theme>
     </AuthProvider>
   </React.StrictMode>,

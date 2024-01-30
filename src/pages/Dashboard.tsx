@@ -8,7 +8,7 @@ const Dashboard = () => {
     return (
         <>
             
-            <Container px="6" style={{height: "60vh", background:`url("${background}")`}}>
+            <Container px="6">
                 <Box pt={"6"} pb={"5"}>
                     <Heading size="7">To start create an organization.</Heading>
                 </Box>

@@ -6,9 +6,8 @@ import background from "../assets/background.jpg";
 export function Component() {
     return (
         <>
-            <Container px="6" style={{height: "60vh", background:`url("${background}")`}}>
-                <Box pt={"6"} pb={"5"}>
-                </Box>
+            <Container px="6">
+                
                 <Box>
                     <Button>
                         Create Organization

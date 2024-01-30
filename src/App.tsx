@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { Spinner } from './assets/Spinner';
 import Dashboard from './pages/Dashboard';
 
+
 export const AuthPage = () => {
   return (
     <section>
@@ -22,11 +23,13 @@ const App = () => {
 
   return (
     <main>
-      {
+      
+        {
         (status === 'authenticated' && userId)
           ? <Dashboard />
           : <AuthPage />
       }
+      
     </main>
   )
 }
