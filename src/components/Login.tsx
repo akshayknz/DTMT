@@ -48,18 +48,6 @@ const Login = () => {
                 </Flex>
             </form>
         </div> */}
-            <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'
-        , position:"sticky", zIndex:"100", width:"100%", top:"10px"}}>
-                <Container>
-                    <Flex gap="2" align="center">
-                        <Avatar
-                            src={logo} size="2"
-                            fallback="A"
-                        />
-                        <Text>DeckHouse</Text>
-                    </Flex>
-                </Container>
-            </Box>
             <Box >
                 <Container size="1">
                 <Flex gap="2" align="center">

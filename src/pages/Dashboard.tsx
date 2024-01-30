@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const Dashboard = () => {
     return (
         <>
-            <Navbar />
+            
             <Container px="6" style={{height: "60vh", background:`url("${background}")`}}>
                 <Box pt={"6"} pb={"5"}>
                     <Heading size="7">To start create an organization.</Heading>

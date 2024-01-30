@@ -2,6 +2,7 @@ import { Box, Container, Flex, Avatar, Text } from "@radix-ui/themes";
 import logo from '../assets/logo.png';
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Navigate, Outlet } from "react-router-dom";
 
 const Navbar = () => {
   const { handleLogOut } = useContext(AuthContext)
@@ -22,6 +23,7 @@ const Navbar = () => {
                 </Container>
             </Box>
             <Box style={{height:"28px"}}></Box>
+            <Outlet/>
         </>
     )
 }

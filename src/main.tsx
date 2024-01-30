@@ -7,10 +7,14 @@ import '@radix-ui/themes/styles.css';
 import { AuthProvider } from './context/AuthContext'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ProtectedRoutes from './ProtectedRoutes.tsx';
+import Navbar from './components/Navbar.tsx';
 type DynamicImportType = () => Promise<{ default: React.ComponentType<any>; }>;
 type LazyComponentType = React.LazyExoticComponent<React.ComponentType<any>>;
 export const router = createBrowserRouter(
   [
+    {
+      element: <Navbar />,
+      children: [
     {
       path: "/",
       element: <App />,
@@ -20,28 +24,18 @@ export const router = createBrowserRouter(
       element: <AuthPage />,
     },
     {
-      path: "/create-organization",
-      async loader({ request, params }) {
-        let { loader }:any = await import("./pages/CreateOrganization");
-        return loader({ request, params });
-      },
-      errorElement: <>ds</>,
-      lazy: () => import("./pages/CreateOrganization"),
-    },
-    {
       element: <ProtectedRoutes />,
       children: [
         {
           path: "/create-organization",
-          async loader({ request, params }) {
-            let { loader }:any = await import("./pages/CreateOrganization");
-            return loader({ request, params });
+          async loader() {
+            await import("./pages/CreateOrganization");
+            return null;
           },
-          errorElement: <>ds</>,
           lazy: () => import("./pages/CreateOrganization"),
         }
       ],
-    },
+    }]}
   ], { basename: "/" },
 );
 
