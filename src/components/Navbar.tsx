@@ -8,8 +8,10 @@ const Navbar = () => {
   const { handleLogOut } = useContext(AuthContext)
   return(
         <>
-        <Box style={{ background: 'var(--gray-a3)', padding:"10px", borderRadius: 'var(--radius-3)'
-        , position:"sticky", zIndex:"100", top:"10px"}} mx={"2"}>
+        <Box style={{  borderRadius: 'var(--radius-3)',background: 'var(--gray-a3)'
+        , position:"sticky", zIndex:"100", top:"10px", marginBottom:"20px"
+        , padding:"10px"}} mx={"2"}>
+            <Box style={{marginBottom:"5px", }}>
                 <Container>
                     <Flex gap="2" align="center">
                         <Avatar
@@ -20,7 +22,7 @@ const Navbar = () => {
                         <Text>DeckHouse</Text>
                         {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
                     </Flex>
-                </Container>
+                </Container></Box>
             </Box>
             <Outlet/>
         </>
