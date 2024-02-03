@@ -9,6 +9,7 @@ export interface UserFormValues {
     password: string;
     displayName: string;
 }
+
 //IAuth context
 export interface IAuth {
     user: User | null;  //type User comes from firebase
@@ -23,4 +24,9 @@ export interface UserProps {
     email: string,
     photoURL: string,
     uid: string
+}
+
+export interface OrganizationProps {
+    name: string;
+    id: string;
 }

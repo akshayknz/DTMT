@@ -1,13 +1,15 @@
-import { collection, getDocs, doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
-import { UserProps } from "./interfaces/interfaces";
+import { OrganizationProps, UserProps } from "./interfaces/interfaces";
 
+//GET: get all users
 export const getUsers = async (): Promise<UserProps[]> => {
     const querySnapshot = await getDocs(collection(db, "Organizations"));
 
     return querySnapshot.docs.map((doc) => doc.data()) as [UserProps];
 };
 
+//POST: save user's displayName, email, photoURL, uid
 export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps): Promise<UserProps> => {
     const querySnapshot = await setDoc(doc(db, "Users", uid), {
         displayName: displayName,
@@ -19,3 +21,41 @@ export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps)
     // return querySnapshot.docs.map((doc) => doc.data());
     return { displayName: displayName, email: email, photoURL: photoURL, uid: uid };
 };
+
+//POST: save organization
+export const saveOrganization = async ({ name, id }: OrganizationProps): Promise<OrganizationProps> => {
+    console.log(textToUrl(name, id),id);
+    
+    const querySnapshot = await addDoc(collection(db, "Organizations"), {
+        name: name
+      });
+    let url = await textToUrl(name, id);
+    const querySnapshot2 = await setDoc(doc(db, "Users", id, "Organizations",url), {
+        name: name
+    }, { merge: true });
+    console.log(querySnapshot, name, id);
+    return { name:name,id:id };
+};
+
+//FUN: convert text to url
+export const textToUrl = async (text:string, id: string) =>{
+    text = text.toLowerCase();
+    //remove special characters and replace them with hyphens
+    text = text.replace(/[^a-z0-9]+/g, '-');
+    //remove duplicate hyphens.
+    text = text.replace(/--+/g, '-');
+    //DB: check for uniqueness
+    const querySnapshot = await getDocs(collection(db, "Users", id, "Organizations" ));
+    let existingOrganizations = querySnapshot.docs.map((doc) => doc.id); //docIds[]
+    if (existingOrganizations.includes(text)) {
+        let number = 1;
+        let newValue = text + number; 
+        while (existingOrganizations.includes(newValue)) { //loop until unique
+        newValue = newValue.slice(0, -1) + (number + 1); //remove the previous number
+        number++;
+        }
+        text = newValue;
+    }
+    //return the final readable URL.
+    return text;
+}
