@@ -10,27 +10,42 @@ import ProtectedRoutes from './ProtectedRoutes.tsx';
 import Navbar from './components/Navbar.tsx';
 import { Box } from '@radix-ui/themes';
 import background from "./assets/background.jpg";
+import Loading from './components/Loading.tsx';
 export const router = createBrowserRouter(
   [
     {
-      element: <Navbar />,
+      element: <Navbar />, //Navbar shows up on all child routes
       children: [
     {
       path: "/",
-      element: <App />,
+      element: <AuthPage />, //TODO: replace with a homepage (for unauthenticated users)
     },
     {
       path: "/login",
-      element: <AuthPage />,
+      element: <AuthPage />, //login page for unauthenticated but redirect to /dashboard if authenticated
     },
     {
-      element: <ProtectedRoutes />,
+      element: <ProtectedRoutes />, 
+      /**
+       * Protected child routes. This protection component will:
+       * - show loading screen while loading
+       * - show outlet after loading if authenticated
+       * - navigate to /login if unauthenticated
+       */
       children: [
+        {
+          path: "/dashboard",
+          async loader() {
+            await import("./pages/Dashboard");
+            return <Loading/>; //show loading screen while lazy loading
+          },
+          lazy: () => import("./pages/Dashboard"), //Main authenticated screen
+        },
         {
           path: "/create-organization",
           async loader() {
             await import("./pages/CreateOrganization");
-            return null;
+            return <Loading/>; //show loading screen while lazy loading
           },
           lazy: () => import("./pages/CreateOrganization"),
         }
@@ -38,7 +53,6 @@ export const router = createBrowserRouter(
     }]}
   ], { basename: "/" },
 );
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -2,10 +2,11 @@ import { Box, Container, Flex, Avatar, Text } from "@radix-ui/themes";
 import logo from '../assets/logo.png';
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { handleLogOut } = useContext(AuthContext)
+  const navigate = useNavigate();
   return(
         <>
         <Box style={{  borderRadius: 'var(--radius-3)',background: 'var(--gray-a3)'
@@ -18,7 +19,10 @@ const Navbar = () => {
                         <Avatar
                             src={logo} size="2"
                             fallback="A"
-                            onClick={handleLogOut}
+                            onClick={()=>{
+                                handleLogOut();
+                                navigate("/login")
+                            }}
                         />
                         <Text>DeckHouse</Text>
                         </Flex>

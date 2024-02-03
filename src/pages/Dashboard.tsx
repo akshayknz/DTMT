@@ -4,7 +4,7 @@ import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
 import { Link } from "react-router-dom";
-const Dashboard = () => {
+export function Component() {
     return (
         <>
             
@@ -24,4 +24,3 @@ const Dashboard = () => {
         </>
     )
 }
-export default Dashboard;

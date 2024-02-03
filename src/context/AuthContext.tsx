@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { loginWithCredentials, logoutFirebase, onAuthStateHasChanged, signInWithCredentials, singInWithGoogle } from '../firebase/providers'
+import { useNavigate } from 'react-router-dom'
 
 export interface AuthStateContext {
     userId: string | null
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }: IElement) => {
     useEffect(() => {
         onAuthStateHasChanged(setSession)
     }, [])
-
+    
 
     const handleLogOut = async () => {
         logoutFirebase()
