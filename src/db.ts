@@ -1,6 +1,6 @@
-import { collection, getDocs, doc, setDoc, addDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
-import { OrganizationProps, UserProps } from "./interfaces/interfaces";
+import { UserOrganizationProps, UserProps } from "./interfaces/interfaces";
 
 //GET: get all users
 export const getUsers = async (): Promise<UserProps[]> => {
@@ -23,18 +23,20 @@ export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps)
 };
 
 //POST: save organization
-export const saveOrganization = async ({ name, id }: OrganizationProps): Promise<OrganizationProps> => {
+export const saveOrganization = async ({ name, id }: UserOrganizationProps): Promise<UserOrganizationProps> => {
     console.log(textToUrl(name, id),id);
     
     const querySnapshot = await addDoc(collection(db, "Organizations"), {
         name: name
       });
-    let url = await textToUrl(name, id);
-    const querySnapshot2 = await setDoc(doc(db, "Users", id, "Organizations",url), {
-        name: name
+    let slug = await textToUrl(name, id);
+    const querySnapshot2 = await setDoc(doc(db, "Users", id, "Organizations",slug), {
+        name: name,
+        id: querySnapshot.id,
+        slug: slug
     }, { merge: true });
-    console.log(querySnapshot, name, id);
-    return { name:name,id:id };
+    console.log(querySnapshot.id, name, id);
+    return { name:name,id:id, slug: slug };
 };
 
 //FUN: convert text to url
@@ -59,3 +61,17 @@ export const textToUrl = async (text:string, id: string) =>{
     //return the final readable URL.
     return text;
 }
+
+//GET: get organization ID from SLUG
+export const getOrg = async (slug, userId): Promise<string> => {
+    const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug ));
+    if (docSnap.exists()) {
+        let orgId = docSnap.data().id;
+        const docSnap2 = await getDoc(doc(db, "Organizations", orgId ));
+
+        console.log("lessss",docSnap2.data());
+    } else {
+    }
+    // const querySnapshot = await getDocs(collection(db, "Users", id, "Organizations" ));
+    return "yo";
+};

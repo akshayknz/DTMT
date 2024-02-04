@@ -26,7 +26,8 @@ export interface UserProps {
     uid: string
 }
 
-export interface OrganizationProps {
+export interface UserOrganizationProps {
     name: string;
     id: string;
+    slug? :string;
 }

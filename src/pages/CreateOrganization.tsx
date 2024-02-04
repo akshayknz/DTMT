@@ -3,15 +3,17 @@ import Navbar from "../components/Navbar";
 import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { saveOrganization, textToUrl } from "../db";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { UserOrganizationProps } from "../interfaces/interfaces";
 
 export function Component() {
     const [name, setName] = useState("");
     const [url, setUrl] = useState("");
     const { userId } = useContext(AuthContext)
+    const navigate = useNavigate();
     const getUserId = () => {
         return userId
     }
@@ -28,6 +30,13 @@ export function Component() {
     
         return () => {};
     }, [name, userId]);
+    
+    const handleSubmit = async () => {
+        let organization : UserOrganizationProps = await saveOrganization({name:name,"id":getUserId()});
+        console.log(organization);
+        navigate(`/org/${organization.slug}`)
+        
+    }
 
     return (
         <Container px="3">
@@ -50,7 +59,7 @@ export function Component() {
                 </Box>
             </Box>
             <Box>
-                <Button onClick={()=>saveOrganization({name:name,"id":getUserId()})}>
+                <Button onClick={handleSubmit}>
                     Create Organization
                 </Button>
             </Box>
