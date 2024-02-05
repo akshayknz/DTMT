@@ -1,21 +1,47 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Box, Button, Container, Flex, Heading } from '@radix-ui/themes';
 import { RiGoogleFill } from "react-icons/ri";
 import { Navigate, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
+import { getLastSelectedOrganization } from '../db';
+import { Component } from '../pages/Dashboard';
 
 const Login = () => {
     const { handleLoginWithGoogle } = useContext(AuthContext)
     const navigate = useNavigate();
     const { userId, status } = useContext(AuthContext)
-
+    const [lastSlectedOrganization, setLastSlectedOrganization] = useState("")
+    const [lastSlectedOrganizationCheck, setLastSlectedOrganizationCheck] = useState("checking")
+    useEffect(()=>{
+        let org = getLastSelectedOrganization(userId).then(value=>{
+            setLastSlectedOrganization(value)
+            setLastSlectedOrganizationCheck("found")
+            /**
+             * TODO: Not found:
+             * - db will get a empty array
+             * - db sends a null
+             * - set check to "none"
+             */
+            return value
+        })
+        org;
+    },[status])
     if((status === 'checking')) { //loading screen while auth==checking
         return <Loading />;
     }
 
     if((status === 'authenticated' && userId)) { //redirect to dashboard if auth==authenticated
-        return <Navigate to="/dashboard"  replace />;
+        
+        if(lastSlectedOrganizationCheck=='checking'){
+            return <Loading />
+        }
+        if(lastSlectedOrganizationCheck=='found'){
+            return <Navigate to={`/org/${lastSlectedOrganization}`}></Navigate>
+        }
+        if(lastSlectedOrganizationCheck=='none'){
+            return <Component/>
+        }
     }
 
     return ( //show if auth==not authenticated

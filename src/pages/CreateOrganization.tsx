@@ -32,15 +32,14 @@ export function Component() {
     }, [name, userId]);
     
     const handleSubmit = async () => {
-        let organization : UserOrganizationProps = await saveOrganization({name:name,"id":getUserId()});
+        let organization : UserOrganizationProps = await saveOrganization({name:name,"id":getUserId(), selected: true});
         console.log(organization);
         navigate(`/org/${organization.slug}`)
-        
     }
 
     return (
         <Container px="3">
-            <Link to=".." relative="path">
+            <Link to="/dashboard" relative="path">
                 <Button>
                     Go back
                 </Button>

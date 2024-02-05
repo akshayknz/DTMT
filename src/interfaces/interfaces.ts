@@ -30,4 +30,5 @@ export interface UserOrganizationProps {
     name: string;
     id: string;
     slug? :string;
+    selected: boolean
 }

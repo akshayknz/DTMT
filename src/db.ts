@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, setDoc, addDoc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where } from "firebase/firestore";
 import { db } from "./firebase/config";
 import { UserOrganizationProps, UserProps } from "./interfaces/interfaces";
 
@@ -23,7 +23,7 @@ export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps)
 };
 
 //POST: save organization
-export const saveOrganization = async ({ name, id }: UserOrganizationProps): Promise<UserOrganizationProps> => {
+export const saveOrganization = async ({ name, id, selected }: UserOrganizationProps): Promise<UserOrganizationProps> => {
     console.log(textToUrl(name, id),id);
     
     const querySnapshot = await addDoc(collection(db, "Organizations"), {
@@ -33,10 +33,11 @@ export const saveOrganization = async ({ name, id }: UserOrganizationProps): Pro
     const querySnapshot2 = await setDoc(doc(db, "Users", id, "Organizations",slug), {
         name: name,
         id: querySnapshot.id,
-        slug: slug
+        slug: slug,
+        selected: selected
     }, { merge: true });
     console.log(querySnapshot.id, name, id);
-    return { name:name,id:id, slug: slug };
+    return { name:name,id:id, slug: slug, selected: selected };
 };
 
 //FUN: convert text to url
@@ -69,9 +70,22 @@ export const getOrg = async (slug, userId): Promise<string> => {
         let orgId = docSnap.data().id;
         const docSnap2 = await getDoc(doc(db, "Organizations", orgId ));
 
-        console.log("lessss",docSnap2.data());
+        console.log("all organization data:",docSnap2.data());
     } else {
     }
     // const querySnapshot = await getDocs(collection(db, "Users", id, "Organizations" ));
     return "yo";
+};
+
+//GET: get last selected organization (selected: true)
+export const getLastSelectedOrganization = async (userId): Promise<string> => {
+    const querySnapshot = await getDocs(
+            query(
+                collection(db, "Users", userId, "Organizations"), 
+                where("selected", "==", true)
+            )
+        );
+    let data = querySnapshot.docs.map((doc) => doc.data()) as UserOrganizationProps[];
+                
+    return data[0].slug;
 };

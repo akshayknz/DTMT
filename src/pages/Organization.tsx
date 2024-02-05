@@ -14,7 +14,7 @@ export function Component() {
             {slug}
             <Container px="3">
                 <Box pt={"6"} pb={"5"}>
-                    <Heading size="7">To start create an organization.</Heading>
+                    <Heading size="7">{slug}</Heading>
                 </Box>
             </Container>
         </>
