@@ -32,3 +32,10 @@ export interface UserOrganizationProps {
     slug? :string;
     selected: boolean
 }
+
+export interface OrganizationProps {
+    name?: string;
+    id?: string;
+    collections?: string[]; //collection order is with the collection
+    overviewOptions?: string[]; //{clock:[a,b,c,d]; blockcollection:[today,high priority,reminders,todo]}
+}

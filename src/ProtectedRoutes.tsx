@@ -6,8 +6,6 @@ import Loading from "./components/Loading";
 
 const ProtectedRoutes = () => {
     const { userId, status } = useContext(AuthContext)
-    console.log(userId, status);
-    
 	
     if(status === 'checking') { //loading screen while auth==checking
         return <Loading />;

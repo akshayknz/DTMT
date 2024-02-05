@@ -14,18 +14,19 @@ const Login = () => {
     const [lastSlectedOrganization, setLastSlectedOrganization] = useState("")
     const [lastSlectedOrganizationCheck, setLastSlectedOrganizationCheck] = useState("checking")
     useEffect(()=>{
-        let org = getLastSelectedOrganization(userId).then(value=>{
-            setLastSlectedOrganization(value)
-            setLastSlectedOrganizationCheck("found")
-            /**
-             * TODO: Not found:
-             * - db will get a empty array
-             * - db sends a null
-             * - set check to "none"
-             */
-            return value
-        })
-        org;
+        if((status === 'authenticated' && userId)) {
+            let org = getLastSelectedOrganization(userId).then(value=>{
+                setLastSlectedOrganization(value)
+                setLastSlectedOrganizationCheck("found")
+                /**
+                 * TODO: Not found:
+                 * - db will get a empty array
+                 * - db sends a null
+                 * - set check to "none"
+                 */
+                return value
+            })
+        }
     },[status])
     if((status === 'checking')) { //loading screen while auth==checking
         return <Loading />;

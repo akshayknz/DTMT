@@ -1,19 +1,13 @@
 import { Flex, Heading, Button, DropdownMenu } from "@radix-ui/themes";
-import { getUsers } from "../db";
 import { useState, useEffect } from "react";
 import { RiMore2Fill } from "react-icons/ri";
 import { UserProps } from "../interfaces/interfaces";
 
 const Collection = () => {
 
-    const [users, setUsers] = useState<UserProps[]>([]);
+    // const [users, setUsers] = useState<UserProps[]>([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const usersData = await getUsers();
-      setUsers(usersData);
-    };
-    fetchUsers();
   }, []);
 
 
@@ -42,9 +36,6 @@ const Collection = () => {
 </Flex>
 iitems
 <ul>
-        {users.map((user) => (
-          <li key={user.uid}>{user.displayName}</li>
-        ))}
       </ul>
         </>
     )

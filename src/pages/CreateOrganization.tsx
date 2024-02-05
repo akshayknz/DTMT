@@ -4,7 +4,7 @@ import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
 import { Link, useNavigate } from "react-router-dom";
-import { saveOrganization, textToUrl } from "../db";
+import { saveUserOrganization, textToUrl } from "../db";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { UserOrganizationProps } from "../interfaces/interfaces";
@@ -32,8 +32,11 @@ export function Component() {
     }, [name, userId]);
     
     const handleSubmit = async () => {
-        let organization : UserOrganizationProps = await saveOrganization({name:name,"id":getUserId(), selected: true});
-        console.log(organization);
+        let organization : UserOrganizationProps = await saveUserOrganization({
+            name:name,
+            id:getUserId(), 
+            selected: true
+        });
         navigate(`/org/${organization.slug}`)
     }
 
@@ -50,6 +53,8 @@ export function Component() {
                         background: "transparent",
                         border: "none",
                         width: "100%",
+                        display:"block",
+                        boxSizing:"border-box",
                         color: "#000",
                         fontSize: "30px",
                         resize: "none"
