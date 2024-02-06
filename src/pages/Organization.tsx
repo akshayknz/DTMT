@@ -165,7 +165,7 @@ export function Component() {
                 </Masonry>
                 <Box pb={"1"}></Box>
             </Box>
-            <Masonry>
+            <Masonry style={{width:"10vw", overflow:"hidden"}}>
                 <Box style={{ width: '100%' }}>
                     <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
                         <Box>
