@@ -88,7 +88,7 @@ export function Component() {
                             </Box>
                         </Box>
                     </Box>
-                    <Box style={{ width: '100%' }}>
+                    <Box style={{ width: '99.9%' }}>
                         <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#00CC66", height:"200px", borderRadius: "4px", color: "#fff" }}>
                             <Box>
                                 <Text size="1">Page 1 (Pages)</Text>
@@ -152,7 +152,7 @@ export function Component() {
                             </Box>
                         </Box>
                     </Box>
-                    <Box style={{ width: '100%' }}>
+                    <Box style={{ width: '99.9%' }}>
                         <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#00CC66", height, borderRadius: "4px", color: "#fff" }}>
                             <Box>
                                 <Text size="1">Page 1 (Pages)</Text>
@@ -165,8 +165,8 @@ export function Component() {
                 </Masonry>
                 <Box pb={"1"}></Box>
             </Box>
-            <Masonry style={{width:"10vw", overflow:"hidden"}}>
-                <Box style={{ width: '100%' }}>
+            <Masonry >
+                <Box style={{width:"99.9%"}}>
                     <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
                         <Box>
                             <Text size="1">Page 1 (Pages)</Text>
@@ -176,17 +176,7 @@ export function Component() {
                         </Box>
                     </Box>
                 </Box>
-                <Box style={{ width: '100%' }}>
-                    <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
-                        <Box>
-                            <Text size="1">Page 1 (Pages)</Text>
-                            <Box width={"auto"} p={"1"}>
-                                <Text m={"1"} size="1" >Page body (Content)</Text>
-                            </Box>
-                        </Box>
-                    </Box>
-                </Box>
-                <Box style={{ width: '100%' }}>
+                <Box style={{width:"99.9%"}}>
                     <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
                         <Box>
                             <Text size="1">Page 1 (Pages)</Text>
