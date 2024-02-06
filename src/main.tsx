@@ -66,7 +66,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
     <Theme appearance="light" accentColor="green" radius="small">
-    <Box style={{height: "100vh", background:`url("${background}")`}}>
+    <Box style={{minHeight: "100vh"}}>
         <RouterProvider router={router} />
         </Box>
       </Theme>

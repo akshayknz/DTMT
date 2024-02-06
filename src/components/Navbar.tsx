@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import { getOrganization, getUser } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
+import { RiMore2Fill, RiNotification4Line } from "react-icons/ri";
 
 const Navbar = () => {
     const { handleLogOut } = useContext(AuthContext)
@@ -40,17 +41,29 @@ const Navbar = () => {
                                 />
                                 {organizationData.name ? <Text size={"1"}>{organizationData.name}</Text> : <Text>DeckHouse</Text>}
                             </Flex>
+                            <Flex gap="2" align="center">
 
+                            <Button variant="soft" style={{
+                                        }}>
+                                        <RiNotification4Line />
+                                        </Button>
                             {userId &&
                                 <DropdownMenu.Root>
                                     <DropdownMenu.Trigger>
+                                        <Button variant="soft" style={{
+                                            padding:0,margin:0,
+                                        }}>
                                         <Avatar
-                                            size={`${userId ? "1" : "2"}`}
+                                         style={{
+                                            padding:0,margin:0
+                                        }}
+                                            size={`${userId ? "2" : "2"}`}
                                             fallback="A"
                                             src={user.photoURL}
                                         />
+                                        </Button>
                                     </DropdownMenu.Trigger>
-                                    <DropdownMenu.Content size="1">
+                                    <DropdownMenu.Content size="2">
                                         <DropdownMenu.Item shortcut="⌘ E">Edit</DropdownMenu.Item>
                                         <DropdownMenu.Item shortcut="⌘ D">Duplicate</DropdownMenu.Item>
                                         <DropdownMenu.Separator />
@@ -68,6 +81,7 @@ const Navbar = () => {
                             }
 
                             {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
+                        </Flex>
                         </Flex>
                     </Container></Box>
             </Box>
