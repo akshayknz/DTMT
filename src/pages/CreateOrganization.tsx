@@ -14,9 +14,7 @@ export function Component() {
     const [url, setUrl] = useState("");
     const { userId } = useContext(AuthContext)
     const navigate = useNavigate();
-    const getUserId = () => {
-        return userId
-    }
+
     useEffect(() => {
         /**
          * IIFE
@@ -34,7 +32,7 @@ export function Component() {
     const handleSubmit = async () => {
         let organization : UserOrganizationProps = await saveUserOrganization({
             name:name,
-            id:getUserId(), 
+            id:userId, 
             selected: true
         });
         navigate(`/org/${organization.slug}`)

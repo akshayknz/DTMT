@@ -1,11 +1,12 @@
 import { Box, Button, Card, Container, Flex, Heading, Text, TextField } from "@radix-ui/themes";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getOrganization, getUser } from "../db";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
 import { RiAddFill, RiMore2Fill, RiSearchLine } from "react-icons/ri";
 import { Masonry } from "react-masonry/dist";
+import Block from "../components/Block";
 export function Component() {
     const params = useParams();
     const [user, setUser] = useState({} as UserProps)
@@ -29,164 +30,34 @@ export function Component() {
                      * - Onclick toggle.
                      * - Show on true.
                      * - Font should be as big as the Heading.
-                     * 
                      *  */ }
-                    <Button variant="soft" size="4" radius="small"><RiSearchLine /></Button>
-                    {/* <TextField.Root>
-                            <TextField.Input variant="soft" placeholder="Search the docs…" size="2" />
-                        </TextField.Root> */}
+                    <Flex gap="3" align="center" justify="between">
+                        <Link to="/page/new-page">
+                        <Button variant="solid" size="3" radius="small"><RiAddFill /></Button>
+                        </Link>
+                        <Button variant="solid" size="3" radius="small"><RiSearchLine /></Button>
+                    </Flex>
                 </Flex>
             </Box>
-            <Box className="collection" mb={"2"} >
-                <Box p={"2"}>
+            <Box className="collection" mb={"2"} style={{ display: "flex", flexWrap: "wrap" }} >
+                <Box p={"2"} width={"100%"}>
                     <Flex justify={"between"} align={"center"}>
                         <Text weight={"medium"}>Overview (Collection)</Text>
                         <Flex>
-                            <Button variant="soft" size="4" mx={"1"}><RiAddFill /></Button>
-                            <Button variant="soft" size="4" mx={"1"}><RiMore2Fill /></Button>
-
+                            <Button variant="solid" size="3" mx={"1"}><RiMore2Fill /></Button>
                         </Flex>
                     </Flex>
                 </Box>
-                <Masonry>
-                    <Box style={{ width: '70%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#DB3A34", height, borderRadius: "4px", color: "#fff" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '30%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#333333", height, borderRadius: "4px", color: "#fff" }}>
-                            <Box>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '50%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '50%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#FFCA3A", height, borderRadius: "4px", color: "#000" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '99.9%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#00CC66", height:"200px", borderRadius: "4px", color: "#fff" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                </Masonry>
+                <Block h="120px" w="70%" bg="#DB3A34" head="Page 1 (Pages)" body="Page body (Content)" />
+                <Block h="120px" w="29.5%" bg="#333333" head="Page 1 (Pages)" body="Page body (Content)" />
+                <Block h="120px" w="50%" bg="#E3F2FD" head="Page 1 (Pages)" body="Page body (Content)" />
+                <Block h="120px" w="49.5%" bg="#FFCA3A" head="Page 1 (Pages)" body="Page body (Content)" />
+                <Block h="200px" w="99.9%" bg="#00CC66" head="Page 1 (Pages)" body="Page body (Content)" />
                 <Box pb={"1"}></Box>
             </Box>
-            <Box className="collection" mb={"2"} >
-                <Box p={"2"}>
-                    <Flex justify={"between"} align={"center"}>
-                        <Text weight={"medium"}>Overview (Collection)</Text>
-                        <Flex>
-                            <Button variant="soft" size="4" mx={"1"}><RiAddFill /></Button>
-                            <Button variant="soft" size="4" mx={"1"}><RiMore2Fill /></Button>
+            <Block h="100px" w="99.9%" bg="#E3F2FD" head="Page 1 (Pages)" body="Page body (Content)" />
+            <Block h="100px" w="99.9%" bg="#E3F2FD" head="Page 1 (Pages)" body="Page body (Content)" />
 
-                        </Flex>
-                    </Flex>
-                </Box>
-                <Masonry>
-                    <Box style={{ width: '70%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#DB3A34", height, borderRadius: "4px", color: "#fff" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '30%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#333333", height, borderRadius: "4px", color: "#fff" }}>
-                            <Box>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '50%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '50%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#FFCA3A", height, borderRadius: "4px", color: "#000" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box style={{ width: '99.9%' }}>
-                        <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#00CC66", height, borderRadius: "4px", color: "#fff" }}>
-                            <Box>
-                                <Text size="1">Page 1 (Pages)</Text>
-                                <Box width={"auto"} p={"1"}>
-                                    <Text m={"1"} size="1" >Page body (Content)</Text>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Box>
-                </Masonry>
-                <Box pb={"1"}></Box>
-            </Box>
-            <Masonry >
-                <Box style={{width:"99.9%"}}>
-                    <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
-                        <Box>
-                            <Text size="1">Page 1 (Pages)</Text>
-                            <Box width={"auto"} p={"1"}>
-                                <Text m={"1"} size="1" >Page body (Content)</Text>
-                            </Box>
-                        </Box>
-                    </Box>
-                </Box>
-                <Box style={{width:"99.9%"}}>
-                    <Box px={"3"} p={"1"} style={{ margin: "4px", background: "#E3F2FD", height, borderRadius: "4px", color: "#000" }}>
-                        <Box>
-                            <Text size="1">Page 1 (Pages)</Text>
-                            <Box width={"auto"} p={"1"}>
-                                <Text m={"1"} size="1" >Page body (Content)</Text>
-                            </Box>
-                        </Box>
-                    </Box>
-                </Box>
-            </Masonry>
 
         </Container>
     )

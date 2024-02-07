@@ -17,7 +17,7 @@ const Navbar = () => {
     useEffect(() => {
         if (userId) {
             getUser(userId).then(v => setUser(v as UserProps))
-            if(params.id){
+            if (params.id) {
                 getOrganization(params.id, userId).then(v => setOrganizationData(v))
             }
         } else {
@@ -27,9 +27,10 @@ const Navbar = () => {
     return (
         <>
             <Box style={{
-                borderRadius: 'var(--radius-3)', background: 'var(--gray-a3)'
+                borderRadius: 'var(--radius-3)', background: '#f5f5f5bd'
                 , position: "sticky", zIndex: "100", top: `${userId ? "6px" : "10px"}`, marginBottom: "20px"
-                , padding: `${userId ? "6px" : "10px"}`, backdropFilter:"blur(3px)", WebkitBackdropFilter:"blur(3px)"
+                , padding: `${userId ? "6px" : "10px"}`, backdropFilter: "blur(7px)",
+                WebkitBackdropFilter: "blur(3px)", boxShadow: "0 0 3px 1px #00000029"
             }} mx={"2"} className={`${userId ? "authenticated" : ""}`}>
                 <Box style={{}}>
                     <Container>
@@ -39,49 +40,50 @@ const Navbar = () => {
                                     src={logo} size={`${userId ? "1" : "2"}`}
                                     fallback="A"
                                 />
-                                {organizationData.name ? <Text size={"1"}>{organizationData.name}</Text> : <Text>DeckHouse</Text>}
+                                {organizationData.name ? <Text size={"1"} weight={"medium"}>{organizationData.name}</Text> : <Text>DeckHouse</Text>}
                             </Flex>
                             <Flex gap="2" align="center">
 
-                            <Button variant="soft" style={{
-                                        }}>
-                                        <RiNotification4Line />
-                                        </Button>
-                            {userId &&
-                                <DropdownMenu.Root>
-                                    <DropdownMenu.Trigger>
-                                        <Button variant="soft" style={{
-                                            padding:0,margin:0,
-                                        }}>
-                                        <Avatar
-                                         style={{
-                                            padding:0,margin:0
-                                        }}
-                                            size={`${userId ? "2" : "2"}`}
-                                            fallback="A"
-                                            src={user.photoURL}
-                                        />
-                                        </Button>
-                                    </DropdownMenu.Trigger>
-                                    <DropdownMenu.Content size="2">
-                                        <DropdownMenu.Item shortcut="⌘ E">Edit</DropdownMenu.Item>
-                                        <DropdownMenu.Item shortcut="⌘ D">Duplicate</DropdownMenu.Item>
-                                        <DropdownMenu.Separator />
-                                        <DropdownMenu.Item shortcut="⌘ N">Archive</DropdownMenu.Item>
 
-                                        <DropdownMenu.Separator />
-                                        <DropdownMenu.Item shortcut="⌘ ⌫" color="red" onClick={() => {
-                                            handleLogOut();
-                                            navigate("/login")
-                                        }}>
-                                            Log out
-                                        </DropdownMenu.Item>
-                                    </DropdownMenu.Content>
-                                </DropdownMenu.Root>
-                            }
+                                {userId &&
+                                    <>
+                                        <Button variant="soft">
+                                            <RiNotification4Line />
+                                        </Button>
+                                        <DropdownMenu.Root>
+                                            <DropdownMenu.Trigger>
+                                                <Button variant="soft" style={{
+                                                    padding: 0, margin: 0,
+                                                }}>
+                                                    <Avatar
+                                                        style={{
+                                                            padding: 0, margin: 0
+                                                        }}
+                                                        size={`${userId ? "2" : "2"}`}
+                                                        fallback="A"
+                                                        src={user.photoURL}
+                                                    />
+                                                </Button>
+                                            </DropdownMenu.Trigger>
+                                            <DropdownMenu.Content size="2" style={{ width: "200px" }} >
+                                                <DropdownMenu.Item>Sharing</DropdownMenu.Item>
+                                                <DropdownMenu.Separator />
+                                                <DropdownMenu.Item>Trash</DropdownMenu.Item>
+                                                <DropdownMenu.Item>Settings</DropdownMenu.Item>
 
-                            {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
-                        </Flex>
+                                                <DropdownMenu.Separator />
+                                                <DropdownMenu.Item color="red" onClick={() => {
+                                                    handleLogOut();
+                                                    navigate("/login")
+                                                }}>
+                                                    Log out
+                                                </DropdownMenu.Item>
+                                            </DropdownMenu.Content>
+                                        </DropdownMenu.Root>
+                                    </>}
+
+                                {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
+                            </Flex>
                         </Flex>
                     </Container></Box>
             </Box>
