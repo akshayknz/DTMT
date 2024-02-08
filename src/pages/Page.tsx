@@ -31,7 +31,13 @@ export function Component() {
                     <TextField.Input size="3" placeholder="New Page" autoFocus />
                 </Box>
                 <Box pb={"3"}>
-                    <TextArea placeholder="Body" />
+                    <Text>Add a body block</Text>
+                </Box>
+                <Box pb={"3"}>
+                    <Text>Add a To-do block</Text>
+                </Box>
+                <Box pb={"3"}>
+                    <Text>Add a Link block</Text>
                 </Box>
                 <Box pb={"3"}>
                     <AlertDialog.Root>
