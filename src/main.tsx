@@ -64,7 +64,15 @@ export const router = createBrowserRouter(
             return <Loading/>; //show loading screen while lazy loading
           },
           lazy: () => import("./pages/Page"),
-        }
+        },
+        {
+          path: "/page/:id",
+          async loader() {
+            await import("./pages/Page");
+            return <Loading/>; //show loading screen while lazy loading
+          },
+          lazy: () => import("./pages/Page"),
+        },
       ],
     }]}
   ], { basename: "/" },

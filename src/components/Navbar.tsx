@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
-import { getOrganization, getUser } from "../db";
+import { getLastSelectedOrganization, getOrganization, getUser } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
 import { RiMore2Fill, RiNotification4Line } from "react-icons/ri";
 
@@ -18,7 +18,11 @@ const Navbar = () => {
         if (userId) {
             getUser(userId).then(v => setUser(v as UserProps))
             if (params.id) {
-                getOrganization(params.id, userId).then(v => setOrganizationData(v))
+                getLastSelectedOrganization(userId).then(v => {
+                    getOrganization(v, userId).then(vv => {
+                        setOrganizationData(vv)
+                    })
+                })
             }
         } else {
             setUser({} as UserProps)

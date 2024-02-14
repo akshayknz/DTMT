@@ -1,29 +1,38 @@
 import { AlertDialog, Box, Button, Card, Container, Flex, Heading, Text, TextArea, TextField } from "@radix-ui/themes";
-import Navbar from "../components/Navbar";
-import Collection from "../components/Collection";
-import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
-import background from "../assets/background.jpg";
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useContext } from "react";
+import { RiAddCircleFill } from "react-icons/ri";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { savePage } from "../db";
+import { getPage, savePage } from "../db";
 export function Component() {
+    const params = useParams();
     const [name, setName] = useState("");
     const [id, setId] = useState("");
-    const [body, setBody] = useState({} as {[key: string]: string});
+    const [body, setBody] = useState({} as { [key: string]: string });
     const { userId } = useContext(AuthContext)
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (params.id) {
+            getPage(params.id, userId).then(v => {
+                setName(v.name)
+                // setBody(v.body) get id[], then get element data and out id:data
+                setId(v.id)
+            })
+        }
+    }, [])
+
     const handleSavePage = () => {
         const page = savePage({
             name: name,
             body: [],
-            id:id
-        }, userId).then(v=>{
-            console.log(v);
-            
-            // navigate(`/page/${v.slug}`)            
+            id: id
+        }, userId).then(v => {
+            setId(v.id)
+            navigate(`/page/${v.slug}`)
         });
     }
+
     return (
         <>
             <Container px="3" pb={"5"}>
@@ -35,12 +44,12 @@ export function Component() {
                             </Button>
                         </Link>
                         <Button onClick={handleSavePage}>
-                            <RiAddCircleFill width="16" height="16"/> Save
+                            <RiAddCircleFill width="16" height="16" /> Save
                         </Button>
                     </Flex>
                 </Box>
                 <Box pb={"3"}>
-                    <TextField.Input size="3" placeholder="New Page" autoFocus value={name} onChange={(v)=>setName(v.target.value)}/>
+                    <TextField.Input size="3" placeholder="New Page" autoFocus value={name} onChange={(v) => setName(v.target.value)} />
                 </Box>
                 <Box pb={"3"}>
                     <Text>Add a body block</Text>
