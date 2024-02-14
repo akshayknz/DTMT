@@ -9,16 +9,20 @@ import { AuthContext } from "../context/AuthContext";
 import { savePage } from "../db";
 export function Component() {
     const [name, setName] = useState("");
-    const [url, setUrl] = useState("");
+    const [id, setId] = useState("");
+    const [body, setBody] = useState({} as {[key: string]: string});
     const { userId } = useContext(AuthContext)
     const navigate = useNavigate();
     const handleSavePage = () => {
         const page = savePage({
-            name:"Page 1",
-            body: []
-        }).then(v=>v);
-        console.log(page);
-        
+            name: name,
+            body: [],
+            id:id
+        }, userId).then(v=>{
+            console.log(v);
+            
+            // navigate(`/page/${v.slug}`)            
+        });
     }
     return (
         <>
@@ -36,7 +40,7 @@ export function Component() {
                     </Flex>
                 </Box>
                 <Box pb={"3"}>
-                    <TextField.Input size="3" placeholder="New Page" autoFocus />
+                    <TextField.Input size="3" placeholder="New Page" autoFocus value={name} onChange={(v)=>setName(v.target.value)}/>
                 </Box>
                 <Box pb={"3"}>
                     <Text>Add a body block</Text>

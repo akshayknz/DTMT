@@ -49,6 +49,40 @@ export enum PageStatus {
 export interface PageProps {
   name?: string;
   id?: string;
-  body: string[];
+  body?: string[];
   status?: PageStatus;
+  slug?: string;
+}
+
+export enum ElementType {
+  LINK = "LINK",
+  TODO = "TODO",
+  TEXT = "TEXT",
+}
+
+export interface ElementProps {
+  body: TodoProps[] | LinkProps[] | string; //each array element is an object and is a link or a todo
+  order: number;
+  status: string;
+  type: ElementType;
+  userId: string;
+  organizationId: string;
+}
+
+export enum TodoStatus {
+  COMPLETED = "COMPLETED",
+  INCOMPLETE = "INCOMPLETE",
+}
+
+export interface TodoProps {
+  title: string;
+  description: string;
+  date: Date;
+  status: TodoStatus;
+}
+
+export interface LinkProps {
+  title: string;
+  url: string;
+  img: Date;
 }
