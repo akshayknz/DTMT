@@ -1,6 +1,6 @@
 import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where } from "firebase/firestore";
 import { db } from "./firebase/config";
-import { OrganizationProps, UserOrganizationProps, UserProps } from "./interfaces/interfaces";
+import { OrganizationProps, PageProps, PageStatus, UserOrganizationProps, UserProps } from "./interfaces/interfaces";
 
 //GET: get user
 export const getUser = async (id:string): Promise<UserProps|Error> => {
@@ -109,4 +109,14 @@ export const getLastSelectedOrganization = async (userId): Promise<string> => {
     let data = querySnapshot.docs.map((doc) => doc.data()) as UserOrganizationProps[];
                 
     return data.length>0 ? Object.keys(data).length>0?data[0].slug:null:null;
+};
+
+//POST: Add page
+export const savePage = async (data:PageProps): Promise<PageProps> => {
+    const querySnapshot = await addDoc(collection(db, "Pages"), {...data, status:PageStatus.ACTIVE});
+    const page = {
+        id: querySnapshot.id,
+        ...data
+    }
+    return page;
 };

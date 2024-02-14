@@ -6,12 +6,20 @@ import background from "../assets/background.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { savePage } from "../db";
 export function Component() {
     const [name, setName] = useState("");
     const [url, setUrl] = useState("");
     const { userId } = useContext(AuthContext)
     const navigate = useNavigate();
-
+    const handleSavePage = () => {
+        const page = savePage({
+            name:"Page 1",
+            body: []
+        }).then(v=>v);
+        console.log(page);
+        
+    }
     return (
         <>
             <Container px="3" pb={"5"}>
@@ -22,8 +30,8 @@ export function Component() {
                                 Cancel
                             </Button>
                         </Link>
-                        <Button>
-                            <RiAddCircleFill width="16" height="16" /> Save
+                        <Button onClick={handleSavePage}>
+                            <RiAddCircleFill width="16" height="16"/> Save
                         </Button>
                     </Flex>
                 </Box>
