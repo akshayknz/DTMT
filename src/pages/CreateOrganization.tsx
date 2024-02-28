@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { saveUserOrganization, textToUrl } from "../db";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -22,7 +22,7 @@ export function Component() {
          * function that runs as soon as it is defined.
          */
         (async () => {
-            let url = await textToUrl(name, userId);
+            let url = await textToUrl(name, userId, "Organization");
             setUrl(url)
         })();
     
@@ -40,11 +40,9 @@ export function Component() {
 
     return (
         <Container px="3">
-            <Link to="/dashboard" relative="path">
-                <Button>
+                <Button onClick={() => navigate(-1)}>
                     Go back
                 </Button>
-            </Link>
             <Box>
                 <Box py={"6"}>
                     <textarea value={name} onChange={(e)=>setName(e.target.value)} autoFocus style={{
@@ -65,6 +63,7 @@ export function Component() {
                     Create Organization
                 </Button>
             </Box>
+            
         </Container>
     )
 }

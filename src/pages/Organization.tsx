@@ -1,5 +1,5 @@
 import { Box, Button, Card, Container, Flex, Heading, Text, TextField } from "@radix-ui/themes";
-import { Link, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { getOrganization, getUser } from "../db";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -8,6 +8,7 @@ import { RiAddFill, RiMore2Fill, RiSearchLine } from "react-icons/ri";
 import { Masonry } from "react-masonry/dist";
 import Block from "../components/Block";
 export function Component() {
+    const navigate = useNavigate();
     const params = useParams();
     const [user, setUser] = useState({} as UserProps)
     const [organizationData, setOrganizationData] = useState({} as OrganizationProps)
@@ -22,6 +23,9 @@ export function Component() {
         <Container px="3">
             <Box pt={"2"} pb={"3"}>
                 <Text>Hi {user.displayName && user.displayName.split(' ')[0] + ","}</Text>
+                <Button onClick={() => navigate(-1)}>
+                    Go back
+                </Button>
                 <Flex gap="3" align="center" justify="between">
                     <Heading size="7" weight={"medium"}>{organizationData.name}</Heading>
                     {/**

@@ -31,10 +31,10 @@ const Navbar = () => {
     return (
         <>
             <Box style={{
-                borderRadius: 'var(--radius-3)', background: '#f5f5f5bd'
+                borderRadius: 'var(--radius-3)'
                 , position: "sticky", zIndex: "100", top: `${userId ? "6px" : "10px"}`, marginBottom: "20px"
                 , padding: `${userId ? "6px" : "10px"}`, backdropFilter: "blur(7px)",
-                WebkitBackdropFilter: "blur(3px)", boxShadow: "0 0 3px 1px #00000029"
+                WebkitBackdropFilter: "blur(3px)"
             }} mx={"2"} className={`${userId ? "authenticated" : ""}`}>
                 <Box style={{}}>
                     <Container>

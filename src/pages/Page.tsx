@@ -3,7 +3,8 @@ import { RiAddCircleFill } from "react-icons/ri";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { getPage, savePage } from "../db";
+import { getPage, saveElement, savePage } from "../db";
+import { ElementType } from "../interfaces/interfaces";
 export function Component() {
     const params = useParams();
     const [name, setName] = useState("");
@@ -23,14 +24,30 @@ export function Component() {
     }, [])
 
     const handleSavePage = () => {
-        const page = savePage({
-            name: name,
-            body: [],
-            id: id
-        }, userId).then(v => {
-            setId(v.id)
-            navigate(`/page/${v.slug}`)
-        });
+        const page = savePage(
+            { name: name, body: Object.keys(body), id: id, slug: params.id ? params.id : "" },
+            userId
+        ).then(slug => navigate(`/page/${slug}`))
+    }
+
+    const addElement = async (type:ElementType) => {
+        console.log("addElement", type);
+        /**
+         * Call to firebase: add an element
+         * Type is body
+         * sends back the id
+         * id gets saved to the body state
+         * the page saves automatically to write the addition of a new element to database
+         */
+        let id = await saveElement({
+            body: "body",
+            order: 0,
+            status: "active",
+            type: type,
+            userId: userId,
+        })
+        console.log(id, type);
+        
     }
 
     return (
@@ -70,7 +87,7 @@ export function Component() {
                         <AlertDialog.Content style={{ maxWidth: 450 }}>
                             <AlertDialog.Title>Add a block</AlertDialog.Title>
                             <Flex direction={"column"}>
-                                <AlertDialog.Action>
+                                <AlertDialog.Action onClick={()=>addElement(ElementType.TEXT)}>
                                     <Card my={"1"}>
                                         <Text as="div" size="2" weight="bold"> Body </Text>
                                         <Text as="div" color="gray" size="2">

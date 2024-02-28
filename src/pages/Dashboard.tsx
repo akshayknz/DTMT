@@ -3,8 +3,8 @@ import Navbar from "../components/Navbar";
 import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
-import { Link } from "react-router-dom";
-export function Component() {
+import { Link, Outlet } from "react-router-dom";
+export default function Dashboard() {
     return (
         <>
             
@@ -18,7 +18,16 @@ export function Component() {
                         <RiAddCircleFill width="16" height="16" /> Create Organization
                     </Button>
                     </Link>
-                    
+                    <Link to="/org/dsrgsdfg">
+                    <Box>
+                One from list
+            </Box></Link>
+            <Box>
+                One from list
+            </Box>
+            <Box>
+                One from list
+            </Box>
                 </Box>
             </Container>
         </>

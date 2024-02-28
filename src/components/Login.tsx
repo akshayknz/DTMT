@@ -5,7 +5,7 @@ import { RiGoogleFill } from "react-icons/ri";
 import { Navigate, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
 import { getLastSelectedOrganization } from '../db';
-import { Component } from '../pages/Dashboard';
+import Dashboard from '../pages/Dashboard';
 
 const Login = () => {
     const { handleLoginWithGoogle } = useContext(AuthContext)
@@ -41,7 +41,7 @@ const Login = () => {
             return <Navigate to={`/org/${lastSlectedOrganization}`}></Navigate>
         }
         if(lastSlectedOrganizationCheck=='none'){
-            return <Component/>
+            return <Dashboard/>
         }
     }
 

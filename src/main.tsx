@@ -11,6 +11,7 @@ import Navbar from './components/Navbar.tsx';
 import { Box } from '@radix-ui/themes';
 import background from "./assets/background.jpg";
 import Loading from './components/Loading.tsx';
+import Dashboard from './pages/Dashboard.tsx';
 export const router = createBrowserRouter(
   [
     {
@@ -34,12 +35,9 @@ export const router = createBrowserRouter(
        */
       children: [
         {
+        //TODO: Change dashboard to normal load (dashboard will load on each back button)
           path: "/dashboard",
-          async loader() {
-            await import("./pages/Dashboard");
-            return <Loading/>; //show loading screen while lazy loading
-          },
-          lazy: () => import("./pages/Dashboard"), //Main authenticated screen
+          element: <Dashboard />
         },
         {
           path: "/create-organization",
@@ -50,20 +48,19 @@ export const router = createBrowserRouter(
           lazy: () => import("./pages/CreateOrganization"),
         },
         {
-          path: "/org/:id",
-          async loader() {
-            await import("./pages/Organization");
-            return <Loading/>; //show loading screen while lazy loading
-          },
-          lazy: () => import("./pages/Organization"),
-        },
-        {
           path: "/page/new-page",
           async loader() {
             await import("./pages/Page");
             return <Loading/>; //show loading screen while lazy loading
           },
           lazy: () => import("./pages/Page"),
+        },{
+          path: "/org/:id",
+          async loader() {
+            await import("./pages/Organization");
+            return <Loading/>; //show loading screen while lazy loading
+          },
+          lazy: () => import("./pages/Organization"),
         },
         {
           path: "/page/:id",

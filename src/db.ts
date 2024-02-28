@@ -43,7 +43,7 @@ export const saveUserOrganization = async ({
   id,
   selected,
 }: UserOrganizationProps): Promise<UserOrganizationProps> => {
-  const querySnapshotId = saveOrganization({ name: name }); //TODO: Elaborate 
+  const querySnapshotId = await saveOrganization({ name: name }); //TODO: Elaborate
   let slug = await textToUrl(name, id, "Organizations");
   await setDoc(
     doc(db, "Users", id, "Organizations", slug),
@@ -66,38 +66,39 @@ export const saveOrganization = async (data: OrganizationProps): Promise<string>
 };
 
 /**
-* Convert text to URL. Generate slug from the name of page/organization. 
-* This will be unique in the provided `type` collection. 
-*
-* @param text - The text to be made into slug (usually title of item)
-* @param userId - The user id to store the slug and document id relationship
-* @param type - The type of item. Currently its "Organizations"/"Pages". Value used as docRef path to store this info.
-* @returns The generated slug
-*
-* @beta
-*/
+ * Convert text to URL. Generate slug from the name of page/organization.
+ * This will be unique in the provided `type` collection.
+ *
+ * @param text - The text to be made into slug (usually title of item)
+ * @param userId - The user id to store the slug and document id relationship
+ * @param type - The type of item. Currently its "Organizations"/"Pages". Value used as docRef path to store this info.
+ * @returns The generated slug
+ *
+ * @beta
+ */
 export const textToUrl = async (text: string, userId: string, type: string) => {
-  text = text.toLowerCase()
+  text = text.toLowerCase();
   //remove special characters and replace them with hyphens
-  text = text.replace(/[^a-z0-9]+/g, "-")
+  text = text.replace(/[^a-z0-9]+/g, "-");
   //remove duplicate hyphens.
-  text = text.replace(/--+/g, "-")
+  text = text.replace(/--+/g, "-");
   //DB: check for uniqueness
-  const querySnapshot = await getDocs(collection(db, "Users", userId, type))
-  let existingOrganizations = querySnapshot.docs.map((doc) => doc.id) //docIds[]
-  if (existingOrganizations.includes(text)) { //check if text already exists in type
-    let number = 1
-    let newValue = text + number //if yes, add a number next to it to make it unique
+  const querySnapshot = await getDocs(collection(db, "Users", userId, type));
+  let existingOrganizations = querySnapshot.docs.map((doc) => doc.id); //docIds[]
+  if (existingOrganizations.includes(text)) {
+    //check if text already exists in type
+    let number = 1;
+    let newValue = text + number; //if yes, add a number next to it to make it unique
     while (existingOrganizations.includes(newValue)) {
       //still text exists in type, so loop until unique
       //remove the previous number and add the new number
-      newValue = newValue.slice(0, -1) + (number + 1)
-      number++
+      newValue = newValue.slice(0, -1) + (number + 1);
+      number++;
     }
-    text = newValue
+    text = newValue;
   }
 
-  return text //return the final readable URL.
+  return text; //return the final readable URL.
 };
 
 //GET: get organization ID from SLUG
@@ -119,6 +120,8 @@ export const getOrganization = async (slug, userId): Promise<OrganizationProps> 
   let organizationId = (await getUserOrganization(slug, userId)).id;
   let docSnap2;
   let data;
+  console.log("organizationId", organizationId);
+  
   if (organizationId) {
     docSnap2 = await getDoc(doc(db, "Organizations", organizationId));
     data = docSnap2.data();
@@ -138,40 +141,43 @@ export const getLastSelectedOrganization = async (userId): Promise<string> => {
 };
 
 //POST: Add page
-export const savePage = async (data: PageProps, userId: string): Promise<PageProps> => {
+/**
+ * POST: Create new page or save existing page (when called with an id in data).
+ * (Future TODO: dont send back the entire page data, that is done by getPage.
+ * Only send slug back)
+ *
+ * @param data - All page properties
+ * @param userId - The user id to store the slug and document id relationship
+ * @returns The generated page data 
+ *
+ * @beta
+ */
+export const savePage = async (data: PageProps, userId: string): Promise<string> => {
   let d: PageProps = {};
-  if (!data.id) {
-    console.log("got no id");
-    
-    if (!data.name) data.name = "Untitled Page";
-    d = {
-      name: data.name ? data.name : "",
-      body: data.body ? data.body : [],
-      id: data.id ? data.id : "",
-      status: data.status ? data.status : PageStatus.ACTIVE,
+  //No id passed
+  if (!data.id) { 
+    //No name passed
+    if (!data.name) data.name = "Untitled Page"; 
+    //new page data
+    d = { 
+      name: data.name, status: PageStatus.ACTIVE, body: data.body ? data.body : [], 
       slug: await textToUrl(data.name, userId, "Pages"),
     };
     const querySnapshot = await addDoc(collection(db, "Pages"), d);
-    d.id = querySnapshot.id;
-    getBody(d.body);
+    getBody(d.body); //TODO: Elaborate into type: { [key: string]: string }
+    //setDoc to Users collection (saving slug)
     await setDoc(
       doc(db, "Users", userId, "Pages", d.slug),
-      {
-        name: d.name,
-        id: d.id,
-        slug: d.slug,
-      },
+      {name: d.name,id: querySnapshot.id,slug: d.slug,},
       { merge: true }
     );
   } else {
-    console.log("got id");
+    //id is passed and will use setDoc
     const docRef = doc(db, "Pages", data.id);
     await setDoc(docRef, data, { merge: true });
-    const updatedDoc = await getDoc(docRef);
-    d = updatedDoc.data();
   }
 
-  return d;
+  return d.slug;
 };
 
 //GET: get all the body elements
@@ -188,7 +194,6 @@ export const getBody = async (ids: string[]): Promise<ElementProps[]> => {
     status: "",
     type: ElementType.LINK,
     userId: "",
-    organizationId: "",
   };
 
   return data;
@@ -206,4 +211,10 @@ export const getPage = async (slug, userId): Promise<PageProps> => {
   }
 
   return data;
+};
+
+//POST: save element
+export const saveElement = async (data: ElementProps): Promise<string> => {
+  const querySnapshot = await addDoc(collection(db, "Elements"), data);
+  return querySnapshot.id;
 };

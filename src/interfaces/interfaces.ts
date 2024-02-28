@@ -48,7 +48,7 @@ export enum PageStatus {
 
 export interface PageProps {
   name?: string;
-  id?: string;
+  id?: string; //not saved as a field in db, just for internal operations
   body?: string[];
   status?: PageStatus;
   slug?: string;
@@ -66,7 +66,6 @@ export interface ElementProps {
   status: string;
   type: ElementType;
   userId: string;
-  organizationId: string;
 }
 
 export enum TodoStatus {
