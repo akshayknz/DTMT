@@ -190,37 +190,35 @@ export const getPage = async (slug, userId): Promise<PageProps> => {
     docSnap2 = await getDoc(doc(db, "Pages", pageId));
     data = docSnap2.data() as PageProps;
     data.id = pageId;
-    data.body = getAllElements(data.body)
+    data.body = await getAllElements(data.body)
+    console.log("dataaaaa getpage",data);
     return data;
+  }else{
+    return null;
   }
-  console.log(data);
-
-  return null;
-};
-
-//GET: get element data from elementId
-export const getElement = async (elementId): Promise<ElementProps> => {
-  const docSnap = await getDoc(doc(db, "Elements", elementId));
-
-  return docSnap.data() as ElementProps;
 };
 
 //GET: get element data from elementId
 export const getAllElements = async (elements): Promise<PageBodyProps> => {
-  if(elements.length<0){
+  if(elements.length>30){ 
+    /**
+     * Firebase currently do not support where in quries of arrays larger than
+     * 30, so after thirty the only way to get this done is to lookup individually.
+     * This is only a rough sketch.
+     **/ 
     let pageBody = {} as PageBodyProps;
-    elements.forEach(async id => {
-      getElement(id)
-      pageBody[id] = await getElement(id);
-    });
+    await elements.forEach(async id => {
+      pageBody[id] = (await getDoc(doc(db, "Elements", id))).data() as ElementProps;
+    }); //maybe a for loop
+    
     return pageBody;
   }else{
     const querySnapshot = await getDocs(query(collection(db, "Elements"), where(documentId(), "in", elements)));
-    let dict: { [key: string]: string } = {};
-    const data = querySnapshot.docs.map((doc) => {
-      console.log(doc.id);
-      return doc.data() as PageBodyProps;
-    });
+    console.log(querySnapshot.docs.map(v=>v.data()));
+    let dict: PageBodyProps = {};
+    await querySnapshot.docs.map((doc) => {dict[doc.id] = doc.data() as ElementProps});
+
+    return dict as PageBodyProps;
   }
   
   return null

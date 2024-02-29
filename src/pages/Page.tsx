@@ -9,19 +9,27 @@ export function Component() {
     const params = useParams();
     const [name, setName] = useState("");
     const [id, setId] = useState("");
-    const [body, setBody] = useState({} as PageBodyProps);
+    const [body, setBody] = useState({} as PageBodyProps|string[]);
     const { userId } = useContext(AuthContext)
     const navigate = useNavigate();
 
     useEffect(() => {
         if (params.id) {
-            getPage(params.id, userId).then(v => {
-                setName(v.name)
-                // setBody(v.body) get id[], then get element data and out id:data
-                setId(v.id)
-            })
+            /**
+             * IIFE
+             * An IIFE (Immediately Invoked Function Expression) is a JavaScript 
+             * function that runs as soon as it is defined.
+             */
+            (async () => {
+                const page = await getPage(params.id, userId)
+                setName(page.name)
+                setBody(page.body)
+                setId(page.id)
+                console.log("what i got", body, page.body, page);
+                
+            })();
         }
-    }, [])
+    }, [params.id])
 
     const handleSavePage = () => {
         const page = savePage(
@@ -50,11 +58,24 @@ export function Component() {
             orgId: "",
             pageId: ""
         }
-        let id = await saveElement(elem)
+        let id = await saveElement(elem) Element type: TEXT
         setBody((prev)=>({
             ...prev, [id]:elem
         }))
         console.log(id, type, body);
+        
+    }
+
+    const handleElementChange = (elem,value,type,id) => {
+        console.log(value,type,id, body);
+        elem.style.height = `${elem.scrollHeight}px`
+        setBody({
+            ...body,
+            [id]:{
+                ...body[id],
+                body:value
+            }
+        })
         
     }
 
@@ -81,7 +102,9 @@ export function Component() {
                         {body[key].type==ElementType.TEXT&&
                         <Box pb={"3"}>
                             <Text size={"1"}>{JSON.stringify(key)}</Text>
-                            <TextArea value={JSON.stringify(body[key].body)} />
+                            <TextArea 
+                            onChange={(e)=>handleElementChange(e.currentTarget,e.target.value,body[key].type,key)}
+                            value={body[key].body} />
                         </Box>
                         }
                     </Box>
