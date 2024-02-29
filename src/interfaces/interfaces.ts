@@ -49,9 +49,13 @@ export enum PageStatus {
 export interface PageProps {
   name?: string;
   id?: string; //not saved as a field in db, just for internal operations
-  body?: string[];
+  body?: string[] | PageBodyProps;
   status?: PageStatus;
   slug?: string;
+}
+
+export interface PageBodyProps { 
+  [key: string]: ElementProps 
 }
 
 export enum ElementType {
@@ -66,6 +70,8 @@ export interface ElementProps {
   status: string;
   type: ElementType;
   userId: string;
+  orgId: string;
+  pageId: string;
 }
 
 export enum TodoStatus {

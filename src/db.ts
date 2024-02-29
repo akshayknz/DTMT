@@ -4,6 +4,7 @@ import {
   ElementProps,
   ElementType,
   OrganizationProps,
+  PageBodyProps,
   PageProps,
   PageStatus,
   UserOrganizationProps,
@@ -164,7 +165,7 @@ export const savePage = async (data: PageProps, userId: string): Promise<string>
       slug: await textToUrl(data.name, userId, "Pages"),
     };
     const querySnapshot = await addDoc(collection(db, "Pages"), d);
-    getBody(d.body); //TODO: Elaborate into type: { [key: string]: string }
+    // getBody(d.body); //TODO: Elaborate into type: { [key: string]: string }
     //setDoc to Users collection (saving slug)
     await setDoc(
       doc(db, "Users", userId, "Pages", d.slug),
@@ -180,37 +181,49 @@ export const savePage = async (data: PageProps, userId: string): Promise<string>
   return d.slug;
 };
 
-//GET: get all the body elements
-export const getBody = async (ids: string[]): Promise<ElementProps[]> => {
-  const querySnapshot = await getDocs(query(collection(db, "Elements"), where(documentId(), "in", ids)));
-  let dict: { [key: string]: string } = {};
-  const data = querySnapshot.docs.map((doc) => {
-    console.log(doc.id);
-    return doc.data() as ElementProps;
-  });
-  let dataa: ElementProps = {
-    body: "yo",
-    order: 1,
-    status: "",
-    type: ElementType.LINK,
-    userId: "",
-  };
-
-  return data;
-};
-
-//GET: get page ID from SLUG
+//GET: get page data from SLUG & userId
 export const getPage = async (slug, userId): Promise<PageProps> => {
   const docSnap = await getDoc(doc(db, "Users", userId, "Pages", slug));
   let pageId = docSnap.data().id;
   let docSnap2, data;
   if (pageId) {
     docSnap2 = await getDoc(doc(db, "Pages", pageId));
-    data = docSnap2.data();
+    data = docSnap2.data() as PageProps;
     data.id = pageId;
+    data.body = getAllElements(data.body)
+    return data;
   }
+  console.log(data);
 
-  return data;
+  return null;
+};
+
+//GET: get element data from elementId
+export const getElement = async (elementId): Promise<ElementProps> => {
+  const docSnap = await getDoc(doc(db, "Elements", elementId));
+
+  return docSnap.data() as ElementProps;
+};
+
+//GET: get element data from elementId
+export const getAllElements = async (elements): Promise<PageBodyProps> => {
+  if(elements.length<0){
+    let pageBody = {} as PageBodyProps;
+    elements.forEach(async id => {
+      getElement(id)
+      pageBody[id] = await getElement(id);
+    });
+    return pageBody;
+  }else{
+    const querySnapshot = await getDocs(query(collection(db, "Elements"), where(documentId(), "in", elements)));
+    let dict: { [key: string]: string } = {};
+    const data = querySnapshot.docs.map((doc) => {
+      console.log(doc.id);
+      return doc.data() as PageBodyProps;
+    });
+  }
+  
+  return null
 };
 
 //POST: save element

@@ -4,12 +4,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getPage, saveElement, savePage } from "../db";
-import { ElementType } from "../interfaces/interfaces";
+import { ElementProps, ElementType, PageBodyProps } from "../interfaces/interfaces";
 export function Component() {
     const params = useParams();
     const [name, setName] = useState("");
     const [id, setId] = useState("");
-    const [body, setBody] = useState({} as { [key: string]: string });
+    const [body, setBody] = useState({} as PageBodyProps);
     const { userId } = useContext(AuthContext)
     const navigate = useNavigate();
 
@@ -28,6 +28,8 @@ export function Component() {
             { name: name, body: Object.keys(body), id: id, slug: params.id ? params.id : "" },
             userId
         ).then(slug => navigate(`/page/${slug}`))
+        //Take all element data and save
+        //Automatically save
     }
 
     const addElement = async (type:ElementType) => {
@@ -39,14 +41,20 @@ export function Component() {
          * id gets saved to the body state
          * the page saves automatically to write the addition of a new element to database
          */
-        let id = await saveElement({
+        let elem = {
             body: "body",
             order: 0,
             status: "active",
             type: type,
             userId: userId,
-        })
-        console.log(id, type);
+            orgId: "",
+            pageId: ""
+        }
+        let id = await saveElement(elem)
+        setBody((prev)=>({
+            ...prev, [id]:elem
+        }))
+        console.log(id, type, body);
         
     }
 
@@ -68,15 +76,16 @@ export function Component() {
                 <Box pb={"3"}>
                     <TextField.Input size="3" placeholder="New Page" autoFocus value={name} onChange={(v) => setName(v.target.value)} />
                 </Box>
-                <Box pb={"3"}>
-                    <Text>Add a body block</Text>
-                </Box>
-                <Box pb={"3"}>
-                    <Text>Add a To-do block</Text>
-                </Box>
-                <Box pb={"3"}>
-                    <Text>Add a Link block</Text>
-                </Box>
+                {Object.keys(body).map((key)=>(
+                    <Box key={key}>
+                        {body[key].type==ElementType.TEXT&&
+                        <Box pb={"3"}>
+                            <Text size={"1"}>{JSON.stringify(key)}</Text>
+                            <TextArea value={JSON.stringify(body[key].body)} />
+                        </Box>
+                        }
+                    </Box>
+                ))}
                 <Box pb={"3"}>
                     <AlertDialog.Root>
                         <AlertDialog.Trigger>
