@@ -16,11 +16,13 @@ export function Component() {
     useEffect(() => {
         getUser(userId).then(v => setUser(v as UserProps))
         getOrganization(params.id, userId).then(v => setOrganizationData(v))
+        
     }, [])
     const height = 120
 
     return (
         <Container px="3">
+            <Outlet/>
             <Box pt={"2"} pb={"3"}>
                 <Text>Hi {user.displayName && user.displayName.split(' ')[0] + ","}</Text>
                 <Button onClick={() => navigate(-1)}>

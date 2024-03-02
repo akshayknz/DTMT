@@ -25,15 +25,13 @@ export function Component() {
                 setName(page.name)
                 setBody(page.body)
                 setId(page.id)
-                console.log("what i got", body, page.body, page);
-                
             })();
         }
     }, [params.id])
 
     const handleSavePage = () => {
         const page = savePage(
-            { name: name, body: Object.keys(body), id: id, slug: params.id ? params.id : "" },
+            { name: name, body: body, id: id, slug: params.id ? params.id : "" },
             userId
         ).then(slug => navigate(`/page/${slug}`))
         //Take all element data and save
@@ -41,7 +39,6 @@ export function Component() {
     }
 
     const addElement = async (type:ElementType) => {
-        console.log("addElement", type);
         /**
          * Call to firebase: add an element
          * Type is body
@@ -58,16 +55,14 @@ export function Component() {
             orgId: "",
             pageId: ""
         }
-        let id = await saveElement(elem) Element type: TEXT
+        let id = await saveElement(elem)
         setBody((prev)=>({
             ...prev, [id]:elem
         }))
-        console.log(id, type, body);
         
     }
 
     const handleElementChange = (elem,value,type,id) => {
-        console.log(value,type,id, body);
         elem.style.height = `${elem.scrollHeight}px`
         setBody({
             ...body,
@@ -84,11 +79,9 @@ export function Component() {
             <Container px="3" pb={"5"}>
                 <Box pb={"3"}>
                     <Flex gap={"3"}>
-                        <Link to="..">
-                            <Button>
+                            <Button onClick={() => navigate(-1)}>
                                 Cancel
                             </Button>
-                        </Link>
                         <Button onClick={handleSavePage}>
                             <RiAddCircleFill width="16" height="16" /> Save
                         </Button>
@@ -112,7 +105,7 @@ export function Component() {
                 <Box pb={"3"}>
                     <AlertDialog.Root>
                         <AlertDialog.Trigger>
-                            <Button style={{ width: "100%", fontWeight: "400" }} size="3" >
+                            <Button variant={Object.keys(body).length>0?"soft":"solid"} style={{ width: "100%", fontWeight: "400" }} size="3" >
                                 <RiAddCircleFill width="16" height="16" /> Add a block
                             </Button>
                         </AlertDialog.Trigger>

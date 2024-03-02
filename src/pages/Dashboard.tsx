@@ -3,12 +3,13 @@ import Navbar from "../components/Navbar";
 import Collection from "../components/Collection";
 import { RiAddBoxFill, RiAddCircleFill } from "react-icons/ri";
 import background from "../assets/background.jpg";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 export default function Dashboard() {
+    const params = useParams();
+
     return (
         <>
-            
-            <Container px="3">
+            {params.id?<Outlet/>:<Container px="3">
                 <Box pt={"6"} pb={"5"}>
                     <Heading size="7">To start create an organization.</Heading>
                 </Box>
@@ -29,7 +30,8 @@ export default function Dashboard() {
                 One from list
             </Box>
                 </Box>
-            </Container>
+            </Container>}
+            
         </>
     )
 }

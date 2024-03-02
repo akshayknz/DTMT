@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch } from "firebase/firestore";
 import { db } from "./firebase/config";
 import {
   ElementProps,
@@ -32,7 +32,6 @@ export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps)
     },
     { merge: true }
   );
-  console.log(querySnapshot, displayName, email, photoURL, uid);
   // return querySnapshot.docs.map((doc) => doc.data());
   return { displayName: displayName, email: email, photoURL: photoURL, uid: uid };
 };
@@ -46,7 +45,7 @@ export const saveUserOrganization = async ({
 }: UserOrganizationProps): Promise<UserOrganizationProps> => {
   const querySnapshotId = await saveOrganization({ name: name }); //TODO: Elaborate
   let slug = await textToUrl(name, id, "Organizations");
-  await setDoc(
+  let selectedOrganization = await setDoc(
     doc(db, "Users", id, "Organizations", slug),
     {
       name: name,
@@ -56,7 +55,7 @@ export const saveUserOrganization = async ({
     },
     { merge: true }
   );
-  console.log(querySnapshotId, name, id);
+  setSelectedOrganization(id, slug)
   return { name: name, id: id, slug: slug, selected: selected };
 };
 
@@ -109,6 +108,7 @@ export const getUserOrganization = async (slug, userId): Promise<UserOrganizatio
   let data;
   if (docSnap.exists()) {
     let orgId = docSnap.data().id;
+    await setSelectedOrganization(docSnap.data().id, userId)
     data = docSnap.data();
   } else {
   }
@@ -121,8 +121,7 @@ export const getOrganization = async (slug, userId): Promise<OrganizationProps> 
   let organizationId = (await getUserOrganization(slug, userId)).id;
   let docSnap2;
   let data;
-  console.log("organizationId", organizationId);
-  
+
   if (organizationId) {
     docSnap2 = await getDoc(doc(db, "Organizations", organizationId));
     data = docSnap2.data();
@@ -141,6 +140,30 @@ export const getLastSelectedOrganization = async (userId): Promise<string> => {
   return data.length > 0 ? (Object.keys(data).length > 0 ? data[0].slug : null) : null;
 };
 
+//GET: get organization ID from SLUG
+export const setSelectedOrganization = async (slug, userId): Promise<boolean> => {
+  const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
+  let data;
+  if (docSnap.exists()) {
+    let orgId = docSnap.data().id;
+    const listOfOrgs = await getDocs(collection(db, "Users", userId, "Organization"))
+    const list = listOfOrgs.docs.map(V => V.id)
+    // Get a new write batch
+    const batch = writeBatch(db);
+    list.forEach(v => {
+      const nycRef = doc(db, "Users", userId, "Organization", v);
+      batch.set(nycRef, { selected: false });
+    })
+    const nycRef = doc(db, "Users", userId, "Organization", slug);
+    batch.set(nycRef, { selected: true });
+    // Commit the batch
+    await batch.commit();
+  } else {
+    return false;
+  }
+  // const querySnapshot = await getDocs(collection(db, "Users", id, "Organizations" ));
+  return true; //ERROR: IF DOCSNAP DOESNT EXIST
+};
 //POST: Add page
 /**
  * POST: Create new page or save existing page (when called with an id in data).
@@ -149,37 +172,62 @@ export const getLastSelectedOrganization = async (userId): Promise<string> => {
  *
  * @param data - All page properties
  * @param userId - The user id to store the slug and document id relationship
- * @returns The generated page data 
+ * @returns Slug of the page
  *
  * @beta
  */
 export const savePage = async (data: PageProps, userId: string): Promise<string> => {
-  let d: PageProps = {};
-  //No id passed
-  if (!data.id) { 
-    //No name passed
-    if (!data.name) data.name = "Untitled Page"; 
-    //new page data
-    d = { 
-      name: data.name, status: PageStatus.ACTIVE, body: data.body ? data.body : [], 
-      slug: await textToUrl(data.name, userId, "Pages"),
-    };
-    const querySnapshot = await addDoc(collection(db, "Pages"), d);
-    // getBody(d.body); //TODO: Elaborate into type: { [key: string]: string }
-    //setDoc to Users collection (saving slug)
-    await setDoc(
-      doc(db, "Users", userId, "Pages", d.slug),
-      {name: d.name,id: querySnapshot.id,slug: d.slug,},
-      { merge: true }
+  if (!data.id) {//No id passed
+    if (!data.name) data.name = "Untitled Page";//No name passed
+    data.slug = await textToUrl(data.name, userId, "Pages")
+    data.status = PageStatus.ACTIVE
+    data.id = (await addDoc(collection(db, "Pages"), {})).id
+    await savePageTransaction(data)
+    await setDoc(//setDoc to Users collection (saving slug)
+      doc(db, "Users", userId, "Pages", data.slug),
+      { name: data.name, id: data.id, slug: data.slug, },
     );
+
+    return data.slug;
   } else {
-    //id is passed and will use setDoc
-    const docRef = doc(db, "Pages", data.id);
-    await setDoc(docRef, data, { merge: true });
+    let slug = await savePageTransaction(data)
+
+    return slug;
   }
 
-  return d.slug;
+  return null;
 };
+
+
+//POST: Add page
+/**
+ * POST: Create new page or save existing page write commit
+ *
+ * @param data - All page properties (With ID even for new pages)
+ * @returns Slug of the page
+ *
+ * @beta
+ */
+export const savePageTransaction = async (data: PageProps): Promise<string> => {
+
+  const pageDocRef = doc(db, "Pages", data.id);
+  try {
+    await runTransaction(db, async (transaction) => {
+      const sfDoc = await transaction.get(pageDocRef);
+      if (!sfDoc.exists()) throw "Document does not exist!";
+      Object.keys(data.body).forEach(element => {
+        transaction.update(doc(db, "Elements", element), { ...data.body[element] });
+      });
+      data.body = Object.keys(data.body)
+      transaction.update(pageDocRef, { ...data });
+    });
+  } catch (e) {
+    console.log("Transaction failed: ", e);
+  }
+
+  return data.slug;
+};
+
 
 //GET: get page data from SLUG & userId
 export const getPage = async (slug, userId): Promise<PageProps> => {
@@ -190,37 +238,36 @@ export const getPage = async (slug, userId): Promise<PageProps> => {
     docSnap2 = await getDoc(doc(db, "Pages", pageId));
     data = docSnap2.data() as PageProps;
     data.id = pageId;
-    data.body = await getAllElements(data.body)
-    console.log("dataaaaa getpage",data);
+    if (Object.keys(data.body).length != 0) data.body = await getAllElements(data.body)
+
     return data;
-  }else{
+  } else {
     return null;
   }
 };
 
 //GET: get element data from elementId
 export const getAllElements = async (elements): Promise<PageBodyProps> => {
-  if(elements.length>30){ 
+  if (elements.length > 30) {
     /**
      * Firebase currently do not support where in quries of arrays larger than
      * 30, so after thirty the only way to get this done is to lookup individually.
      * This is only a rough sketch.
-     **/ 
+     **/
     let pageBody = {} as PageBodyProps;
     await elements.forEach(async id => {
       pageBody[id] = (await getDoc(doc(db, "Elements", id))).data() as ElementProps;
     }); //maybe a for loop
-    
+
     return pageBody;
-  }else{
+  } else {
     const querySnapshot = await getDocs(query(collection(db, "Elements"), where(documentId(), "in", elements)));
-    console.log(querySnapshot.docs.map(v=>v.data()));
     let dict: PageBodyProps = {};
-    await querySnapshot.docs.map((doc) => {dict[doc.id] = doc.data() as ElementProps});
+    await querySnapshot.docs.map((doc) => { dict[doc.id] = doc.data() as ElementProps });
 
     return dict as PageBodyProps;
   }
-  
+
   return null
 };
 
@@ -229,3 +276,18 @@ export const saveElement = async (data: ElementProps): Promise<string> => {
   const querySnapshot = await addDoc(collection(db, "Elements"), data);
   return querySnapshot.id;
 };
+
+//GET: get element data from elementId
+export const getPages = async (orgId): Promise<PageBodyProps> => {
+  const querySnapshot = await getDocs(query(collection(db, "Elements"), where(documentId(), "in", orgId)));
+  let dict: PageBodyProps = {};
+  await querySnapshot.docs.map((doc) => { dict[doc.id] = doc.data() as ElementProps });
+
+  return dict as PageBodyProps;
+};
+
+export const getIdFromSlug = async (slug: string, userId: string, type: string): Promise<string> => {
+  const querySnapshot = await getDocs(collection(db, "Users", userId, type, slug));
+
+  return ""
+}
