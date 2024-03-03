@@ -21,7 +21,7 @@ import {
   PageBodyProps,
   PageStatus,
 } from "../interfaces/interfaces";
-import * as styles from "../assets/page.module.css";
+import styles from "../assets/page.module.css";
 
 export function Component() {
   const params = useParams();
