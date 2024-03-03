@@ -31,12 +31,14 @@ export interface UserOrganizationProps {
   id: string;
   slug?: string;
   selected: boolean;
+  status: PageStatus
 }
 
 export interface OrganizationProps {
   name?: string;
   id?: string;
   collections?: string[]; //collection order is with the collection
+  pages?: string[]; //collection order is with the collection
   overviewOptions?: string[]; //{clock:[a,b,c,d]; blockcollection:[today,high priority,reminders,todo]}
 }
 

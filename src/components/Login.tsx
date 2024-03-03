@@ -38,7 +38,7 @@ const Login = () => {
             return <Loading />
         }
         if(lastSlectedOrganizationCheck=='found'){
-            return <Navigate to={`/org/${lastSlectedOrganization}`}></Navigate>
+            return <Navigate to={`/dashboard/org/${lastSlectedOrganization}`}></Navigate>
         }
         if(lastSlectedOrganizationCheck=='none'){
             return <Dashboard/>

@@ -7,7 +7,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { saveUserOrganization, textToUrl } from "../db";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { UserOrganizationProps } from "../interfaces/interfaces";
+import { PageStatus, UserOrganizationProps } from "../interfaces/interfaces";
 
 export function Component() {
     const [name, setName] = useState("");
@@ -30,12 +30,15 @@ export function Component() {
     }, [name, userId]);
     
     const handleSubmit = async () => {
-        let organization : UserOrganizationProps = await saveUserOrganization({
+        let organization : UserOrganizationProps = await saveUserOrganization({orgData:{
             name:name,
             id:userId, 
-            selected: true
-        });
-        navigate(`/org/${organization.slug}`)
+            selected: true,
+            status: PageStatus.ACTIVE
+        }, userId});
+        console.log(organization);
+        
+        navigate(`/dashboard/org/${organization.slug}`)
     }
 
     return (

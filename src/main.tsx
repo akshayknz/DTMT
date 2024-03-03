@@ -48,7 +48,7 @@ export const router = createBrowserRouter(
                   lazy: () => import("./pages/Organization"),
                   children: [
                     {
-                      path: "/dashboard/org/:id/page/new-page",
+                      path: "/dashboard/org/:id/page/:pageid",
                       async loader() {
                         await import("./pages/Page");
                         return <Loading />; //show loading screen while lazy loading
@@ -67,14 +67,7 @@ export const router = createBrowserRouter(
               },
               lazy: () => import("./pages/CreateOrganization"),
             },
-            {
-              path: "/page/:id",
-              async loader() {
-                await import("./pages/Page");
-                return <Loading />; //show loading screen while lazy loading
-              },
-              lazy: () => import("./pages/Page"),
-            },
+            
           ],
         },
       ],

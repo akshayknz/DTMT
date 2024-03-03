@@ -1,0 +1,8 @@
+.textarea textarea, .title{
+    -webkit-text-fill-color:#000;
+    color:#000;
+    background-color: #fff;
+}
+.linebreak{
+    white-space: pre-line;
+}
