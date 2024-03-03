@@ -91,5 +91,5 @@ export interface TodoProps {
 export interface LinkProps {
   title: string;
   url: string;
-  img: Date;
+  img: string;
 }

@@ -81,8 +81,8 @@ useEffect(()=>{
      * id gets saved to the body state
      * the page saves automatically to write the addition of a new element to database
      */
-    let elem = {
-      body: "body",
+    let elem: ElementProps = {
+      body: "",
       order: 0,
       status: "active",
       type: type,
@@ -90,6 +90,23 @@ useEffect(()=>{
       orgId: "",
       pageId: "",
     };
+    switch (type) {
+      case ElementType.TEXT:
+        break;
+      case ElementType.LINK:
+        elem.body = [{
+          title: "nEW link",
+          url: "http://google.com/",
+          img: "url"
+        }]
+        break;
+      case ElementType.TODO:
+        elem.body = []
+        break;
+      default:
+        break;
+    }
+    
     let id = await saveElement(elem);
     setBody((prev) => ({
       ...prev,
@@ -113,12 +130,6 @@ useEffect(()=>{
     navigate(`/dashboard/org/${params.id}/`);
   };
 
-  const getHeight = (body) => {
-    const contentLength = body.length + body.split("\n").length - 1;
-    console.log("content size", contentLength);
-
-    return "100px";
-  };
   return (
     <>
       <Container px="3" pb={"5"}>
@@ -175,6 +186,21 @@ useEffect(()=>{
                     />
               </Box>
             )}
+            {body[key].type == ElementType.LINK && (
+              <Box pb={"3"}>
+                {body[key].body.map(link => (
+                  <Link to={link.url}>
+                {link.title}
+                </Link>
+
+                ))}
+              </Box>
+            )}
+            {body[key].type == ElementType.TODO && (
+              <Box pb={"3"}>
+                shows the todo elements
+              </Box>
+            )}
           </Box>
         ))}
         {editMode && (
@@ -205,7 +231,7 @@ useEffect(()=>{
                       </Text>
                     </Card>
                   </AlertDialog.Action>
-                  <AlertDialog.Action>
+                  <AlertDialog.Action onClick={() => addElement(ElementType.TODO)}>
                     <Card my={"1"}>
                       <Text as="div" size="2" weight="bold">
                         {" "}
@@ -213,7 +239,7 @@ useEffect(()=>{
                       </Text>
                     </Card>
                   </AlertDialog.Action>
-                  <AlertDialog.Action>
+                  <AlertDialog.Action onClick={() => addElement(ElementType.LINK)}>
                     <Card my={"1"}>
                       <Text as="div" size="2" weight="bold">
                         {" "}
