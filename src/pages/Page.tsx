@@ -139,8 +139,8 @@ export function Component() {
 
   const getShoppingItems = async () => {
     setLoading(true);
-    const apiSecret = "secret_96rP4FhQnriphx4ZUALjQeQKcFquXtYZ";
-    const userToken = "public_fYqp6KGkgvuzexRw82Ez7kLhAE3UBYSb";
+    const apiSecret = "";
+    const userToken = import.meta.env.VITE_ECWID_PUBLIC_TOKEN;
     const storeId = 26494476;
     var requestURL = "https://app.ecwid.com/api/v3/" + storeId + "/products";
     console.log("inside shopping items function");
