@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@radix-ui/themes": "^2.0.3",
-    "firebase": "^10.7.2",
+    "axios": "^1.6.7",
+    "firebase": "^10.8.1",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.3",
     "react": "^18.2.0",
