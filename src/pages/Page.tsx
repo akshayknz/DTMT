@@ -139,7 +139,6 @@ export function Component() {
 
   const getShoppingItems = async () => {
     setLoading(true);
-    const apiSecret = "";
     const userToken = import.meta.env.VITE_ECWID_PUBLIC_TOKEN;
     const storeId = 26494476;
     var requestURL = "https://app.ecwid.com/api/v3/" + storeId + "/products";
@@ -260,12 +259,14 @@ export function Component() {
                 {body[key].type == ElementType.LINK && (
                   <Box pb={"3"}>
                     {body[key].body.map((link) => (
-                      <Link to={link.url}>{link.title}</Link>
+                      <Link to={link.url}>Link 1: {link.title}</Link>
                     ))}
                   </Box>
                 )}
                 {body[key].type == ElementType.TODO && (
-                  <Box pb={"3"}>shows the todo elements</Box>
+                  <Box pb={"3"}>
+                  <input type="checkbox"></input> Todo task
+                  </Box>
                 )}
               </Box>
             ))}

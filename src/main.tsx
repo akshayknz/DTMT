@@ -67,6 +67,15 @@ export const router = createBrowserRouter(
               },
               lazy: () => import("./pages/CreateOrganization"),
             },
+            ,
+            {
+              path: "/order",
+              async loader() {
+                await import("./pages/OrderPage");
+                return <Loading />; //show loading screen while lazy loading
+              },
+              lazy: () => import("./pages/OrderPage"),
+            },
             
           ],
         },
