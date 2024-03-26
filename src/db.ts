@@ -243,8 +243,8 @@ export const savePageTransaction = async (data: PageProps, orgId: string): Promi
     await runTransaction(db, async (transaction) => {
       const sfDoc = await transaction.get(pageDocRef);
       if (!sfDoc.exists()) throw "Document does not exist!";
-      Object.keys(data.body).forEach(element => {
-        transaction.update(doc(db, "Elements", element), { ...data.body[element] });
+      Object.keys(data.body).forEach((element, i) => {
+        transaction.update(doc(db, "Elements", element), { ...data.body[element], order:i });
       });
       data.body = Object.keys(data.body)
       transaction.update(pageDocRef, { ...data });
@@ -327,3 +327,19 @@ export const getIdFromSlug = async (slug: string, userId: string, type: string):
 
   return ""
 }
+
+
+//POST: save element
+export const addEmailToShareList = async (email: string, userId: string, slug: string): Promise<string> => {
+  let organization = await getUserOrganization(slug, userId)
+  console.log(email,userId,organization.id);
+  const querySnapshot = await getDocs(query(collection(db, "Users"), where("email", "==", email)))
+  const emailUserId = querySnapshot.docs.map(v=>v.data().uid)[0]
+  const documentSnapshot = await getDoc(doc(db, "Users", userId, "Organizations", slug))
+  const orgData = documentSnapshot.data()
+  await setDoc(doc(db, "Users", emailUserId, "Organizations", slug ), orgData)
+  console.log(emailUserId, orgData);
+  
+  // const querySnapshot = await addDoc(collection(db, "Elements"), data);
+  return ""
+};

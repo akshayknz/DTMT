@@ -1,8 +1,10 @@
 import {
   AlertDialog,
+  Avatar,
   Box,
   Button,
   Card,
+  Checkbox,
   Container,
   DropdownMenu,
   Flex,
@@ -21,6 +23,8 @@ import {
   ElementType,
   PageBodyProps,
   PageStatus,
+  TodoProps,
+  TodoStatus,
 } from "../interfaces/interfaces";
 import styles from "../assets/page.module.css";
 import axios from "axios";
@@ -51,8 +55,8 @@ export function Component() {
         setId(page.id);
         setLoading(false);
       })();
-    }else{
-      setLoading(false)
+    } else {
+      setLoading(false);
     }
   }, [params.id]);
   useEffect(() => {
@@ -63,7 +67,7 @@ export function Component() {
   const handleSavePage = () => {
     console.log("saving page");
     setEditMode(!editMode);
-
+    
     const page = savePage(
       {
         name: name,
@@ -99,16 +103,17 @@ export function Component() {
       case ElementType.TEXT:
         break;
       case ElementType.LINK:
-        elem.body = [
-          {
-            title: "nEW link",
-            url: "http://google.com/",
-            img: "url",
-          },
-        ];
+        elem.body = [];
         break;
       case ElementType.TODO:
-        elem.body = [];
+        elem.body = [
+          {
+            title: "",
+            description: "",
+            date: new Date(),
+            status: TodoStatus.INCOMPLETE,
+          },
+        ];
         break;
       default:
         break;
@@ -121,6 +126,63 @@ export function Component() {
     }));
   };
 
+  const addLink = (bodyIndex) => {
+    console.log(body[bodyIndex]);
+    setBody((prev) => {
+      return {
+        ...prev,
+        [bodyIndex]: {
+          ...prev[bodyIndex],
+          body: [
+            ...prev[bodyIndex].body,
+            {
+              title: "",
+              url: "",
+              img: "",
+            },
+          ],
+        },
+      };
+    });
+  };
+
+  const addTodo = (bodyIndex) => {
+    setBody((prev) => {
+      return {
+        ...prev,
+        [bodyIndex]: {
+          ...prev[bodyIndex],
+          body: [
+            ...prev[bodyIndex].body,
+            {
+              title: "",
+              description: "",
+              date: new Date(),
+              status: TodoStatus.INCOMPLETE,
+            },
+          ],
+        },
+      };
+    });
+  };
+  const updateLinkOrTodo = (dataObject, todoIndex, bodyIndex) => {
+    setBody((prev) => {
+      return {
+        ...prev,
+        [bodyIndex]: {
+          ...prev[bodyIndex],
+          body: prev[bodyIndex].body.map((v, k) =>
+            todoIndex == k
+              ? {
+                  ...v,
+                  ...dataObject,
+                }
+              : v
+          ),
+        },
+      };
+    });
+  };
   const handleElementChange = (elem, value, type, id) => {
     elem.style.height = `${elem.scrollHeight}px`;
     setBody({
@@ -142,7 +204,6 @@ export function Component() {
     const userToken = import.meta.env.VITE_ECWID_PUBLIC_TOKEN;
     const storeId = 26494476;
     var requestURL = "https://app.ecwid.com/api/v3/" + storeId + "/products";
-    console.log("inside shopping items function");
     try {
       const maxProducts = 1000; // Total number of products you want to retrieve
       const productsPerPage = 100; // Products per page (API limit)
@@ -170,10 +231,8 @@ export function Component() {
         .filter((a) => a.quantity < 10)
         .sort((a, b) => a.quantity - b.quantity)
         .map((a) => "🔴 " + a.name + ": " + a.quantity);
-      console.log("All products:", sortedProducts);
       addElement(ElementType.TEXT, sortedProducts.join("\n\n"));
       setLoading(false);
-
       // Save allProducts to a state variable or handle it as needed
     } catch (error) {
       console.error("Error fetching data from Ecwid API:", error);
@@ -207,7 +266,6 @@ export function Component() {
                 </DropdownMenu.Item>
                 <DropdownMenu.Item>Get full menu from store</DropdownMenu.Item>
                 <DropdownMenu.Item onClick={handleDeletePage} color="red">
-                  
                   Delete Page
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -217,8 +275,8 @@ export function Component() {
 
         {loading ? (
           <>
-          <Box style={{ height: "50px" }} className={styles.skeleton}></Box>
-          <Box style={{ height: "100px" }} className={styles.skeleton}></Box>
+            <Box style={{ height: "50px" }} className={styles.skeleton}></Box>
+            <Box style={{ height: "100px" }} className={styles.skeleton}></Box>
           </>
         ) : (
           <>
@@ -234,7 +292,7 @@ export function Component() {
                 onChange={(v) => setName(v.target.value)}
               />
             </Box>
-            {Object.keys(body).map((key, i) => (
+            {Object.keys(body).sort((a, b) => body[a].order - body[b].order).map((key, i) => (
               <Box key={key}>
                 {body[key].type == ElementType.TEXT && (
                   <Box pb={"3"}>
@@ -258,14 +316,129 @@ export function Component() {
                 )}
                 {body[key].type == ElementType.LINK && (
                   <Box pb={"3"}>
-                    {body[key].body.map((link) => (
-                      <Link to={link.url}>Link 1: {link.title}</Link>
-                    ))}
+                    <Card>
+                      {body[key].body.map((link, index) => (
+                        <Box>
+                          <Avatar
+                            fallback={
+                              link.title != "" && link.title?.substring(0, 2)
+                            }
+                          ></Avatar>
+                          <TextField.Input
+                            size="2"
+                            placeholder="New Page"
+                            value={link.url}
+                            variant="soft"
+                            autoFocus
+                            readOnly={!editMode}
+                            onChange={(e) => {
+                              updateLinkOrTodo(
+                                { url: e.target.value },
+                                index,
+                                key
+                              );
+                              updateLinkOrTodo(
+                                {
+                                  title: e.target.value
+                                    .replace("www.", "")
+                                    .replace("http://", "")
+                                    .replace("https://", ""),
+                                },
+                                index,
+                                key
+                              );
+                            }}
+                          />
+                          <TextField.Input
+                            size="2"
+                            placeholder="New Page"
+                            value={link.title}
+                            variant="soft"
+                            readOnly={!editMode}
+                            onChange={(e) =>
+                              updateLinkOrTodo(
+                                { title: e.target.value },
+                                index,
+                                key
+                              )
+                            }
+                          />
+                        </Box>
+                      ))}
+                      <Button
+                        onClick={() => {
+                          addLink(key);
+                        }}
+                      >
+                        Add anohter link
+                      </Button>
+                    </Card>
                   </Box>
                 )}
                 {body[key].type == ElementType.TODO && (
                   <Box pb={"3"}>
-                  <input type="checkbox"></input> Todo task
+                    <Card>
+                      {Array.isArray(body[key].body) &&
+                        body[key].body.map((todo: TodoProps, index) => (
+                          <Flex gap="3" align="center">
+                            <Checkbox
+                              defaultChecked={
+                                todo.status == TodoStatus.COMPLETED
+                                  ? true
+                                  : false
+                              }
+                              value={
+                                todo.status == TodoStatus.COMPLETED ? 1 : 0
+                              }
+                              onClick={(e) =>
+                                updateLinkOrTodo(
+                                  {
+                                    status: Math.abs(+e.currentTarget.value - 1)
+                                      ? TodoStatus.COMPLETED
+                                      : TodoStatus.INCOMPLETE,
+                                  },
+                                  index,
+                                  key
+                                )
+                              }
+                              size="3"
+                            />
+                            <Flex gap="3" align="center">
+                              <Box>
+                                <TextField.Input
+                                  size="2"
+                                  placeholder="New Page"
+                                  value={todo.title}
+                                  variant="soft"
+                                  readOnly={!editMode}
+                                  onChange={(e) =>
+                                    updateLinkOrTodo(
+                                      { title: e.target.value },
+                                      index,
+                                      key
+                                    )
+                                  }
+                                />
+                                <TextField.Input
+                                  size="1"
+                                  placeholder="New Page"
+                                  value={todo.description}
+                                  variant="soft"
+                                  readOnly={!editMode}
+                                  onChange={(e) =>
+                                    updateLinkOrTodo(
+                                      { description: e.target.value },
+                                      index,
+                                      key
+                                    )
+                                  }
+                                />
+                              </Box>
+                            </Flex>
+                          </Flex>
+                        ))}
+                      <Button onClick={() => addTodo(key)}>Add todo</Button>
+                    </Card>
                   </Box>
                 )}
               </Box>

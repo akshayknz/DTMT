@@ -39,6 +39,15 @@ export const router = createBrowserRouter(
               path: "/dashboard",
               element: <Dashboard />,
               children: [
+                
+                {
+                  path: "/dashboard/org/:id/settings",
+                  async loader() {
+                    await import("./pages/OrganizationSettings");
+                    return <Loading />; //show loading screen while lazy loading
+                  },
+                  lazy: () => import("./pages/OrganizationSettings"),
+                },
                 {
                   path: "/dashboard/org/:id",
                   async loader() {
@@ -54,7 +63,7 @@ export const router = createBrowserRouter(
                         return <Loading />; //show loading screen while lazy loading
                       },
                       lazy: () => import("./pages/Page"),
-                    },
+                    }
                   ],
                 },
               ],
