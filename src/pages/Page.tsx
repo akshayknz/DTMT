@@ -60,9 +60,9 @@ export function Component() {
     }
   }, [params.id]);
   useEffect(() => {
-    itemsRef.current.forEach((e) => {
-      e.style.height = `${e.scrollHeight}px`;
-    });
+    // itemsRef.current.forEach((e) => {
+    //   e.style.height = `${e.scrollHeight}px`;
+    // });
   }, [body, editMode]);
   const handleSavePage = () => {
     console.log("saving page");
