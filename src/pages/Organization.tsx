@@ -43,9 +43,7 @@ export function Component() {
     getOrganization(params.id, userId).then((v) => setOrganizationData(v));
   }, []);
   useEffect(() => {
-    getPageList(userId);
-    console.log(location);
-    
+    if (!params.pageid) getPageList(userId);
   }, [location]);
   const height = 120;
   const getPageList = async (userId) => {
@@ -90,9 +88,10 @@ export function Component() {
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>
                     <Link to="settings#people-settings">
-                    <DropdownMenu.Item>
-                      Share this organization
-                    </DropdownMenu.Item></Link>
+                      <DropdownMenu.Item>
+                        Share this organization
+                      </DropdownMenu.Item>
+                    </Link>
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               </Flex>
@@ -121,6 +120,7 @@ export function Component() {
                 head={pages[v].name}
                 body="Page body (Content)"
                 data={pages[v]}
+                key={pages[v].id}
               />
             ))}
             {/* <Block h="120px" w="70%" bg="#DB3A34" head="Page 1 (Pages)" body="Page body (Content)" />

@@ -30,8 +30,16 @@ export interface UserOrganizationProps {
   name: string;
   id: string;
   slug?: string;
+  status: PageStatus;
+  owner?: string;
   selected: boolean;
-  status: PageStatus
+}
+export interface UserPageProps {
+  name?: string;
+  id?: string;
+  slug?: string;
+  status?: PageStatus;
+  owner?: string
 }
 
 export interface OrganizationProps {

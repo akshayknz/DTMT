@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch, arrayUnion } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch, arrayUnion, startAt } from "firebase/firestore";
 import { db } from "./firebase/config";
 import {
   ElementProps,
@@ -8,6 +8,7 @@ import {
   PageProps,
   PageStatus,
   UserOrganizationProps,
+  UserPageProps,
   UserProps,
 } from "./interfaces/interfaces";
 import Login from "./components/Login";
@@ -43,7 +44,8 @@ export const saveUserOrganization = async (
   { orgData, userId }: { orgData: UserOrganizationProps, userId: string }
 ): Promise<UserOrganizationProps> => {
   orgData.id = await saveOrganization({ name: orgData.name } as OrganizationProps); //TODO: Elaborate
-  orgData.slug = await textToUrl(orgData.name, orgData.id, "Organizations")
+  orgData.slug = await textToUrl(orgData.name, orgData.id, "Organizations");
+  orgData.owner = userId
   let selectedOrganization = await setDoc(
     doc(db, "Users", userId, "Organizations", orgData.slug),
     orgData,
@@ -211,7 +213,7 @@ export const savePage = async (data: PageProps, userId: string, orgId: string): 
     await savePageTransaction(data, orgIdFromSlug.id)
     await setDoc(//setDoc to Users collection (saving slug)
       doc(db, "Users", userId, "Pages", data.slug),
-      { name: data.name, id: data.id, slug: data.slug, }, { merge: true }
+      { name: data.name, id: data.id, slug: data.slug, owner: userId }, { merge: true }
     );
 
     return data.slug;
@@ -244,7 +246,7 @@ export const savePageTransaction = async (data: PageProps, orgId: string): Promi
       const sfDoc = await transaction.get(pageDocRef);
       if (!sfDoc.exists()) throw "Document does not exist!";
       Object.keys(data.body).forEach((element, i) => {
-        transaction.update(doc(db, "Elements", element), { ...data.body[element], order:i });
+        transaction.update(doc(db, "Elements", element), { ...data.body[element], order: i });
       });
       data.body = Object.keys(data.body)
       transaction.update(pageDocRef, { ...data });
@@ -306,17 +308,20 @@ export const saveElement = async (data: ElementProps): Promise<string> => {
 };
 
 //GET: get all pages belonging to an organization (using the organization's id)
-export const getPages = async (orgSlug, userId): Promise<{[key: string]: PageProps}> => {
+export const getPages = async (orgSlug, userId): Promise<{ [key: string]: PageProps }> => {
   const orgIdDoc = await getUserOrganization(orgSlug, userId)
   const pageIdsDoc = await getDoc(doc(db, "Organizations", orgIdDoc.id))
   const pageIds = pageIdsDoc.data().pages
-  const querySnapshot = await getDocs(query(collection(db, "Pages"), where(documentId(), "in", pageIds)));
-  let dict: {[key: string]: PageProps} = {};
-  await querySnapshot.docs.map((doc) => {
-    if(doc.data().status !=PageStatus.DELETED){
-      dict[doc.id] = doc.data() as {[key: string]: PageProps};
-
-    }
+  let dict: { [key: string]: PageProps } = {};
+  // Divide and conquer
+  const arrayOf30PagesEach = splitIntoChunks(pageIds, 30);
+  const allPages = (await Promise.all(arrayOf30PagesEach.map(async arrayOf30 => {
+    const userPages = (await getDocs(query(collection(db, "Pages"), where(documentId(), "in", arrayOf30), where("status", "==", PageStatus.ACTIVE)))).docs.map(v => v.data())
+    return userPages
+  }))).flat() as PageProps[];
+  console.log(allPages);
+  await allPages.map((doc) => {
+      dict[doc.id] = doc as { [key: string]: PageProps };
   });
 
   return dict;
@@ -328,18 +333,46 @@ export const getIdFromSlug = async (slug: string, userId: string, type: string):
   return ""
 }
 
+const splitIntoChunks = (array, chunkSize) => {
+  return array.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / chunkSize);
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [] // start a new chunk
+    }
+    resultArray[chunkIndex].push(item)
+
+    return resultArray
+  }, [])
+}
 
 //POST: save element
-export const addEmailToShareList = async (email: string, userId: string, slug: string): Promise<string> => {
+export const addEmailToShareList = async (email: string, userId: string, slug: string): Promise<boolean> => {
+  // Move user organization to share user
   let organization = await getUserOrganization(slug, userId)
-  console.log(email,userId,organization.id);
+  console.log(email, userId, organization.id);
   const querySnapshot = await getDocs(query(collection(db, "Users"), where("email", "==", email)))
-  const emailUserId = querySnapshot.docs.map(v=>v.data().uid)[0]
+  const emailUserId = querySnapshot.docs.map(v => v.data().uid)[0]
   const documentSnapshot = await getDoc(doc(db, "Users", userId, "Organizations", slug))
-  const orgData = documentSnapshot.data()
-  await setDoc(doc(db, "Users", emailUserId, "Organizations", slug ), orgData)
-  console.log(emailUserId, orgData);
-  
+  const userOrgData = documentSnapshot.data() as OrganizationProps
+  await setDoc(doc(db, "Users", emailUserId, "Organizations", slug), userOrgData)
+  // Get all user pages from organization and transfer them to share user's user pages
+  const orgData = (await getDoc(doc(db, "Organizations", userOrgData.id))).data() as OrganizationProps
+  // Firebase has a 30 nos limit for in array where operation
+  const arrayOf30PagesEach = splitIntoChunks(orgData.pages, 30);
+  const allPages = (await Promise.all(arrayOf30PagesEach.map(async arrayOf30 => {
+    const userPages = (await getDocs(query(collection(db, "Users", userId, "Pages"), where("id", "in", arrayOf30)))).docs.map(v => v.data())
+    return userPages
+  }))).flat() as UserPageProps[];
+  console.log(emailUserId, userOrgData, allPages);
+  // Put all the owner user pages into share user user pages
+  // Get a new write batch
+  const batch = writeBatch(db);
+  allPages.forEach(page=>{
+    const shareUserPageRef = doc(db, "Users", emailUserId, "Pages",page.slug);
+    batch.set(shareUserPageRef, page);
+  })
+  // Commit the batch
+  await batch.commit();
   // const querySnapshot = await addDoc(collection(db, "Elements"), data);
-  return ""
+  return true
 };

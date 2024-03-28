@@ -62,7 +62,9 @@ export function Component() {
   };
   const scrollTo = (ref) => ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
   const submitEmail = () => { 
-    if(/\S+@\S+\.\S+/.test(shareEmail)) addEmailToShareList(shareEmail, userId, params.id) 
+    if(/\S+@\S+\.\S+/.test(shareEmail)) {
+      addEmailToShareList(shareEmail, userId, params.id).then(()=>alert("Success"))
+    } 
   }
 
   return (
