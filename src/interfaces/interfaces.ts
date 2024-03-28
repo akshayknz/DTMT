@@ -33,6 +33,7 @@ export interface UserOrganizationProps {
   status: PageStatus;
   owner?: string;
   selected: boolean;
+  sharedWith?: string[] // array of user ids
 }
 export interface UserPageProps {
   name?: string;
@@ -40,6 +41,7 @@ export interface UserPageProps {
   slug?: string;
   status?: PageStatus;
   owner?: string
+  sharedWith?: string[] // array of user ids
 }
 
 export interface OrganizationProps {

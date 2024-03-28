@@ -51,9 +51,11 @@ export function Component() {
   }, []);
   useEffect(() => {
     getPageList(userId);
-    console.log(params)
     scrollTo(peopleSettingsRef)
   }, [location]);
+  useEffect(()=>{
+
+  }, [shareEmail])
   const height = 120;
   const getPageList = async (userId) => {
     const pageList = await getPages(params.id, userId);
@@ -64,6 +66,7 @@ export function Component() {
   const submitEmail = () => { 
     if(/\S+@\S+\.\S+/.test(shareEmail)) {
       addEmailToShareList(shareEmail, userId, params.id).then(()=>alert("Success"))
+      setShareEmail("")
     } 
   }
 

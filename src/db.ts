@@ -171,7 +171,6 @@ export const setSelectedOrganization = async (slug, userId): Promise<boolean> =>
   const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
   
   if (docSnap.exists()) {
-    console.log(docSnap.data(), slug);
     const listOfOrgs = await getDocs(collection(db, "Users", userId, "Organization"))
     const list = listOfOrgs.docs.map(v => v.id)
     // Get a new write batch
@@ -312,13 +311,14 @@ export const getPages = async (orgSlug, userId): Promise<{ [key: string]: PagePr
   const pageIdsDoc = await getDoc(doc(db, "Organizations", orgIdDoc.id))
   const pageIds = pageIdsDoc.data().pages
   let dict: { [key: string]: PageProps } = {};
+  // No pages in this organization
+  if(!pageIds) return dict 
   // Divide and conquer
   const arrayOf30PagesEach = splitIntoChunks(pageIds, 30);
   const allPages = (await Promise.all(arrayOf30PagesEach.map(async arrayOf30 => {
     const userPages = (await getDocs(query(collection(db, "Pages"), where(documentId(), "in", arrayOf30), where("status", "==", PageStatus.ACTIVE)))).docs.map(v => v.data())
     return userPages
   }))).flat() as PageProps[];
-  console.log(allPages);
   await allPages.map((doc) => {
       dict[doc.id] = doc as { [key: string]: PageProps };
   });
@@ -348,7 +348,6 @@ const splitIntoChunks = (array, chunkSize) => {
 export const addEmailToShareList = async (email: string, userId: string, slug: string): Promise<boolean> => {
   // Move user organization to share user
   let organization = await getUserOrganization(slug, userId)
-  console.log(email, userId, organization.id);
   const querySnapshot = await getDocs(query(collection(db, "Users"), where("email", "==", email)))
   const emailUserId = querySnapshot.docs.map(v => v.data().uid)[0]
   const documentSnapshot = await getDoc(doc(db, "Users", userId, "Organizations", slug))
@@ -356,13 +355,13 @@ export const addEmailToShareList = async (email: string, userId: string, slug: s
   await setDoc(doc(db, "Users", emailUserId, "Organizations", slug), userOrgData)
   // Get all user pages from organization and transfer them to share user's user pages
   const orgData = (await getDoc(doc(db, "Organizations", userOrgData.id))).data() as OrganizationProps
+  if(!orgData.pages) return true // no pages in this organization
   // Firebase has a 30 nos limit for in array where operation
   const arrayOf30PagesEach = splitIntoChunks(orgData.pages, 30);
   const allPages = (await Promise.all(arrayOf30PagesEach.map(async arrayOf30 => {
     const userPages = (await getDocs(query(collection(db, "Users", userId, "Pages"), where("id", "in", arrayOf30)))).docs.map(v => v.data())
     return userPages
   }))).flat() as UserPageProps[];
-  console.log(emailUserId, userOrgData, allPages);
   // Put all the owner user pages into share user user pages
   // Get a new write batch
   const batch = writeBatch(db);
