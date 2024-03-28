@@ -101,14 +101,13 @@ export const textToUrl = async (text: string, userId: string, type: string) => {
 //GET: get organization ID from SLUG
 export const getUserOrganization = async (slug, userId): Promise<UserOrganizationProps> => {
   const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
-  let docSnap2;
   let data;
   if (docSnap.exists()) {
-    let orgId = docSnap.data().id;
-    await setSelectedOrganization(docSnap.data().id, userId)
+    await setSelectedOrganization(slug, userId)
     data = docSnap.data();
   } else {
     //The organization: doesnt exist/youre not the owner/not shared to you
+    throw new Error("Organizaion doesn't exist or you're not the owner or is not shared to you");
   }
 
   return data; //ERROR: IF DOCSNAP DOESNT EXIST
@@ -170,19 +169,19 @@ export const getLastSelectedOrganization = async (userId): Promise<string> => {
 //GET: get organization ID from SLUG
 export const setSelectedOrganization = async (slug, userId): Promise<boolean> => {
   const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
-  let data;
+  
   if (docSnap.exists()) {
-    let orgId = docSnap.data().id;
+    console.log(docSnap.data(), slug);
     const listOfOrgs = await getDocs(collection(db, "Users", userId, "Organization"))
-    const list = listOfOrgs.docs.map(V => V.id)
+    const list = listOfOrgs.docs.map(v => v.id)
     // Get a new write batch
     const batch = writeBatch(db);
     list.forEach(v => {
-      const nycRef = doc(db, "Users", userId, "Organization", v);
-      batch.set(nycRef, { selected: false });
+      const allOrgs = doc(db, "Users", userId, "Organizations", v);
+      batch.set(allOrgs, { selected: false }, {merge:true});
     })
-    const nycRef = doc(db, "Users", userId, "Organization", slug);
-    batch.set(nycRef, { selected: true });
+    const currentOrg = doc(db, "Users", userId, "Organizations", slug);
+    batch.set(currentOrg, { selected: true }, {merge:true});
     // Commit the batch
     await batch.commit();
   } else {
