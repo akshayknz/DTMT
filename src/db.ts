@@ -43,7 +43,7 @@ export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps)
 export const saveUserOrganization = async (
   { orgData, userId }: { orgData: UserOrganizationProps, userId: string }
 ): Promise<UserOrganizationProps> => {
-  orgData.id = await saveOrganization({ name: orgData.name } as OrganizationProps); //TODO: Elaborate
+  orgData.id = await saveOrganization({ name: orgData.name, access:[userId] } as OrganizationProps); //TODO: Elaborate
   orgData.slug = await textToUrl(orgData.name, orgData.id, "Organizations");
   orgData.owner = userId
   let selectedOrganization = await setDoc(
@@ -171,7 +171,7 @@ export const setSelectedOrganization = async (slug, userId): Promise<boolean> =>
   const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
   
   if (docSnap.exists()) {
-    const listOfOrgs = await getDocs(collection(db, "Users", userId, "Organization"))
+    const listOfOrgs = await getDocs(collection(db, "Users", userId, "Organizations"))
     const list = listOfOrgs.docs.map(v => v.id)
     // Get a new write batch
     const batch = writeBatch(db);
@@ -206,7 +206,8 @@ export const savePage = async (data: PageProps, userId: string, orgId: string): 
     if (!data.name) data.name = "Untitled Page";//No name passed
     data.slug = await textToUrl(data.name, userId, "Pages")
     data.status = PageStatus.ACTIVE
-    data.id = (await addDoc(collection(db, "Pages"), {})).id
+    data.access = [userId]
+    data.id = (await addDoc(collection(db, "Pages"), { })).id
     const orgIdFromSlug = await getUserOrganization(orgId, userId)
     await savePageTransaction(data, orgIdFromSlug.id)
     await setDoc(//setDoc to Users collection (saving slug)
@@ -347,12 +348,10 @@ const splitIntoChunks = (array, chunkSize) => {
 //POST: save element
 export const addEmailToShareList = async (email: string, userId: string, slug: string): Promise<boolean> => {
   // Move user organization to share user
-  let organization = await getUserOrganization(slug, userId)
   const querySnapshot = await getDocs(query(collection(db, "Users"), where("email", "==", email)))
   const emailUserId = querySnapshot.docs.map(v => v.data().uid)[0]
   const documentSnapshot = await getDoc(doc(db, "Users", userId, "Organizations", slug))
   const userOrgData = documentSnapshot.data() as OrganizationProps
-  await setDoc(doc(db, "Users", emailUserId, "Organizations", slug), userOrgData)
   // Get all user pages from organization and transfer them to share user's user pages
   const orgData = (await getDoc(doc(db, "Organizations", userOrgData.id))).data() as OrganizationProps
   if(!orgData.pages) return true // no pages in this organization
@@ -365,6 +364,8 @@ export const addEmailToShareList = async (email: string, userId: string, slug: s
   // Put all the owner user pages into share user user pages
   // Get a new write batch
   const batch = writeBatch(db);
+  batch.set(doc(db, "Users", emailUserId, "Organizations", slug), userOrgData)
+  batch.set(doc(db, "Organizations", userOrgData.id), {"access":arrayUnion(emailUserId)}, {merge:true})
   allPages.forEach(page=>{
     const shareUserPageRef = doc(db, "Users", emailUserId, "Pages",page.slug);
     batch.set(shareUserPageRef, page);
@@ -374,3 +375,11 @@ export const addEmailToShareList = async (email: string, userId: string, slug: s
   // const querySnapshot = await addDoc(collection(db, "Elements"), data);
   return true
 };
+
+//GET: Users from Organization
+export const getOrganizaionUsers = async (slug, userId) =>{
+  const owner = (await getUserOrganization(slug, userId)).owner
+  let organizationUsers = ((await getOrganization(slug, userId)).access)
+  console.log(organizationUsers);
+  
+}

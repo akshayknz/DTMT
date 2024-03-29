@@ -33,7 +33,7 @@ export interface UserOrganizationProps {
   status: PageStatus;
   owner?: string;
   selected: boolean;
-  sharedWith?: string[] // array of user ids
+  // This should be in OrganizationProps sharedWith?: string[] // array of user ids
 }
 export interface UserPageProps {
   name?: string;
@@ -41,7 +41,7 @@ export interface UserPageProps {
   slug?: string;
   status?: PageStatus;
   owner?: string
-  sharedWith?: string[] // array of user ids
+  // This should be in PageProps sharedWith?: string[] // array of user ids
 }
 
 export interface OrganizationProps {
@@ -50,6 +50,7 @@ export interface OrganizationProps {
   collections?: string[]; //collection order is with the collection
   pages?: string[]; //collection order is with the collection
   overviewOptions?: string[]; //{clock:[a,b,c,d]; blockcollection:[today,high priority,reminders,todo]}
+  access?: string[]
 }
 
 export enum PageStatus {
@@ -64,6 +65,7 @@ export interface PageProps {
   body?: string[] | PageBodyProps;
   status?: PageStatus;
   slug?: string;
+  access?: string[]
 }
 
 export interface PageBodyProps { 

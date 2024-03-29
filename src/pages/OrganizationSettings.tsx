@@ -20,7 +20,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { addEmailToShareList, getOrganization, getPages, getUser } from "../db";
+import { addEmailToShareList, getOrganizaionUsers, getOrganization, getPages, getUser } from "../db";
 import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -54,7 +54,11 @@ export function Component() {
     scrollTo(peopleSettingsRef)
   }, [location]);
   useEffect(()=>{
-
+    /**
+     * TODO
+     * Get share list to display in table of shared accounts
+     */
+    getOrganizaionUsers(params.id, userId)
   }, [shareEmail])
   const height = 120;
   const getPageList = async (userId) => {
