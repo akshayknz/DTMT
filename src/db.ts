@@ -381,5 +381,11 @@ export const getOrganizaionUsers = async (slug, userId) =>{
   const owner = (await getUserOrganization(slug, userId)).owner
   let organizationUsers = ((await getOrganization(slug, userId)).access)
   console.log(organizationUsers);
-  
+  //TODO
+  // Firebase has a 30 nos limit for in array where operation
+  const arrayOf30PagesEach = splitIntoChunks(organizationUsers, 30);
+  const allPages = (await Promise.all(arrayOf30PagesEach.map(async arrayOf30 => {
+    const userPages = (await getDocs(query(collection(db, "Users", userId, "Pages"), where("id", "in", arrayOf30)))).docs.map(v => v.data())
+    return userPages
+  }))).flat() as UserPageProps[];
 }

@@ -6,6 +6,7 @@ import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import { getLastSelectedOrganization, getOrganization, getUser } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
 import { RiMore2Fill, RiNotification4Line } from "react-icons/ri";
+import Navigations from "./Navigations";
 
 const Navbar = () => {
     const { handleLogOut } = useContext(AuthContext)
@@ -92,6 +93,7 @@ const Navbar = () => {
                     </Container></Box>
             </Box>
             <Outlet />
+            <Navigations/>
         </>
     )
 }
