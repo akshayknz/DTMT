@@ -43,9 +43,6 @@ export function Component() {
 
     return (
         <Container px="3">
-                <Button onClick={() => navigate(-1)}>
-                    Go back
-                </Button>
             <Box>
                 <Box py={"6"}>
                     <textarea value={name} onChange={(e)=>setName(e.target.value)} autoFocus style={{
