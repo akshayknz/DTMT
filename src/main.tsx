@@ -12,6 +12,7 @@ import { Box } from "@radix-ui/themes";
 import background from "./assets/background.jpg";
 import Loading from "./components/Loading.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+
 export const router = createBrowserRouter(
   [
     {
@@ -98,7 +99,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
       <Theme appearance="light" accentColor="green" radius="small">
-        <Box style={{ minHeight: "100vh" }}>
+        <Box style={{ minHeight: "100vh", background:"linear-gradient(white 80%, #00d26a2e 96%)" }} >
           <RouterProvider router={router} />
         </Box>
       </Theme>

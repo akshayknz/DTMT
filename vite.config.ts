@@ -4,6 +4,11 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    commonjsOptions: {
+      esmExternals: true,
+    },
+  },
   plugins: [react(), VitePWA({
     registerType: "autoUpdate",
     includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],

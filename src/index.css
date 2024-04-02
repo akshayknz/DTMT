@@ -1,9 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
 :root {
   color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+ 
+}
+.radix-themes{
+  --default-font-family: "Open Sans", sans-serif !important;  /* Your custom default font */
+  --heading-font-family: "Open Sans", sans-serif !important ;  /* Your custom font for <Heading> components */
+  --code-font-family: "Open Sans", sans-serif !important ;     /* Your custom font for <Code> components */
+  --strong-font-family: "Open Sans", sans-serif !important ;   /* Your custom font for <Strong> components */
+  --em-font-family: "Open Sans", sans-serif !important ;       /* Your custom font for <Em> components */
+  --quote-font-family: "Open Sans", sans-serif !important ; 
 }
 
 body {
@@ -27,6 +38,7 @@ html {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  z-index: 10;
 }
 
 .buttons-wrapper {
@@ -85,4 +97,38 @@ html {
   100% {
     transform: translateY(0px);
   }
+}
+
+.card{
+  border:1px solid #000;
+  height:10px;
+}
+.btn {
+  background: none;
+  box-shadow: 0 0 0px 1px #00000021;
+  color: #000;
+  border-radius: 100px;
+  height: 50px;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all .3s;
+  background-color: #fff;
+}
+.btn-secondary {
+  background-color: transparent;
+
+}
+.btn:hover {
+  box-shadow: 0 0 3px 3px #0000000f;
+
+}
+
+.avatar-group{
+  margin-left: 15px;
+}
+.avatar-group .rt-AvatarRoot {
+  margin-left: -21px;
 }

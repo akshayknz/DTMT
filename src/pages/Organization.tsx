@@ -28,6 +28,7 @@ import {
 import { RiAddFill, RiMore2Fill, RiSearchLine } from "react-icons/ri";
 import { Masonry } from "react-masonry/dist";
 import Block from "../components/Block";
+import { GoKebabHorizontal } from "react-icons/go";
 export function Component() {
   const navigate = useNavigate();
   const params = useParams();
@@ -61,7 +62,6 @@ export function Component() {
             <Text>
               Hi {user.displayName && user.displayName.split(" ")[0] + ","}
             </Text>
-            <Button onClick={() => navigate("/dashboard")}>Go back</Button>
             <Flex gap="3" align="center" justify="between">
               <Heading size="7" weight={"medium"}>
                 {organizationData.name}
@@ -84,7 +84,7 @@ export function Component() {
                 </Button>
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger>
-                    <Button variant="soft">Options</Button>
+                    <Button variant="soft"><GoKebabHorizontal/></Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>
                     <Link to="settings#people-settings">

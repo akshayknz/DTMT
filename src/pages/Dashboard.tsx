@@ -28,24 +28,25 @@ import {
   UserOrganizationProps,
 } from "../interfaces/interfaces";
 import Loading from "../components/Loading";
+import { GoArrowUpRight, GoGear, GoGrabber, GoKebabHorizontal } from "react-icons/go";
 export default function Dashboard() {
   const { userId } = useContext(AuthContext);
   const params = useParams();
   const [organizations, setOrganizations] = useState(
     [] as UserOrganizationProps[]
   );
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getAllOrganizations();
   }, []);
 
   const getAllOrganizations = async () => {
-    
     setOrganizations(await getOrganizations(userId));
-    setLoading(false)
+    setLoading(false);
   };
-  const deleteOrganization = async (slug) => {
+  const deleteOrganization = async (e,slug) => {
+    e.preventDefault()
     changeOrganizationStatus(slug, userId, PageStatus.DELETED);
     getAllOrganizations();
   };
@@ -54,107 +55,88 @@ export default function Dashboard() {
       {params.id ? (
         <Outlet />
       ) : (
-        <>{loading?<>
-        <Loading></Loading>
-          </>:
-        <Container px="3">
-          {organizations.length===0 ? 
-          <Box>
-          <Box pt={"6"} pb={"5"}>
-            <Heading size="7">To start create an organization.</Heading>
-          </Box>
-          <Box pb={"4"}>
-            <Link to="/create-organization">
-              <Button>
-                <RiAddCircleFill width="16" height="16" /> Create Organization
-              </Button>
-            </Link>
-          </Box>
-        </Box>:
-          <Box pt={"3"} pb={"2"}>
-            <Heading size="7">Your organizations.</Heading>
-          </Box>
-          }
-          
-          <Box>
-            {organizations.map((v) => (
-              <Card style={{ margin: "10px 0px" }} key={v.id}>
-                        <Flex align="center" gap="3" justify={"between"}>
-                <Text as="div" size="2" color="gray" >
+        <>
+          {loading ? (
+            <>
+              <Loading></Loading>
+            </>
+          ) : (
+            <Container px="3">
+              {organizations.length === 0 ? (
+                <Box>
+                  <Box pt={"6"} pb={"5"}>
+                    <Heading size="7">To start create an organization.</Heading>
+                  </Box>
+                  <Box pb={"4"}>
+                    <Link to="/create-organization">
+                      <Button>
+                        <RiAddCircleFill width="16" height="16" /> Create
+                        Organization
+                      </Button>
+                    </Link>
+                  </Box>
+                </Box>
+              ) : (
+                <Box pt={"3"} pb={"2"}>
+                  <Heading size="7" weight={"medium"}>Your organizations</Heading>
+                </Box>
+              )}
+
+              <Box style={{marginBottom:"130px"}}>
+                {organizations.map((v,i) => (
+                  <Link to={`org/${v.slug}`}
+                  style={{ textDecoration: "none", color: "inherit" }} key={v.id}
+                >
+                  <Box
+                    style={{
+                      margin: "15px 0px 15px 0",
+                      borderRadius: "16px",
+                      padding: "22px 16px",
+                      background:"#e7ffec",
+                    }}
+                  >
+                    <Flex align="start" gap="3" justify={"between"}>
+                      <Box style={{width:"57%"}}>
+                        <Text as="div" size="1" color="gray">
                           13 items
                         </Text>
-                        <Flex align="center" gap="3">
-                      <IconButton
-                        size="3"
-                        variant="soft"
-                        onClick={() => deleteOrganization(v.slug)}
-                      >
-                        <RiDeleteBin7Line />
-                      </IconButton>
-
-                      <IconButton
-                        size="3"
-                        variant="soft"
-                        onClick={() => deleteOrganization(v.slug)}
-                      >
-                        <RiMore2Fill />
-                      </IconButton>
-                    </Flex>
-                    </Flex>
-                <Flex  gap="3"  direction={"column"}>
-                  <Link
-                    to={`org/${v.slug}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    <Flex gap="3" align="center">
-                      <Box>
-                        <Heading weight="bold">
-                          {v.name}
-                        </Heading>
                         
+                          <Box mb="6" mt="1">
+                            <Heading weight={"medium"} >{v.name}</Heading>
+                          </Box>
                       </Box>
-                      
+                      <Box
+                          className="btn btn-secondary"
+                          onClick={(e) => deleteOrganization(e,v.slug)}
+                        >
+                          <GoKebabHorizontal />
+                        </Box>
+                        <Box
+                          className="btn"
+                          onClick={(e) => deleteOrganization(e,v.slug)}
+                        >
+                          <GoArrowUpRight  />
+                        </Box>
                     </Flex>
-                  </Link>
-                  <Flex gap="2">
-                  <Avatar
-                          variant="solid"
-                          color="red"
-                          radius="large"
-                          fallback="A"
-                          style={{transform:"scale(.7)"}}
-                        />
-                  <Avatar
-                          variant="solid"
-                          color="indigo"
-                          radius="large"
-                          fallback="A"
-                          style={{transform:"scale(.8)", marginLeft: "-40px"}}
-                        />
-                        <Avatar
-                          variant="solid"
-                          color="orange"
-                          fallback="A"
-                          radius="large"
-                          style={{transform:"scale(.9)", marginLeft: "-40px"}}
-                        />
-                        <Avatar
-                          variant="solid"
-                          color="indigo"
-                          radius="large"
-                          fallback="A"
-                          style={{ marginLeft: "-40px", zIndex:1 }}
-                        />
+                    <Flex gap="3" direction={"row"} align={"center"}>
+                    <Text size="1" color="gray">
+                       Members: 
+                       </Text>
+                      <Flex gap="2" className="avatar-group">
+                        <Avatar radius="full" fallback="A" size={"2"} variant="solid" />
+                        <Avatar radius="full" fallback="B" size={"2"} variant="solid" />
+                        <Avatar size={"2"} variant="solid" fallback="C" radius="full" />
+                        <Avatar size={"2"} variant="solid" radius="full" fallback="+3" style={{ zIndex: 1 }} />
                       </Flex>
-                  <Box>
-                    
+                      <Box></Box>
+                    </Flex>
                   </Box>
-                </Flex>
-              </Card>
-            ))}
-          </Box>
-      
-        </Container>}</>
+                  </Link>
+                ))}
+              </Box>
+            </Container>
+          )}
+        </>
       )}
     </>
   );

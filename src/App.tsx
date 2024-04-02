@@ -8,6 +8,7 @@ export const AuthPage = () => {
   return <Login />
 }
 
+ 
 const App = () => {
   const { status, userId } = useContext(AuthContext)
 
