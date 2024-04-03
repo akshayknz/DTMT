@@ -11,16 +11,17 @@ import {
 import logo from "../assets/logo.png";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { getLastSelectedOrganization, getOrganization, getUser } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
-import { RiMore2Fill, RiNotification4Line } from "react-icons/ri";
-import {
-  IoIosAdd,
-  IoIosArrowBack,
-  IoIosArrowRoundBack,
-  IoIosMenu,
-} from "react-icons/io";
+import { IoIosAdd, IoIosArrowRoundBack, IoIosMenu } from "react-icons/io";
 
 const Navigations = () => {
   const { handleLogOut } = useContext(AuthContext);
@@ -29,35 +30,37 @@ const Navigations = () => {
   const { userId } = useContext(AuthContext);
   const [user, setUser] = useState({} as UserProps);
   const params = useParams();
-  const [organizationData, setOrganizationData] = useState(
-    {} as OrganizationProps
-  );
-  useEffect(() => {
-    console.log(location.pathname);
-
-    if (userId) {
-      getUser(userId).then((v) => setUser(v as UserProps));
-      if (params.id) {
-        getLastSelectedOrganization(userId).then((v) => {
-          getOrganization(v, userId).then((vv) => {
-            setOrganizationData(vv);
-          });
-        });
-      }
+  const add = () => {
+    if (params.id) {
+      navigate(location.pathname + "/page/new-page");
     } else {
-      setUser({} as UserProps);
+      navigate("/create-organization");
     }
-  }, [userId]);
+  };
+
+  const back = () => {
+    if (params.pageid) {
+      console.log("yes page id");
+      
+      navigate(-1);
+    } else {
+      console.log("no page id");
+      navigate("/dashboard");
+    }
+  };
   return (
     <>
       {userId && (
         <Box className="bottom-navigation">
           <Box className="buttons-wrapper">
             <Box
-              onClick={() => navigate("/dashboard")}
+              onClick={back}
               className={`back-button 
               ${Object.keys(params).length != 0 && "show-back-button"}
-              ${location.pathname == "/create-organization" && "show-back-button"}
+              ${
+                location.pathname == "/create-organization" &&
+                "show-back-button"
+              }
               
               `}
               style={{ color: "#fff", marginRight: 0 }}
@@ -65,10 +68,7 @@ const Navigations = () => {
               <IoIosArrowRoundBack />
             </Box>
 
-            <Box
-              onClick={() => navigate("/create-organization")}
-              style={{ background: "#fff", marginRight: 0 }}
-            >
+            <Box onClick={add} style={{ background: "#fff", marginRight: 0 }}>
               <IoIosAdd />
             </Box>
             <DropdownMenu.Root>
@@ -94,7 +94,11 @@ const Navigations = () => {
                   </DropdownMenu.SubContent>
                 </DropdownMenu.Sub>
                 <DropdownMenu.Separator />
-                <DropdownMenu.Item>Share</DropdownMenu.Item>
+                <DropdownMenu.Item>
+                  <Link to={location.pathname+"/settings#people-settings"} relative="path">
+                      Share this organization
+                  </Link>
+                </DropdownMenu.Item>
                 <DropdownMenu.Item>Indeces</DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item shortcut="⌘ ⌫" color="red">

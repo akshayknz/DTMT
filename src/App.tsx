@@ -3,6 +3,9 @@ import { useContext } from "react"
 import Login from './components/Login';
 import { AuthContext } from './context/AuthContext';
 import Loading from './components/Loading';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from './context/store';
+import { saveUserId } from './context/appSlice';
 
 export const AuthPage = () => {
   return <Login />

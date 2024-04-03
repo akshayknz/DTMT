@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { AuthPage } from "./App.tsx";
 import "./index.css";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthContext, AuthProvider } from "./context/AuthContext";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes.tsx";
 import Navbar from "./components/Navbar.tsx";
@@ -12,6 +12,9 @@ import { Box } from "@radix-ui/themes";
 import background from "./assets/background.jpg";
 import Loading from "./components/Loading.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import { Provider, useDispatch } from "react-redux";
+import { AppDispatch, store } from "./context/store";
+import { saveUserId } from "./context/appSlice.ts";
 
 export const router = createBrowserRouter(
   [
@@ -40,7 +43,6 @@ export const router = createBrowserRouter(
               path: "/dashboard",
               element: <Dashboard />,
               children: [
-                
                 {
                   path: "/dashboard/org/:id/settings",
                   async loader() {
@@ -64,7 +66,7 @@ export const router = createBrowserRouter(
                         return <Loading />; //show loading screen while lazy loading
                       },
                       lazy: () => import("./pages/Page"),
-                    }
+                    },
                   ],
                 },
               ],
@@ -86,7 +88,6 @@ export const router = createBrowserRouter(
               },
               lazy: () => import("./pages/OrderPage"),
             },
-            
           ],
         },
       ],
@@ -95,14 +96,36 @@ export const router = createBrowserRouter(
   { basename: "/" }
 );
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <AuthProvider>
+const App = () => {
+  const { status, userId } = useContext(AuthContext);
+  console.log(userId);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(saveUserId(userId));
+  }, [userId]);
+  return (
+    <React.StrictMode>
       <Theme appearance="light" accentColor="green" radius="small">
-        <Box style={{ minHeight: "100vh", background:"linear-gradient(white 80%, #00d26a2e 96%)" }} >
+        <Box
+          style={{
+            minHeight: "100vh",
+            background: "linear-gradient(white 80%, #00d26a2e 96%)",
+          }}
+        >
           <RouterProvider router={router} />
         </Box>
       </Theme>
+    </React.StrictMode>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+root.render(
+  <React.StrictMode>
+    <AuthProvider>
+      <Provider store={store}>
+        <App />
+      </Provider>
     </AuthProvider>
   </React.StrictMode>
 );

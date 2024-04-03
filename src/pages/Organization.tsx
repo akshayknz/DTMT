@@ -74,11 +74,7 @@ export function Component() {
                * - Font should be as big as the Heading.
                *  */}
               <Flex gap="3" align="center" justify="between">
-                <Link to="page/new-page">
-                  <Button variant="solid" size="3" radius="small">
-                    <RiAddFill />
-                  </Button>
-                </Link>
+                
                 <Button variant="solid" size="3" radius="small">
                   <RiSearchLine />
                 </Button>
