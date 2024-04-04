@@ -18,13 +18,11 @@ import { AuthContext } from "../context/AuthContext";
 import { PageStatus, UserOrganizationProps } from "../interfaces/interfaces";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../context/store";
-import { saveUserOrganizationThunk, setCreateOrgName } from "../context/appSlice";
+import { setCreateOrgName } from "../context/appSlice";
 
 export function Component() {
-  const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const { userId } = useContext(AuthContext);
-  const navigate = useNavigate();
   const createOrgName = useSelector((state: RootState) => state.app.createOrgName);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -35,27 +33,10 @@ export function Component() {
      * function that runs as soon as it is defined.
      */
     (async () => {
-      let url = await textToUrl(name, userId, "Organization");
+      let url = await textToUrl(createOrgName, userId, "Organization");
       setUrl(url);
     })();
-
-    return () => {};
-  }, [name, userId]);
-
-  const handleSubmit = async () => {
-    let organization: UserOrganizationProps = await saveUserOrganization({
-      orgData: {
-        name: name,
-        id: userId,
-        selected: true,
-        status: PageStatus.ACTIVE,
-      },
-      userId,
-    });
-    console.log(organization);
-
-    navigate(`/dashboard/org/${organization.slug}`);
-  };
+  }, [createOrgName, userId]);
 
   return (
     <Container px="3">
@@ -80,9 +61,8 @@ export function Component() {
         </Box>
       </Box>
       <Box>
-        <Button onClick={handleSubmit}>Create Organization</Button>
+        <Button onClick={saveUserOrganization}>Create Organization</Button>
       </Box>
-      <button onClick={() => dispatch(saveUserOrganizationThunk())}>-</button>
     </Container>
   );
 }

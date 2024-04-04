@@ -12,6 +12,8 @@ import {
   UserProps,
 } from "./interfaces/interfaces";
 import Login from "./components/Login";
+import { store } from "./context/store";
+import appSlice, { setCreateOrgName, setNavigateTo } from "./context/appSlice";
 
 //GET: get user
 export const getUser = async (id: string): Promise<UserProps | Error> => {
@@ -40,19 +42,33 @@ export const saveUser = async ({ displayName, email, photoURL, uid }: UserProps)
 
 //POST: save user organization
 //Each call will create a document in (db,Users,userId,type) path.
-export const saveUserOrganization = async (
-  { orgData, userId }: { orgData: UserOrganizationProps, userId: string }
-): Promise<UserOrganizationProps> => {
-  orgData.id = await saveOrganization({ name: orgData.name, access:[userId] } as OrganizationProps); //TODO: Elaborate
-  orgData.slug = await textToUrl(orgData.name, orgData.id, "Organizations");
-  orgData.owner = userId
+export const saveUserOrganization = async (): Promise<UserOrganizationProps> => {
+  const userId = store.getState().app.userId;
+  const name = store.getState().app.createOrgName;
+  let id = await saveOrganization({ name: name, access:[userId] } as OrganizationProps)
+  let slug = await textToUrl(name, id, "Organizations");
+  const orgData = {
+    id: id,
+    slug: slug,
+    owner: userId,
+    name: name,
+    selected: true,
+    status: PageStatus.ACTIVE
+  }
+  console.log(id,"id");
+  console.log(slug,"slug");
+  console.log(userId,"userId");
+  console.log(name,"name");
+  console.log(orgData);
+  
   let selectedOrganization = await setDoc(
-    doc(db, "Users", userId, "Organizations", orgData.slug),
+    doc(db, "Users", userId, "Organizations", slug),
     orgData,
     { merge: true }
   );
   setSelectedOrganization(orgData.id, orgData.slug)
-
+  store.dispatch(setNavigateTo(`/dashboard/org/${orgData.slug}`))
+  store.dispatch(setCreateOrgName(""))
   return orgData;
 };
 
@@ -134,7 +150,8 @@ export const getOrganization = async (slug, userId): Promise<OrganizationProps> 
 //GET: get list of all Organizations belonging to a user (dashboard)
 export const getOrganizations = async (userId): Promise<UserOrganizationProps[]> => {
   const docSnap = await getDocs(query(collection(db, "Users", userId, "Organizations"), where("status", "==", PageStatus.ACTIVE)));
-
+  console.log(docSnap.docs.map((v) => v.data()));
+  
   return docSnap.docs.map((v) => v.data()) as UserOrganizationProps[];
 };
 
@@ -355,6 +372,10 @@ export const addEmailToShareList = async (email: string, userId: string, slug: s
   // Get all user pages from organization and transfer them to share user's user pages
   const orgData = (await getDoc(doc(db, "Organizations", userOrgData.id))).data() as OrganizationProps
   if(!orgData.pages) return true // no pages in this organization
+  /**
+   * TODO: Right now if there are no pages in the organization, sharing wont take place.
+   * Make it sharable even without any pages!
+   */
   // Firebase has a 30 nos limit for in array where operation
   const arrayOf30PagesEach = splitIntoChunks(orgData.pages, 30);
   const allPages = (await Promise.all(arrayOf30PagesEach.map(async arrayOf30 => {

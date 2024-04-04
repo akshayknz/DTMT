@@ -5,15 +5,15 @@ import "./index.css";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { AuthContext, AuthProvider } from "./context/AuthContext";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, useNavigate } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes.tsx";
 import Navbar from "./components/Navbar.tsx";
 import { Box } from "@radix-ui/themes";
 import background from "./assets/background.jpg";
 import Loading from "./components/Loading.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
-import { Provider, useDispatch } from "react-redux";
-import { AppDispatch, store } from "./context/store";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState, store } from "./context/store";
 import { saveUserId } from "./context/appSlice.ts";
 
 export const router = createBrowserRouter(
@@ -100,6 +100,7 @@ const App = () => {
   const { status, userId } = useContext(AuthContext);
   console.log(userId);
   const dispatch = useDispatch<AppDispatch>();
+  
   useEffect(() => {
     dispatch(saveUserId(userId));
   }, [userId]);

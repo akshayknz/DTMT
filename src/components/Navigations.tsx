@@ -19,7 +19,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { getLastSelectedOrganization, getOrganization, getUser } from "../db";
+import { getLastSelectedOrganization, getOrganization, getUser, saveUserOrganization } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
 import { IoIosAdd, IoIosArrowRoundBack, IoIosMenu } from "react-icons/io";
 
@@ -28,23 +28,24 @@ const Navigations = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { userId } = useContext(AuthContext);
-  const [user, setUser] = useState({} as UserProps);
   const params = useParams();
   const add = () => {
+    console.log();
+    if(location.pathname == "/create-organization") {
+      saveUserOrganization(); return;
+    }
+    if(location.pathname == "/dashboard") {
+      navigate("/create-organization")
+    }
     if (params.id) {
       navigate(location.pathname + "/page/new-page");
-    } else {
-      navigate("/create-organization");
     }
   };
 
   const back = () => {
     if (params.pageid) {
-      console.log("yes page id");
-      
       navigate(-1);
     } else {
-      console.log("no page id");
       navigate("/dashboard");
     }
   };

@@ -15,16 +15,23 @@ import { getLastSelectedOrganization, getOrganization, getUser } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
 import { RiMore2Fill, RiNotification4Line } from "react-icons/ri";
 import Navigations from "./Navigations";
+import { useSelector } from "react-redux";
+import { RootState } from "../context/store";
 
 const Navbar = () => {
   const { handleLogOut } = useContext(AuthContext);
-  const navigate = useNavigate();
   const { userId } = useContext(AuthContext);
   const [user, setUser] = useState({} as UserProps);
   const params = useParams();
   const [organizationData, setOrganizationData] = useState(
     {} as OrganizationProps
   );
+  const navigateTo = useSelector((state: RootState) => state.app.navigateTo);
+  const navigate = useNavigate();
+  useEffect(()=>{
+    navigate(navigateTo);
+    
+  },[navigateTo])
   useEffect(() => {
     if (userId) {
       getUser(userId).then((v) => setUser(v as UserProps));
