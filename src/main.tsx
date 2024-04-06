@@ -79,7 +79,6 @@ export const router = createBrowserRouter(
               },
               lazy: () => import("./pages/CreateOrganization"),
             },
-            ,
             {
               path: "/order",
               async loader() {

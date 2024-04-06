@@ -29,7 +29,7 @@ const Block = ({ h, w, bg, head, body, data }) => {
       >
         <Box>
           <Text size="1">{head}</Text>
-          <Box width={"auto"} p={"1"}>
+          <Box width={"auto"} p={"0"}>
             <Text m={"1"} size="1">
               {body}
             </Text>

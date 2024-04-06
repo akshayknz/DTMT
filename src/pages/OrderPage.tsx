@@ -39,13 +39,6 @@ export function Component() {
   const navigate = useNavigate();
   const itemsRef = useRef([]);
 
-  useEffect(() => {
-    if (params.pageid != "new-page") {
-      setEditMode(editMode);
-    } else {
-      setLoading(false);
-    }
-  }, [params.id]);
 
   // Calculate the Levenshtein distance between two strings
   function levenshteinDistance(str1, str2) {
@@ -132,6 +125,12 @@ export function Component() {
   const saveOrderCountToDb = () => {
 
   }
+  const saveCsv = () => {
+    const csvContent = csvDataArray.map(v=>`${v.item}, ${v.count}\n`).join("")
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+const url = URL.createObjectURL(blob);
+window.open(url);
+  }
   return (
     <>
       <Container px="3" pb={"5"}>
@@ -162,10 +161,11 @@ export function Component() {
           type="file"
         />
         <br/>
-        <TextArea mb={"3"}placeholder="Reply to comment…" value={csvData} onChange={()=>null} style={{height:"50px"}}/>
-        <Flex gap="3">
+        <TextArea mb={"3"}placeholder="File Preview" value={csvData} onChange={()=>null} style={{height:"50px"}}/>
+        <Flex gap="3" wrap={"wrap"}>
           <Button onClick={saveToCsvDataArray}>submit</Button>
           <Button onClick={saveOrderCountToDb}>Save as a week</Button>
+          <Button onClick={saveCsv}>Download CSV</Button>
         </Flex>
         <Table.Root>
           <Table.Header>

@@ -77,7 +77,7 @@ export default function Dashboard() {
                   </Box>
                 </Box>
               ) : (
-                <Box pt={"3"} pb={"2"}>
+                <Box pb={"2"}>
                   <Heading size="7" weight={"medium"}>Your organizations</Heading>
                 </Box>
               )}

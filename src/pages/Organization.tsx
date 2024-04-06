@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Card,
@@ -58,12 +59,9 @@ export function Component() {
         <Outlet />
       ) : (
         <Container px="3">
-          <Box pt={"2"} pb={"3"}>
-            <Text>
-              Hi {user.displayName && user.displayName.split(" ")[0] + ","}
-            </Text>
-            <Flex gap="3" align="center" justify="between">
-              <Heading size="7" weight={"medium"}>
+          <Box pb={"3"}>
+            <Flex gap="3" justify="between" direction={"column"}>
+              <Heading size="8" weight={"medium"}>
                 {organizationData.name}
               </Heading>
               {/**
@@ -73,26 +71,29 @@ export function Component() {
                * - Show on true.
                * - Font should be as big as the Heading.
                *  */}
-              <Flex gap="3" align="center" justify="between">
-                
-                <Button variant="solid" size="3" radius="small">
-                  <RiSearchLine />
-                </Button>
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger>
-                    <Button variant="soft"><GoKebabHorizontal/></Button>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content>
-                    <Link to="settings#people-settings">
-                      <DropdownMenu.Item>
-                        Share this organization
-                      </DropdownMenu.Item>
-                    </Link>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
+              <Flex
+                justify={"between"}
+                style={{
+                  background: "#e7e7e7",
+                  width: "100%",
+                  height: "48px",
+                  borderRadius: "8px",
+                  padding: "8px 20px",
+                }}
+              >
+                  <input style={{
+                    color: "#000",
+                    background: "transparent",
+                    border: "0px",
+                    fontSize: "20px",
+                  }}></input>
+                <Flex align={"center"}>
+                  <RiSearchLine size={"21"} />
+                </Flex>
               </Flex>
             </Flex>
           </Box>
+          
           <Box
             className="collection"
             mb={"5"}
@@ -100,21 +101,19 @@ export function Component() {
           >
             <Box p={"2"} width={"100%"}>
               <Flex justify={"between"} align={"center"}>
-                <Text weight={"medium"}>Overview (Collection)</Text>
+                <Text weight={"medium"}>Overview</Text>
                 <Flex>
-                  <Button variant="solid" size="3" mx={"1"}>
-                    <RiMore2Fill />
-                  </Button>
+                  <Button variant="ghost" size="3" mx={"1"}></Button>
                 </Flex>
               </Flex>
             </Box>
             {Object.keys(pages).map((v) => (
               <Block
-                h="120px"
-                w="29%"
-                bg="#DB3A34"
+                h="65px"
+                w="50%"
+                bg="#00D26A"
                 head={pages[v].name}
-                body="Page body (Content)"
+                body={"/"+pages[v].slug}
                 data={pages[v]}
                 key={pages[v].id}
               />

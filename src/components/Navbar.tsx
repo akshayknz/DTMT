@@ -10,7 +10,7 @@ import {
 import logo from "../assets/logo.png";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getLastSelectedOrganization, getOrganization, getUser } from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
 import { RiMore2Fill, RiNotification4Line } from "react-icons/ri";
@@ -28,12 +28,15 @@ const Navbar = () => {
   );
   const navigateTo = useSelector((state: RootState) => state.app.navigateTo);
   const navigate = useNavigate();
+  const location = useLocation();
   useEffect(()=>{
-    navigate(navigateTo);
+    if(navigateTo) navigate(navigateTo);
     
   },[navigateTo])
   useEffect(() => {
     if (userId) {
+      console.log("inside location");
+      
       getUser(userId).then((v) => setUser(v as UserProps));
       if (params.id) {
         getLastSelectedOrganization(userId).then((v) => {
@@ -48,7 +51,76 @@ const Navbar = () => {
   }, [userId]);
   return (
     <>
-      <Box
+    {userId? <Box
+        style={{
+          borderRadius: "var(--radius-3)",
+          position: "sticky",
+          zIndex: "100",
+          top: "0px",
+          marginBottom: "0px",
+          padding: "10px 7px 0px 7px",
+          backdropFilter: "blur(7px)",
+          WebkitBackdropFilter: "blur(3px)",
+        }}
+        mx={"2"}
+        className={`${userId ? "authenticated" : ""}`}
+      >
+        <Box style={{}}>
+          <Container>
+            <Flex gap="2" align="stretch" justify={"between"}>
+              <Flex gap="2" align="center">
+                <Text>Hi {user.displayName && user.displayName.split(" ")[0]},</Text>
+              </Flex>
+              <Flex gap="2" align="center">
+                {userId && (
+                  <>
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger>
+                        <Box
+                          style={{
+                            padding: 0,
+                            margin: 0,
+                          }}
+                        >
+                          <Avatar
+                            style={{
+                              padding: 0,
+                              margin: 0,
+                            }}
+                            radius="full"
+                            size={"4"}
+                            fallback="A"
+                            src={user.photoURL}
+                          />
+                        </Box>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content size="2" style={{ width: "200px" }}>
+                        <DropdownMenu.Item>Sharing</DropdownMenu.Item>
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Item>Trash</DropdownMenu.Item>
+                        <DropdownMenu.Item>Settings</DropdownMenu.Item>
+
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Item
+                          color="red"
+                          onClick={() => {
+                            handleLogOut();
+                            navigate("/login");
+                          }}
+                        >
+                          Log out
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Root>
+                  </>
+                )}
+
+                {/* <button className="btn-logout" onClick={handleLogOut}>Log out</button> */}
+              </Flex>
+            </Flex>
+          </Container>
+        </Box>
+      </Box>:<Box
         style={{
           borderRadius: "var(--radius-3)",
           position: "sticky",
@@ -131,7 +203,8 @@ const Navbar = () => {
             </Flex>
           </Container>
         </Box>
-      </Box>
+      </Box>}
+      
       <Outlet />
       <Navigations />
     </>

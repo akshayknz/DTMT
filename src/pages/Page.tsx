@@ -28,6 +28,7 @@ import {
 } from "../interfaces/interfaces";
 import styles from "../assets/page.module.css";
 import axios from "axios";
+import GoogleCalendarICS from "../components/GoogleCalenderICS";
 
 export function Component() {
   const params = useParams();
@@ -67,7 +68,7 @@ export function Component() {
   const handleSavePage = () => {
     console.log("saving page");
     setEditMode(!editMode);
-    
+
     const page = savePage(
       {
         name: name,
@@ -292,157 +293,170 @@ export function Component() {
                 onChange={(v) => setName(v.target.value)}
               />
             </Box>
-            {Object.keys(body).sort((a, b) => body[a].order - body[b].order).map((key, i) => (
-              <Box key={key}>
-                {body[key].type == ElementType.TEXT && (
-                  <Box pb={"3"}>
-                    <TextArea
-                      variant="soft"
-                      readOnly={!editMode}
-                      size={"3"}
-                      ref={(el) => (itemsRef.current[i] = el)}
-                      className={styles.textarea}
-                      onChange={(e) =>
-                        handleElementChange(
-                          e.currentTarget,
-                          e.target.value,
-                          body[key].type,
-                          key
-                        )
-                      }
-                      value={body[key].body}
-                    />
-                  </Box>
-                )}
-                {body[key].type == ElementType.LINK && (
-                  <Box pb={"3"}>
-                    <Card>
-                      {body[key].body.map((link, index) => (
-                        <Box>
-                          <Avatar
-                            fallback={
-                              link.title != "" && link.title?.substring(0, 2)
-                            }
-                          ></Avatar>
-                          <TextField.Input
-                            size="2"
-                            placeholder="New Page"
-                            value={link.url}
-                            variant="soft"
-                            autoFocus
-                            readOnly={!editMode}
-                            onChange={(e) => {
-                              updateLinkOrTodo(
-                                { url: e.target.value },
-                                index,
-                                key
-                              );
-                              updateLinkOrTodo(
-                                {
-                                  title: e.target.value
-                                    .replace("www.", "")
-                                    .replace("http://", "")
-                                    .replace("https://", ""),
-                                },
-                                index,
-                                key
-                              );
-                            }}
-                          />
-                          <TextField.Input
-                            size="2"
-                            placeholder="New Page"
-                            value={link.title}
-                            variant="soft"
-                            readOnly={!editMode}
-                            onChange={(e) =>
-                              updateLinkOrTodo(
-                                { title: e.target.value },
-                                index,
-                                key
-                              )
-                            }
-                          />
-                        </Box>
-                      ))}
-                      <Button
-                        onClick={() => {
-                          addLink(key);
-                        }}
-                      >
-                        Add anohter link
-                      </Button>
-                    </Card>
-                  </Box>
-                )}
-                {body[key].type == ElementType.TODO && (
-                  <Box pb={"3"}>
-                    <Card>
-                      {Array.isArray(body[key].body) &&
-                        body[key].body.map((todo: TodoProps, index) => (
-                          <Flex gap="3" align="center">
-                            <Checkbox
-                              defaultChecked={
-                                todo.status == TodoStatus.COMPLETED
-                                  ? true
-                                  : false
+            {Object.keys(body)
+              .sort((a, b) => body[a].order - body[b].order)
+              .map((key, i) => (
+                <Box key={key}>
+                  {body[key].type == ElementType.TEXT && (
+                    <Box pb={"3"}>
+                      <TextArea
+                        variant="soft"
+                        readOnly={!editMode}
+                        size={"3"}
+                        ref={(el) => (itemsRef.current[i] = el)}
+                        className={styles.textarea}
+                        onChange={(e) =>
+                          handleElementChange(
+                            e.currentTarget,
+                            e.target.value,
+                            body[key].type,
+                            key
+                          )
+                        }
+                        value={body[key].body}
+                      />
+                    </Box>
+                  )}
+                  {body[key].type == ElementType.LINK && (
+                    <Box pb={"3"}>
+                      <Card>
+                        {body[key].body.map((link, index) => (
+                          <Box>
+                            <Avatar
+                              fallback={
+                                link.title != "" && link.title?.substring(0, 2)
                               }
-                              value={
-                                todo.status == TodoStatus.COMPLETED ? 1 : 0
-                              }
-                              onClick={(e) =>
+                            ></Avatar>
+                            <TextField.Input
+                              size="2"
+                              placeholder="New Page"
+                              value={link.url}
+                              variant="soft"
+                              autoFocus
+                              readOnly={!editMode}
+                              onChange={(e) => {
+                                updateLinkOrTodo(
+                                  { url: e.target.value },
+                                  index,
+                                  key
+                                );
                                 updateLinkOrTodo(
                                   {
-                                    status: Math.abs(+e.currentTarget.value - 1)
-                                      ? TodoStatus.COMPLETED
-                                      : TodoStatus.INCOMPLETE,
+                                    title: e.target.value
+                                      .replace("www.", "")
+                                      .replace("http://", "")
+                                      .replace("https://", ""),
                                   },
+                                  index,
+                                  key
+                                );
+                              }}
+                            />
+                            <TextField.Input
+                              size="2"
+                              placeholder="New Page"
+                              value={link.title}
+                              variant="soft"
+                              readOnly={!editMode}
+                              onChange={(e) =>
+                                updateLinkOrTodo(
+                                  { title: e.target.value },
                                   index,
                                   key
                                 )
                               }
-                              size="3"
                             />
-                            <Flex gap="3" align="center">
-                              <Box>
-                                <TextField.Input
-                                  size="2"
-                                  placeholder="New Page"
-                                  value={todo.title}
-                                  variant="soft"
-                                  readOnly={!editMode}
-                                  onChange={(e) =>
-                                    updateLinkOrTodo(
-                                      { title: e.target.value },
-                                      index,
-                                      key
-                                    )
-                                  }
-                                />
-                                <TextField.Input
-                                  size="1"
-                                  placeholder="New Page"
-                                  value={todo.description}
-                                  variant="soft"
-                                  readOnly={!editMode}
-                                  onChange={(e) =>
-                                    updateLinkOrTodo(
-                                      { description: e.target.value },
-                                      index,
-                                      key
-                                    )
-                                  }
-                                />
-                              </Box>
-                            </Flex>
-                          </Flex>
+                          </Box>
                         ))}
-                      <Button onClick={() => addTodo(key)}>Add todo</Button>
-                    </Card>
-                  </Box>
-                )}
-              </Box>
-            ))}
+                        <Button
+                          onClick={() => {
+                            addLink(key);
+                          }}
+                        >
+                          Add anohter link
+                        </Button>
+                      </Card>
+                    </Box>
+                  )}
+                  {body[key].type == ElementType.TODO && (
+                    <Box pb={"3"}>
+                      <Card>
+                        {Array.isArray(body[key].body) &&
+                          body[key].body.map((todo: TodoProps, index) => (
+                            <Flex gap="3" align="center">
+                              <Checkbox
+                                defaultChecked={
+                                  todo.status == TodoStatus.COMPLETED
+                                    ? true
+                                    : false
+                                }
+                                value={
+                                  todo.status == TodoStatus.COMPLETED ? 1 : 0
+                                }
+                                onClick={(e) =>
+                                  updateLinkOrTodo(
+                                    {
+                                      status: Math.abs(
+                                        +e.currentTarget.value - 1
+                                      )
+                                        ? TodoStatus.COMPLETED
+                                        : TodoStatus.INCOMPLETE,
+                                    },
+                                    index,
+                                    key
+                                  )
+                                }
+                                size="3"
+                              />
+                              <Flex gap="3" align="center">
+                                <Box>
+                                  <TextField.Input
+                                    size="2"
+                                    placeholder="New Page"
+                                    value={todo.title}
+                                    variant="soft"
+                                    readOnly={!editMode}
+                                    onChange={(e) =>
+                                      updateLinkOrTodo(
+                                        { title: e.target.value },
+                                        index,
+                                        key
+                                      )
+                                    }
+                                  />
+                                  <TextField.Input
+                                    size="1"
+                                    placeholder="New Page"
+                                    value={todo.description}
+                                    variant="soft"
+                                    readOnly={!editMode}
+                                    onChange={(e) =>
+                                      updateLinkOrTodo(
+                                        { description: e.target.value },
+                                        index,
+                                        key
+                                      )
+                                    }
+                                  />
+                                </Box>
+                                <GoogleCalendarICS
+                                  event={{
+                                    summary: todo.title,
+                                    description: todo.description,
+                                    start: new Date("2023-04-06T13:00:00Z"),
+                                    end: new Date("2023-04-06T15:00:00Z"),
+                                    location: "Organization",
+                                  }}
+                                />
+                              </Flex>
+                            </Flex>
+                          ))}
+                        <Button onClick={() => addTodo(key)}>Add todo</Button>
+                      </Card>
+                    </Box>
+                  )}
+                </Box>
+              ))}
           </>
         )}
 

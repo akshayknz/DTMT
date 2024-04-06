@@ -26,11 +26,9 @@ const appSlice = createSlice({
       state.organization = action.payload;
     },
     setCreateOrgName: (state, action) => {
-      console.log(action.payload);
       state.createOrgName = action.payload;
     },
     saveUserId: (state,action:PayloadAction<string>) => {
-      console.log(action.payload);
       state.userId = action.payload
     },
     saveCreateOrganization: (state, action: PayloadAction<number>) => {
