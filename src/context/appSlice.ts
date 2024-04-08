@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { saveUserOrganization } from '../db';
-import { UserOrganizationProps, PageStatus, OrganizationProps } from '../interfaces/interfaces';
+import { UserOrganizationProps, PageStatus, OrganizationProps, PageBodyProps } from '../interfaces/interfaces';
 import { RootState } from './store';
 
 interface AppState {
@@ -9,6 +9,10 @@ interface AppState {
   organization:UserOrganizationProps;
   saveCreateOrganization: number;
   navigateTo: string;
+  editMode:boolean;
+  unsaved:boolean;
+  history:string[];
+  timetravelIndex: number;
 }
 
 const initialState: AppState = {
@@ -17,6 +21,10 @@ const initialState: AppState = {
   organization:null,
   saveCreateOrganization: 0,
   navigateTo: "",
+  editMode:false,
+  unsaved:false,
+  history:[],
+  timetravelIndex: -1,
 };
 const appSlice = createSlice({
   name: 'app',
@@ -37,8 +45,22 @@ const appSlice = createSlice({
     setNavigateTo: (state, action: PayloadAction<string>) => {
       state.navigateTo =action.payload;
     },
+    setEditMode: (state, action: PayloadAction<boolean>) => {
+      console.log(action.payload)
+      state.editMode = action.payload;
+    },
+    setUnsaved: (state, action: PayloadAction<boolean>) => {
+      state.unsaved = action.payload;
+    },
+    setHistory: (state, action: PayloadAction<string>) => {
+      state.history.push(action.payload)
+    },
+    setTimetravelIndex: (state, action: PayloadAction<number>) => {
+      state.timetravelIndex = action.payload;
+    }
   }
 });
 
-export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId } = appSlice.actions;
+export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId, setEditMode, setUnsaved, setHistory, setTimetravelIndex } = appSlice.actions;
 export default appSlice.reducer;
+

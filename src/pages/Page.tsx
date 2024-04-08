@@ -29,21 +29,27 @@ import {
 import styles from "../assets/page.module.css";
 import axios from "axios";
 import GoogleCalendarICS from "../components/GoogleCalenderICS";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setEditMode, setHistory, setTimetravelIndex, setUnsaved } from "../context/appSlice";
+import { AppDispatch, RootState } from "../context/store";
 export function Component() {
   const params = useParams();
   const [name, setName] = useState("");
+  const [initName, setInitName] = useState("");
   const [id, setId] = useState("");
-  const [editMode, setEditMode] = useState(false);
+  const [slug, setSlug] = useState("");
+  // const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [body, setBody] = useState({} as PageBodyProps | string[]);
+  const [initBody, setInitBody] = useState({} as PageBodyProps | string[]);
   const { userId } = useContext(AuthContext);
   const navigate = useNavigate();
   const itemsRef = useRef([]);
-
+  const { editMode, unsaved, history, timetravelIndex } = useSelector((state: RootState) => state.app)
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (params.pageid != "new-page") {
-      setEditMode(editMode);
+      dispatch(setEditMode(editMode));
       /**
        * IIFE
        * An IIFE (Immediately Invoked Function Expression) is a JavaScript
@@ -52,23 +58,50 @@ export function Component() {
       (async () => {
         const page = await getPage(params.pageid, userId);
         setName(page.name);
+        setInitName(page.name);
         setBody(page.body);
+        setInitBody(page.body);
         setId(page.id);
+        setSlug(page.slug)
         setLoading(false);
       })();
     } else {
       setLoading(false);
     }
-  }, [params.id]);
+  }, [params.pageid]);
+  useEffect(() => {
+    if(timetravelIndex != -1){
+      console.log(timetravelIndex,"timetravelIndex");
+      
+      setBody(JSON.parse(history[timetravelIndex]))
+    }
+  }, [timetravelIndex])
+  useEffect(() => {
+    if(JSON.stringify(initBody) != JSON.stringify(body) || initName != name ){
+      if(timetravelIndex===history.length || timetravelIndex===-1){
+        dispatch(setHistory(JSON.stringify(body)))
+      }
+      dispatch(setUnsaved(true))
+    }
+    console.log(unsaved, "unsaved", history);
+    
+  }, [body,name]);
   useEffect(() => {
     // itemsRef.current.forEach((e) => {
     //   e.style.height = `${e.scrollHeight}px`;
     // });
+    if(unsaved){
+      if(editMode===false){
+        console.log("initBody and body are not equal and editmode is false");
+        handleSavePage()
+      }
+    }
+    
   }, [body, editMode]);
   const handleSavePage = () => {
-    console.log("saving page");
-    setEditMode(!editMode);
-
+    console.log("saving started");
+    dispatch(setEditMode(false))
+    let noslug = slug===""
     const page = savePage(
       {
         name: name,
@@ -78,7 +111,16 @@ export function Component() {
       },
       userId,
       params.id
-    ).then((slug) => navigate(`/dashboard/org/${params.id}/page/${slug}`));
+    ).then((slug) => {
+      dispatch(setUnsaved(false))
+      console.log(noslug, "noslug");
+      
+      if(noslug){
+        console.log("saved");
+        navigate(`/dashboard/org/${params.id}/page/${slug}`)
+      }
+      
+    });
     //Take all element data and save
     //Automatically save
   };
@@ -167,6 +209,7 @@ export function Component() {
     });
   };
   const updateLinkOrTodo = (dataObject, todoIndex, bodyIndex) => {
+    dispatch(setTimetravelIndex(-1))
     setBody((prev) => {
       return {
         ...prev,
@@ -185,6 +228,7 @@ export function Component() {
     });
   };
   const handleElementChange = (elem, value, type, id) => {
+    dispatch(setTimetravelIndex(-1))
     elem.style.height = `${elem.scrollHeight}px`;
     setBody({
       ...body,
@@ -248,15 +292,6 @@ export function Component() {
             <Button onClick={() => navigate(`/dashboard/org/${params.id}`)}>
               Cancel
             </Button>
-            {editMode ? (
-              <Button onClick={handleSavePage}>
-                <RiAddCircleFill width="16" height="16" /> Save
-              </Button>
-            ) : (
-              <Button onClick={() => setEditMode(!editMode)}>
-                <RiEditFill width="16" height="16" /> Edit
-              </Button>
-            )}
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
                 <Button variant="soft">Options</Button>

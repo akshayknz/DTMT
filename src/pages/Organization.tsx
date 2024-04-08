@@ -81,23 +81,23 @@ export function Component() {
                   padding: "8px 20px",
                 }}
               >
-                  <input style={{
+                <input
+                  style={{
                     color: "#000",
                     background: "transparent",
                     border: "0px",
                     fontSize: "20px",
-                  }}></input>
+                  }}
+                ></input>
                 <Flex align={"center"}>
                   <RiSearchLine size={"21"} />
                 </Flex>
               </Flex>
             </Flex>
           </Box>
-          
           <Box
             className="collection"
-            mb={"5"}
-            style={{ display: "flex", flexWrap: "wrap" }}
+            style={{ display: "flex", flexWrap: "wrap", marginBottom: "100px" }}
           >
             <Box p={"2"} width={"100%"}>
               <Flex justify={"between"} align={"center"}>
@@ -113,11 +113,227 @@ export function Component() {
                 w="50%"
                 bg="#00D26A"
                 head={pages[v].name}
-                body={"/"+pages[v].slug}
+                body={"/" + pages[v].slug}
                 data={pages[v]}
                 key={pages[v].id}
               />
             ))}
+
+            {/* For demo purposes */}
+            <Box
+              onClick={() => navigate(`/dashboard`)}
+              style={{
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                display: "inline-block",
+                width: "100%",
+              }}
+            >
+              <Box
+                px={"3"}
+                p={"1"}
+                style={{
+                  margin: "4px",
+                  background: "#00d26a",
+                  height,
+                  borderRadius: "4px",
+                  color: "#fff",
+                }}
+              >
+                <Box>
+                  <Text size="1">Daily Tasks</Text>
+                  <Box width={"auto"} p={"0"}>
+                    <div>
+                      <div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            margin: "10px 0px"
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              height: "15px",
+                              width: "15px",
+                              boxShadow: "0 0 0 2px #e5e5e5",
+                              borderRadius: "100px",
+                              marginRight: "9px",
+                            }}
+                          ></div>
+                          <Text size={"1"}>Get more leads</Text>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              height: "15px",
+                              width: "15px",
+                              boxShadow: "0 0 0 2px #e5e5e5",
+                              borderRadius: "100px",
+                              marginRight: "9px",
+                            }}
+                          ></div>
+                          <Text size={"1"}>This is a task that needs to be completed</Text>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            margin: "10px 0px"
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              height: "15px",
+                              width: "15px",
+                              boxShadow: "0 0 0 2px #e5e5e5",
+                              borderRadius: "100px",
+                              marginRight: "9px",
+                            }}
+                          ></div>
+                          <Text size={"1"}>Dont do any of these tasks</Text>
+                        </div>
+                      </div>
+                    </div>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              onClick={() => navigate(`/dashboard`)}
+              style={{
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                display: "inline-block",
+                width: "40%",
+              }}
+            >
+              <Box
+                px={"3"}
+                p={"1"}
+                style={{
+                  margin: "4px",
+                  background: "#000",
+                  height,
+                  borderRadius: "4px",
+                  color: "#fff",
+                }}
+              >
+                <Box>
+                  <Text size="1">Shopping List</Text>
+                  <Box width={"auto"} p={"0"}>
+                  <div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            margin: "10px 0px"
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              height: "15px",
+                              width: "15px",
+                              boxShadow: "0 0 0 2px #e5e5e5",
+                              borderRadius: "100px",
+                              marginRight: "9px",
+                            }}
+                          ></div>
+                          <Text size={"1"}>Food</Text>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              height: "15px",
+                              width: "15px",
+                              boxShadow: "0 0 0 2px #e5e5e5",
+                              borderRadius: "100px",
+                              marginRight: "9px",
+                            }}
+                          ></div>
+                          <Text size={"1"}>Packaging</Text>
+                        </div>
+                        
+                      </div>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              onClick={() => navigate(`/dashboard`)}
+              style={{
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                display: "inline-block",
+                width: "60%",
+              }}
+            >
+              <Box
+                px={"3"}
+                p={"1"}
+                style={{
+                  margin: "4px",
+                  background: "#454ade",
+                  height,
+                  borderRadius: "4px",
+                  color: "#fff",
+                }}
+              >
+                <Box>
+                  <Text size="1">New ideas!</Text>
+                  <Box width={"auto"} p={"0"}>
+                    <Text size="1">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    </Text>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              onClick={() => navigate(`/dashboard`)}
+              style={{
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                display: "inline-block",
+                width: "100%",
+              }}
+            >
+              <Box
+                px={"3"}
+                p={"1"}
+                style={{
+                  margin: "4px",
+                  background: "#000",
+                  height,
+                  borderRadius: "4px",
+                  color: "#fff",
+                }}
+              >
+                <Box>
+                  <Text size="1">New Leads</Text>
+                  <Box width={"auto"} p={"0"}>
+                  <Text size="1">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    </Text>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
             {/* <Block h="120px" w="70%" bg="#DB3A34" head="Page 1 (Pages)" body="Page body (Content)" />
             <Block h="120px" w="29.5%" bg="#333333" head="Page 1 (Pages)" body="Page body (Content)" />
             <Block h="120px" w="50%" bg="#E3F2FD" head="Page 1 (Pages)" body="Page body (Content)" />

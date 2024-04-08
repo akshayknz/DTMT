@@ -7,6 +7,7 @@ import {
   Button,
   DropdownMenu,
   Popover,
+  Slider,
 } from "@radix-ui/themes";
 import logo from "../assets/logo.png";
 import { useContext, useEffect, useState } from "react";
@@ -19,9 +20,26 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { getLastSelectedOrganization, getOrganization, getUser, saveUserOrganization } from "../db";
+import {
+  getLastSelectedOrganization,
+  getOrganization,
+  getUser,
+  saveUserOrganization,
+} from "../db";
 import { OrganizationProps, UserProps } from "../interfaces/interfaces";
-import { IoIosAdd, IoIosArrowRoundBack, IoIosMenu } from "react-icons/io";
+import {
+  IoIosAdd,
+  IoIosArrowRoundBack,
+  IoIosMenu,
+  IoIosSave,
+} from "react-icons/io";
+import { GoPencil } from "react-icons/go";
+import { PiPencilSimpleLight } from "react-icons/pi";
+import { setEditMode, setTimetravelIndex } from "../context/appSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../context/store";
+import { BsSave } from "react-icons/bs";
+import { Spinner } from "../assets/Spinner";
 
 const Navigations = () => {
   const { handleLogOut } = useContext(AuthContext);
@@ -29,19 +47,23 @@ const Navigations = () => {
   const location = useLocation();
   const { userId } = useContext(AuthContext);
   const params = useParams();
+  const { editMode, unsaved, history, timetravelIndex } = useSelector((state: RootState) => state.app);
+  const dispatch = useDispatch<AppDispatch>();
   const add = () => {
-    console.log();
-    if(location.pathname == "/create-organization") {
-      saveUserOrganization(); return;
+    if (location.pathname == "/create-organization") {
+      saveUserOrganization();
+      return;
     }
-    if(location.pathname == "/dashboard") {
-      navigate("/create-organization")
+    if (location.pathname == "/dashboard") {
+      navigate("/create-organization");
     }
     if (params.id) {
       navigate(location.pathname + "/page/new-page");
     }
   };
-
+  const edit = () => {
+    dispatch(setEditMode(!editMode));
+  };
   const back = () => {
     if (params.pageid) {
       navigate(-1);
@@ -49,10 +71,17 @@ const Navigations = () => {
       navigate("/dashboard");
     }
   };
+  const findClosestIndex = (val: number, arr: string[]) =>
+   arr.reduce((ci, v, i) => (Math.abs(i - (val / 100) * (arr.length - 1)) < Math.abs(ci - (val / 100) * (arr.length - 1)) ? i : ci), 0);
   return (
     <>
       {userId && (
         <Box className="bottom-navigation">
+          <Box className="timetravel-slider">
+            <Slider color="gray" value={[timetravelIndex]} size={"3"} onValueChange={(e)=>{
+              dispatch(setTimetravelIndex(findClosestIndex(e[0], history)))
+            }} style={{width:"100%", height:"10px"}}/>
+          </Box>
           <Box className="buttons-wrapper">
             <Box
               onClick={back}
@@ -68,10 +97,35 @@ const Navigations = () => {
             >
               <IoIosArrowRoundBack />
             </Box>
+            {params.pageid ? (
+              <Box
+                onClick={() =>
+                  editMode ? dispatch(setEditMode(false)) : edit()
+                }
+                style={{
+                  background: unsaved ? "#fff" : "#000",
+                  color: unsaved ? "#000" : "#fff",
+                  paddingInline: "22px",
+                  marginRight: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {editMode === false && unsaved === true ? (
+                  <Spinner />
+                ) : editMode ? (
+                  <BsSave size={23} />
+                ) : (
+                  <GoPencil size={23} />
+                )}
+              </Box>
+            ) : (
+              <Box onClick={add} style={{ background: "#fff", marginRight: 0 }}>
+                <IoIosAdd />
+              </Box>
+            )}
 
-            <Box onClick={add} style={{ background: "#fff", marginRight: 0 }}>
-              <IoIosAdd />
-            </Box>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
                 <Box style={{ color: "#fff" }}>
@@ -96,8 +150,11 @@ const Navigations = () => {
                 </DropdownMenu.Sub>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item>
-                  <Link to={location.pathname+"/settings#people-settings"} relative="path">
-                      Share this organization
+                  <Link
+                    to={location.pathname + "/settings#people-settings"}
+                    relative="path"
+                  >
+                    Share this organization
                   </Link>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item>Indeces</DropdownMenu.Item>
@@ -113,4 +170,4 @@ const Navigations = () => {
     </>
   );
 };
-export default Navigations;
+export default Navigations
