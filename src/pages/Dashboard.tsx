@@ -93,8 +93,11 @@ export default function Dashboard() {
                       borderRadius: "16px",
                       padding: "22px 16px",
                       background:"#e7ffec",
+                      position: "relative",
+                      overflow: "hidden",
                     }}
                   >
+                    <div className="org-back-letter">{v.name.substring(0,3)}</div>
                     <Flex align="start" gap="3" justify={"between"}>
                       <Box style={{width:"57%"}}>
                         <Text as="div" size="1" color="gray">

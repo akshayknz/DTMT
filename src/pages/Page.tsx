@@ -30,7 +30,7 @@ import styles from "../assets/page.module.css";
 import axios from "axios";
 import GoogleCalendarICS from "../components/GoogleCalenderICS";
 import { useDispatch, useSelector } from "react-redux";
-import { setEditMode, setHistory, setTimetravelIndex, setUnsaved } from "../context/appSlice";
+import { clearHistory, setEditMode, setHistory, setSelectFromHistory, setTimetravelIndex, setUnsaved } from "../context/appSlice";
 import { AppDispatch, RootState } from "../context/store";
 export function Component() {
   const params = useParams();
@@ -45,7 +45,7 @@ export function Component() {
   const { userId } = useContext(AuthContext);
   const navigate = useNavigate();
   const itemsRef = useRef([]);
-  const { editMode, unsaved, history, timetravelIndex } = useSelector((state: RootState) => state.app)
+  const { editMode, unsaved, history, timetravelIndex, toggleToSave, selectFromHistory } = useSelector((state: RootState) => state.app)
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (params.pageid != "new-page") {
@@ -60,36 +60,46 @@ export function Component() {
         setName(page.name);
         setInitName(page.name);
         setBody(page.body);
+        dispatch(setHistory(JSON.stringify([page.body])))
         setInitBody(page.body);
         setId(page.id);
         setSlug(page.slug)
         setLoading(false);
+        dispatch(setTimetravelIndex(-1))
+        console.log(dispatch(setTimetravelIndex(-1)), timetravelIndex);
+        dispatch(clearHistory())
       })();
     } else {
-      setLoading(false);
+        dispatch(clearHistory())
+        
+        setLoading(false);
     }
   }, [params.pageid]);
   useEffect(() => {
-    if(timetravelIndex != -1){
-      console.log(timetravelIndex,"timetravelIndex");
+    if(timetravelIndex != history.length-1 && history[timetravelIndex] != JSON.stringify(body) ){
+      console.log("going",timetravelIndex);
       
       setBody(JSON.parse(history[timetravelIndex]))
     }
   }, [timetravelIndex])
   useEffect(() => {
-    if(JSON.stringify(initBody) != JSON.stringify(body) || initName != name ){
-      if(timetravelIndex===history.length || timetravelIndex===-1){
-        dispatch(setHistory(JSON.stringify(body)))
+    if((JSON.stringify(initBody) != JSON.stringify(body) || initName != name) && !selectFromHistory){
+      dispatch(setHistory(JSON.stringify(body)))
+      if(timetravelIndex===history.length-1 || timetravelIndex===-1){
       }
-      dispatch(setUnsaved(true))
+      dispatch(setUnsaved(true)) //TODO: FIX SETUNSAVED
     }
-    console.log(unsaved, "unsaved", history);
     
   }, [body,name]);
   useEffect(() => {
     // itemsRef.current.forEach((e) => {
     //   e.style.height = `${e.scrollHeight}px`;
     // });
+    console.log(`unsaved ${unsaved}
+    editMode ${editMode}
+    toggleToSave ${toggleToSave}
+    timetravelIndex ${timetravelIndex}`);
+    
     if(unsaved){
       if(editMode===false){
         console.log("initBody and body are not equal and editmode is false");
@@ -97,7 +107,7 @@ export function Component() {
       }
     }
     
-  }, [body, editMode]);
+  }, [toggleToSave]);
   const handleSavePage = () => {
     console.log("saving started");
     dispatch(setEditMode(false))
@@ -113,7 +123,6 @@ export function Component() {
       params.id
     ).then((slug) => {
       dispatch(setUnsaved(false))
-      console.log(noslug, "noslug");
       
       if(noslug){
         console.log("saved");
@@ -170,7 +179,6 @@ export function Component() {
   };
 
   const addLink = (bodyIndex) => {
-    console.log(body[bodyIndex]);
     setBody((prev) => {
       return {
         ...prev,
@@ -209,7 +217,7 @@ export function Component() {
     });
   };
   const updateLinkOrTodo = (dataObject, todoIndex, bodyIndex) => {
-    dispatch(setTimetravelIndex(-1))
+    dispatch(setSelectFromHistory(false))
     setBody((prev) => {
       return {
         ...prev,
@@ -228,7 +236,7 @@ export function Component() {
     });
   };
   const handleElementChange = (elem, value, type, id) => {
-    dispatch(setTimetravelIndex(-1))
+    dispatch(setSelectFromHistory(false))
     elem.style.height = `${elem.scrollHeight}px`;
     setBody({
       ...body,

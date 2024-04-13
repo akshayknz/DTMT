@@ -13,6 +13,8 @@ interface AppState {
   unsaved:boolean;
   history:string[];
   timetravelIndex: number;
+  toggleToSave: boolean;
+  selectFromHistory: boolean;
 }
 
 const initialState: AppState = {
@@ -25,6 +27,8 @@ const initialState: AppState = {
   unsaved:false,
   history:[],
   timetravelIndex: -1,
+  toggleToSave: false,
+  selectFromHistory: false,
 };
 const appSlice = createSlice({
   name: 'app',
@@ -46,7 +50,6 @@ const appSlice = createSlice({
       state.navigateTo =action.payload;
     },
     setEditMode: (state, action: PayloadAction<boolean>) => {
-      console.log(action.payload)
       state.editMode = action.payload;
     },
     setUnsaved: (state, action: PayloadAction<boolean>) => {
@@ -54,13 +57,23 @@ const appSlice = createSlice({
     },
     setHistory: (state, action: PayloadAction<string>) => {
       state.history.push(action.payload)
+      state.timetravelIndex = state.history.length-1
+    },
+    clearHistory: (state) => {
+      state.history = []
     },
     setTimetravelIndex: (state, action: PayloadAction<number>) => {
       state.timetravelIndex = action.payload;
+    },
+    setToggleToSave: (state) => {
+      state.toggleToSave = !state.toggleToSave;
+    },
+    setSelectFromHistory: (state, action: PayloadAction<boolean>) => {
+      state.selectFromHistory = action.payload;
     }
   }
 });
 
-export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId, setEditMode, setUnsaved, setHistory, setTimetravelIndex } = appSlice.actions;
+export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId, setEditMode, setUnsaved, setHistory, setTimetravelIndex, setToggleToSave, clearHistory, setSelectFromHistory } = appSlice.actions;
 export default appSlice.reducer;
 

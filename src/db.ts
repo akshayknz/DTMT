@@ -55,11 +55,6 @@ export const saveUserOrganization = async (): Promise<UserOrganizationProps> => 
     selected: true,
     status: PageStatus.ACTIVE
   }
-  console.log(id,"id");
-  console.log(slug,"slug");
-  console.log(userId,"userId");
-  console.log(name,"name");
-  console.log(orgData);
   
   let selectedOrganization = await setDoc(
     doc(db, "Users", userId, "Organizations", slug),
@@ -118,6 +113,8 @@ export const textToUrl = async (text: string, userId: string, type: string) => {
 export const getUserOrganization = async (slug, userId): Promise<UserOrganizationProps> => {
   const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
   let data;
+  console.log(slug, userId);
+  
   if (docSnap.exists()) {
     await setSelectedOrganization(slug, userId)
     data = docSnap.data();
@@ -150,7 +147,6 @@ export const getOrganization = async (slug, userId): Promise<OrganizationProps> 
 //GET: get list of all Organizations belonging to a user (dashboard)
 export const getOrganizations = async (userId): Promise<UserOrganizationProps[]> => {
   const docSnap = await getDocs(query(collection(db, "Users", userId, "Organizations"), where("status", "==", PageStatus.ACTIVE)));
-  console.log(docSnap.docs.map((v) => v.data()));
   
   return docSnap.docs.map((v) => v.data()) as UserOrganizationProps[];
 };
@@ -401,7 +397,6 @@ export const addEmailToShareList = async (email: string, userId: string, slug: s
 export const getOrganizaionUsers = async (slug, userId) =>{
   const owner = (await getUserOrganization(slug, userId)).owner
   let organizationUsers = ((await getOrganization(slug, userId)).access)
-  console.log(organizationUsers);
   //TODO
   // Firebase has a 30 nos limit for in array where operation
   const arrayOf30PagesEach = splitIntoChunks(organizationUsers, 30);

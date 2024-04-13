@@ -51,6 +51,10 @@ html {
   padding: 13px;
   margin-bottom: 11px;
   border-radius: 11px;
+  opacity:1;
+}
+.timetravel-slider.hidden{
+  opacity:0;
 }
 .buttons-wrapper {
   background-color: #000;
@@ -148,3 +152,38 @@ html {
 .avatar-group .rt-AvatarRoot {
   margin-left: -21px;
 }
+
+.block-body{
+  font-weight: 200;
+  content: "";
+}
+.block-body::after{
+  content: "";
+  background:linear-gradient(to bottom, #00000000,#00000000);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  width: auto;
+}
+.my-masonry-grid_column {
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+}
+.org-back-letter{
+  position: absolute;
+    font-size: 190px;
+    opacity: .05;
+    color:#000;
+    right: -20px;
+    bottom: -67px;
+}
+

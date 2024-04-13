@@ -35,8 +35,6 @@ const Navbar = () => {
   },[navigateTo])
   useEffect(() => {
     if (userId) {
-      console.log("inside location");
-      
       getUser(userId).then((v) => setUser(v as UserProps));
       if (params.id) {
         getLastSelectedOrganization(userId).then((v) => {

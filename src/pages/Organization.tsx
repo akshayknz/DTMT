@@ -27,9 +27,10 @@ import {
   UserProps,
 } from "../interfaces/interfaces";
 import { RiAddFill, RiMore2Fill, RiSearchLine } from "react-icons/ri";
-import { Masonry } from "react-masonry/dist";
 import Block from "../components/Block";
 import { GoKebabHorizontal } from "react-icons/go";
+import Masonry from "react-masonry-css";
+
 export function Component() {
   const navigate = useNavigate();
   const params = useParams();
@@ -107,18 +108,66 @@ export function Component() {
                 </Flex>
               </Flex>
             </Box>
-            {Object.keys(pages).map((v) => (
-              <Block
-                h="65px"
-                w="50%"
-                bg="#00D26A"
-                head={pages[v].name}
-                body={"/" + pages[v].slug}
-                data={pages[v]}
-                key={pages[v].id}
-              />
-            ))}
-
+            <Masonry
+              breakpointCols={{
+                default: 6,
+                1100: 4,
+                700: 2,
+              }}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
+              {Object.keys(pages).map((v) => (
+                <Box
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/org/${params.id}/page/${pages[v].slug}`
+                    )
+                  }
+                  style={{
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
+                    width: "100%",
+                  }}
+                >
+                  <Box
+                    px={"3"}
+                    p={"1"}
+                    style={{
+                      margin: "4px",
+                      background: "rgb(0, 210, 106)",
+                      height: "auto",
+                      borderRadius: "4px",
+                      color: "rgb(255, 255, 255)",
+                      padding: "11px",
+                    }}
+                  >
+                    <Box>
+                      <Text
+                        size="1"
+                        style={{
+                          fontSize: "24px",
+                          lineHeight: "24px",
+                          fontWeight: "400",
+                        }}
+                      >
+                        {pages[v].name}
+                      </Text>
+                      <Box width={"auto"} p={"0"} className="block-body">
+                        <Text
+                          size="1"
+                          style={{
+                            fontWeight: "200",
+                          }}
+                        >
+                          {pages[v]?.body[0]}
+                        </Text>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Box>
+              ))}
+            </Masonry>
             {/* For demo purposes */}
             <Box
               onClick={() => navigate(`/dashboard`)}
@@ -149,7 +198,7 @@ export function Component() {
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            margin: "10px 0px"
+                            margin: "10px 0px",
                           }}
                         >
                           <div
@@ -180,13 +229,15 @@ export function Component() {
                               marginRight: "9px",
                             }}
                           ></div>
-                          <Text size={"1"}>This is a task that needs to be completed</Text>
+                          <Text size={"1"}>
+                            This is a task that needs to be completed
+                          </Text>
                         </div>
                         <div
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            margin: "10px 0px"
+                            margin: "10px 0px",
                           }}
                         >
                           <div
@@ -230,46 +281,45 @@ export function Component() {
                 <Box>
                   <Text size="1">Shopping List</Text>
                   <Box width={"auto"} p={"0"}>
-                  <div>
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          margin: "10px 0px",
+                        }}
+                      >
                         <div
                           style={{
-                            display: "flex",
-                            alignItems: "center",
-                            margin: "10px 0px"
+                            display: "inline-block",
+                            height: "15px",
+                            width: "15px",
+                            boxShadow: "0 0 0 2px #e5e5e5",
+                            borderRadius: "100px",
+                            marginRight: "9px",
                           }}
-                        >
-                          <div
-                            style={{
-                              display: "inline-block",
-                              height: "15px",
-                              width: "15px",
-                              boxShadow: "0 0 0 2px #e5e5e5",
-                              borderRadius: "100px",
-                              marginRight: "9px",
-                            }}
-                          ></div>
-                          <Text size={"1"}>Food</Text>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "inline-block",
-                              height: "15px",
-                              width: "15px",
-                              boxShadow: "0 0 0 2px #e5e5e5",
-                              borderRadius: "100px",
-                              marginRight: "9px",
-                            }}
-                          ></div>
-                          <Text size={"1"}>Packaging</Text>
-                        </div>
-                        
+                        ></div>
+                        <Text size={"1"}>Food</Text>
                       </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "inline-block",
+                            height: "15px",
+                            width: "15px",
+                            boxShadow: "0 0 0 2px #e5e5e5",
+                            borderRadius: "100px",
+                            marginRight: "9px",
+                          }}
+                        ></div>
+                        <Text size={"1"}>Packaging</Text>
+                      </div>
+                    </div>
                   </Box>
                 </Box>
               </Box>
@@ -298,7 +348,7 @@ export function Component() {
                   <Text size="1">New ideas!</Text>
                   <Box width={"auto"} p={"0"}>
                     <Text size="1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     </Text>
                   </Box>
                 </Box>
@@ -327,8 +377,8 @@ export function Component() {
                 <Box>
                   <Text size="1">New Leads</Text>
                   <Box width={"auto"} p={"0"}>
-                  <Text size="1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    <Text size="1">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     </Text>
                   </Box>
                 </Box>

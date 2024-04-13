@@ -97,7 +97,6 @@ export const router = createBrowserRouter(
 
 const App = () => {
   const { status, userId } = useContext(AuthContext);
-  console.log(userId);
   const dispatch = useDispatch<AppDispatch>();
   
   useEffect(() => {
