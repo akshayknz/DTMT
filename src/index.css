@@ -175,9 +175,6 @@ html {
   background-clip: padding-box;
 }
 
-/* Style your items */
-.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
-}
 .org-back-letter{
   position: absolute;
     font-size: 190px;

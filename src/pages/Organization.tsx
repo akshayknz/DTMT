@@ -146,7 +146,7 @@ export function Component() {
                       <Text
                         size="1"
                         style={{
-                          fontSize: "24px",
+                          fontSize: "20px",
                           lineHeight: "24px",
                           fontWeight: "400",
                         }}

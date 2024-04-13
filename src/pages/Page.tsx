@@ -30,8 +30,16 @@ import styles from "../assets/page.module.css";
 import axios from "axios";
 import GoogleCalendarICS from "../components/GoogleCalenderICS";
 import { useDispatch, useSelector } from "react-redux";
-import { clearHistory, setEditMode, setHistory, setSelectFromHistory, setTimetravelIndex, setUnsaved } from "../context/appSlice";
+import {
+  clearHistory,
+  setEditMode,
+  setHistory,
+  setSelectFromHistory,
+  setTimetravelIndex,
+  setUnsaved,
+} from "../context/appSlice";
 import { AppDispatch, RootState } from "../context/store";
+import Masonry from "react-masonry-css";
 export function Component() {
   const params = useParams();
   const [name, setName] = useState("");
@@ -45,7 +53,14 @@ export function Component() {
   const { userId } = useContext(AuthContext);
   const navigate = useNavigate();
   const itemsRef = useRef([]);
-  const { editMode, unsaved, history, timetravelIndex, toggleToSave, selectFromHistory } = useSelector((state: RootState) => state.app)
+  const {
+    editMode,
+    unsaved,
+    history,
+    timetravelIndex,
+    toggleToSave,
+    selectFromHistory,
+  } = useSelector((state: RootState) => state.app);
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     if (params.pageid != "new-page") {
@@ -60,37 +75,42 @@ export function Component() {
         setName(page.name);
         setInitName(page.name);
         setBody(page.body);
-        dispatch(setHistory(JSON.stringify([page.body])))
+        dispatch(setHistory(JSON.stringify([page.body])));
         setInitBody(page.body);
         setId(page.id);
-        setSlug(page.slug)
+        setSlug(page.slug);
         setLoading(false);
-        dispatch(setTimetravelIndex(-1))
+        dispatch(setTimetravelIndex(-1));
         console.log(dispatch(setTimetravelIndex(-1)), timetravelIndex);
-        dispatch(clearHistory())
+        dispatch(clearHistory());
       })();
     } else {
-        dispatch(clearHistory())
-        
-        setLoading(false);
+      dispatch(clearHistory());
+
+      setLoading(false);
     }
   }, [params.pageid]);
   useEffect(() => {
-    if(timetravelIndex != history.length-1 && history[timetravelIndex] != JSON.stringify(body) ){
-      console.log("going",timetravelIndex);
-      
-      setBody(JSON.parse(history[timetravelIndex]))
+    if (
+      timetravelIndex != history.length - 1 &&
+      history[timetravelIndex] != JSON.stringify(body)
+    ) {
+      console.log("going", timetravelIndex);
+
+      setBody(JSON.parse(history[timetravelIndex]));
     }
-  }, [timetravelIndex])
+  }, [timetravelIndex]);
   useEffect(() => {
-    if((JSON.stringify(initBody) != JSON.stringify(body) || initName != name) && !selectFromHistory){
-      dispatch(setHistory(JSON.stringify(body)))
-      if(timetravelIndex===history.length-1 || timetravelIndex===-1){
+    if (
+      (JSON.stringify(initBody) != JSON.stringify(body) || initName != name) &&
+      !selectFromHistory
+    ) {
+      dispatch(setHistory(JSON.stringify(body)));
+      if (timetravelIndex === history.length - 1 || timetravelIndex === -1) {
       }
-      dispatch(setUnsaved(true)) //TODO: FIX SETUNSAVED
+      dispatch(setUnsaved(true)); //TODO: FIX SETUNSAVED
     }
-    
-  }, [body,name]);
+  }, [body, name]);
   useEffect(() => {
     // itemsRef.current.forEach((e) => {
     //   e.style.height = `${e.scrollHeight}px`;
@@ -99,19 +119,18 @@ export function Component() {
     editMode ${editMode}
     toggleToSave ${toggleToSave}
     timetravelIndex ${timetravelIndex}`);
-    
-    if(unsaved){
-      if(editMode===false){
+
+    if (unsaved) {
+      if (editMode === false) {
         console.log("initBody and body are not equal and editmode is false");
-        handleSavePage()
+        handleSavePage();
       }
     }
-    
   }, [toggleToSave]);
   const handleSavePage = () => {
     console.log("saving started");
-    dispatch(setEditMode(false))
-    let noslug = slug===""
+    dispatch(setEditMode(false));
+    let noslug = slug === "";
     const page = savePage(
       {
         name: name,
@@ -122,13 +141,12 @@ export function Component() {
       userId,
       params.id
     ).then((slug) => {
-      dispatch(setUnsaved(false))
-      
-      if(noslug){
+      dispatch(setUnsaved(false));
+
+      if (noslug) {
         console.log("saved");
-        navigate(`/dashboard/org/${params.id}/page/${slug}`)
+        navigate(`/dashboard/org/${params.id}/page/${slug}`);
       }
-      
     });
     //Take all element data and save
     //Automatically save
@@ -217,7 +235,7 @@ export function Component() {
     });
   };
   const updateLinkOrTodo = (dataObject, todoIndex, bodyIndex) => {
-    dispatch(setSelectFromHistory(false))
+    dispatch(setSelectFromHistory(false));
     setBody((prev) => {
       return {
         ...prev,
@@ -236,8 +254,9 @@ export function Component() {
     });
   };
   const handleElementChange = (elem, value, type, id) => {
-    dispatch(setSelectFromHistory(false))
-    elem.style.height = `${elem.scrollHeight}px`;
+    dispatch(setSelectFromHistory(false));
+    elem.style.height = `auto`;
+    elem.style.height = `${elem.scrollHeight + 5}px`;
     setBody({
       ...body,
       [id]: {
@@ -294,7 +313,7 @@ export function Component() {
 
   return (
     <>
-      <Container px="3" pb={"5"}>
+      <Container px="3" style={{ paddingBottom: "150px" }}>
         <Box pb={"3"}>
           <Flex gap={"3"}>
             <Button onClick={() => navigate(`/dashboard/org/${params.id}`)}>
@@ -325,12 +344,10 @@ export function Component() {
         ) : (
           <>
             <Box pb={"3"}>
-              <TextField.Input
-                size="3"
+              <input
                 placeholder="New Page"
                 autoFocus={editMode}
                 value={name}
-                variant="soft"
                 readOnly={!editMode}
                 className={styles.title}
                 onChange={(v) => setName(v.target.value)}
@@ -342,10 +359,8 @@ export function Component() {
                 <Box key={key}>
                   {body[key].type == ElementType.TEXT && (
                     <Box pb={"3"}>
-                      <TextArea
-                        variant="soft"
+                      <textarea
                         readOnly={!editMode}
-                        size={"3"}
                         ref={(el) => (itemsRef.current[i] = el)}
                         className={styles.textarea}
                         onChange={(e) =>
@@ -361,20 +376,49 @@ export function Component() {
                     </Box>
                   )}
                   {body[key].type == ElementType.LINK && (
-                    <Box pb={"3"}>
-                      <Card>
+                    <Box pb={"3"} className={styles.linkWrapperInside}>
+                      <Masonry
+                        breakpointCols={{
+                          default: 6,
+                          1100: 4,
+                          700: 3,
+                        }}
+                        className="my-masonry-grid"
+                        columnClassName="my-masonry-grid_column"
+                      >
                         {body[key].body.map((link, index) => (
-                          <Box>
+                          <Box
+                            className={styles.linkWrapper}
+                            onClick={(e) => {
+                              if (editMode) {
+                                e.preventDefault();
+                              } else {
+                                if (!link.url.startsWith("http")) {
+                                  window.open(
+                                    `https://${link.url}`,
+                                    "_blank",
+                                    "noopener,noreferrer"
+                                  );
+                                } else {
+                                  window.open(
+                                    link.url,
+                                    "_blank",
+                                    "noopener,noreferrer"
+                                  );
+                                }
+                              }
+
+                              return null;
+                            }}
+                          >
                             <Avatar
                               fallback={
                                 link.title != "" && link.title?.substring(0, 2)
                               }
                             ></Avatar>
-                            <TextField.Input
-                              size="2"
+                            <input
                               placeholder="New Page"
                               value={link.url}
-                              variant="soft"
                               autoFocus
                               readOnly={!editMode}
                               onChange={(e) => {
@@ -395,11 +439,9 @@ export function Component() {
                                 );
                               }}
                             />
-                            <TextField.Input
-                              size="2"
+                            <input
                               placeholder="New Page"
                               value={link.title}
-                              variant="soft"
                               readOnly={!editMode}
                               onChange={(e) =>
                                 updateLinkOrTodo(
@@ -411,14 +453,23 @@ export function Component() {
                             />
                           </Box>
                         ))}
-                        <Button
-                          onClick={() => {
-                            addLink(key);
-                          }}
-                        >
-                          Add anohter link
-                        </Button>
-                      </Card>
+                        {editMode && (
+                          <Box
+                            className={styles.linkWrapper}
+                            onClick={() => {
+                              addLink(key);
+                            }}
+                          >
+                            <Avatar fallback={"+"}></Avatar>
+                            <input
+                              placeholder="New Page"
+                              value={"Add a link"}
+                              autoFocus
+                              readOnly={true}
+                            />
+                          </Box>
+                        )}
+                      </Masonry>
                     </Box>
                   )}
                   {body[key].type == ElementType.TODO && (
