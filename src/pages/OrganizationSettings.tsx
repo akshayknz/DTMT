@@ -39,6 +39,7 @@ import { Masonry } from "react-masonry/dist";
 import Block from "../components/Block";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
 import { IoAddCircleOutline } from "react-icons/io5";
+import { ApiSettingsBlock } from "../components/ApiSettingsBlock";
 export function Component() {
   const navigate = useNavigate();
   const params = useParams();
@@ -133,20 +134,7 @@ export function Component() {
           <Heading mb="3" ref={peopleSettingsRef}>
             Connect APIs
           </Heading>
-          <Card>
-          <TextField.Input
-            mb="3"
-            placeholder="Enter API Name"
-            value={shareEmail}
-            onChange={(v) => setShareEmail(v.target.value)}
-          ></TextField.Input>
-          <TextField.Input
-            mb="3"
-            placeholder="Enter endpoint"
-            value={shareEmail}
-            onChange={(v) => setShareEmail(v.target.value)}
-          ></TextField.Input>
-          </Card>
+          <ApiSettingsBlock/>
           <Button mt={"4"}>
             <IoAddCircleOutline /> Connect a new API
           </Button>
