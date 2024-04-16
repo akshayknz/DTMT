@@ -20,7 +20,13 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { addEmailToShareList, getOrganizaionUsers, getOrganization, getPages, getUser } from "../db";
+import {
+  addEmailToShareList,
+  getOrganizaionUsers,
+  getOrganization,
+  getPages,
+  getUser,
+} from "../db";
 import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -32,6 +38,7 @@ import { RiAddFill, RiMore2Fill, RiSearchLine } from "react-icons/ri";
 import { Masonry } from "react-masonry/dist";
 import Block from "../components/Block";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
+import { IoAddCircleOutline } from "react-icons/io5";
 export function Component() {
   const navigate = useNavigate();
   const params = useParams();
@@ -42,48 +49,58 @@ export function Component() {
   );
   const [pages, setPages] = useState({} as { [key: string]: PageProps });
   const { userId } = useContext(AuthContext);
-  const nameSettingsRef = useRef(null)
-  const peopleSettingsRef = useRef(null)
-  const [shareEmail, setShareEmail] = useState("")
+  const nameSettingsRef = useRef(null);
+  const peopleSettingsRef = useRef(null);
+  const [shareEmail, setShareEmail] = useState("");
   useEffect(() => {
     getUser(userId).then((v) => setUser(v as UserProps));
     getOrganization(params.id, userId).then((v) => setOrganizationData(v));
   }, []);
   useEffect(() => {
     getPageList(userId);
-    scrollTo(peopleSettingsRef)
+    scrollTo(peopleSettingsRef);
   }, [location]);
-  useEffect(()=>{
+  useEffect(() => {
     /**
      * TODO
      * Get share list to display in table of shared accounts
      */
-    getOrganizaionUsers(params.id, userId)
-  }, [shareEmail])
+    getOrganizaionUsers(params.id, userId);
+  }, [shareEmail]);
   const height = 120;
   const getPageList = async (userId) => {
     const pageList = await getPages(params.id, userId);
     setPages(pageList);
     return pageList;
   };
-  const scrollTo = (ref) => ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  const submitEmail = () => { 
-    if(/\S+@\S+\.\S+/.test(shareEmail)) {
-      addEmailToShareList(shareEmail, userId, params.id).then(()=>alert("Success"))
-      setShareEmail("")
-    } 
-  }
+  const scrollTo = (ref) =>
+    ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  const submitEmail = () => {
+    if (/\S+@\S+\.\S+/.test(shareEmail)) {
+      addEmailToShareList(shareEmail, userId, params.id).then(() =>
+        alert("Success")
+      );
+      setShareEmail("");
+    }
+  };
 
   return (
     <>
       <Container px="3">
-      <Box mb="8">
-          <Heading mb="3" ref={nameSettingsRef}>Organization Name</Heading>
-          <TextField.Input mb="3" placeholder="Organization Name"></TextField.Input>
-          <Button>Save</Button>
-          </Box>
         <Box mb="8">
-          <Heading mb="3" ref={peopleSettingsRef}>People in this organization</Heading>
+          <Heading mb="3" ref={nameSettingsRef}>
+            Organization Name
+          </Heading>
+          <TextField.Input
+            mb="3"
+            placeholder="Organization Name"
+          ></TextField.Input>
+          <Button>Save</Button>
+        </Box>
+        <Box mb="8">
+          <Heading mb="3" ref={peopleSettingsRef}>
+            People in this organization
+          </Heading>
           <Table.Root mb="3">
             <Table.Header>
               <Table.Row>
@@ -93,17 +110,46 @@ export function Component() {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-
               <Table.Row>
-                <Table.RowHeaderCell><Checkbox></Checkbox></Table.RowHeaderCell>
+                <Table.RowHeaderCell>
+                  <Checkbox></Checkbox>
+                </Table.RowHeaderCell>
                 <Table.Cell>danilo@example.com</Table.Cell>
-                <Table.Cell><Button>...</Button></Table.Cell>
+                <Table.Cell>
+                  <Button>...</Button>
+                </Table.Cell>
               </Table.Row>
-
             </Table.Body>
           </Table.Root>
-          <TextField.Input mb="3" placeholder="Enter email" value={shareEmail} onChange={(v) => setShareEmail(v.target.value)}></TextField.Input>
+          <TextField.Input
+            mb="3"
+            placeholder="Enter email"
+            value={shareEmail}
+            onChange={(v) => setShareEmail(v.target.value)}
+          ></TextField.Input>
           <Button onClick={submitEmail}>Share</Button>
+        </Box>
+        <Box mb="8">
+          <Heading mb="3" ref={peopleSettingsRef}>
+            Connect APIs
+          </Heading>
+          <Card>
+          <TextField.Input
+            mb="3"
+            placeholder="Enter API Name"
+            value={shareEmail}
+            onChange={(v) => setShareEmail(v.target.value)}
+          ></TextField.Input>
+          <TextField.Input
+            mb="3"
+            placeholder="Enter endpoint"
+            value={shareEmail}
+            onChange={(v) => setShareEmail(v.target.value)}
+          ></TextField.Input>
+          </Card>
+          <Button mt={"4"}>
+            <IoAddCircleOutline /> Connect a new API
+          </Button>
         </Box>
       </Container>
     </>

@@ -113,8 +113,6 @@ export const textToUrl = async (text: string, userId: string, type: string) => {
 export const getUserOrganization = async (slug, userId): Promise<UserOrganizationProps> => {
   const docSnap = await getDoc(doc(db, "Users", userId, "Organizations", slug));
   let data;
-  console.log(slug, userId);
-  
   if (docSnap.exists()) {
     await setSelectedOrganization(slug, userId)
     data = docSnap.data();
