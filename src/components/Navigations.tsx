@@ -35,7 +35,12 @@ import {
 } from "react-icons/io";
 import { GoPencil } from "react-icons/go";
 import { PiPencilSimpleLight } from "react-icons/pi";
-import { setEditMode, setSelectFromHistory, setTimetravelIndex, setToggleToSave } from "../context/appSlice";
+import {
+  setEditMode,
+  setSelectFromHistory,
+  setTimetravelIndex,
+  setToggleToSave,
+} from "../context/appSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../context/store";
 import { BsSave } from "react-icons/bs";
@@ -47,7 +52,8 @@ const Navigations = () => {
   const location = useLocation();
   const { userId } = useContext(AuthContext);
   const params = useParams();
-  const { editMode, unsaved, history, timetravelIndex, selectFromHistory } = useSelector((state: RootState) => state.app);
+  const { editMode, unsaved, history, timetravelIndex, selectFromHistory } =
+    useSelector((state: RootState) => state.app);
   const dispatch = useDispatch<AppDispatch>();
   const add = () => {
     if (location.pathname == "/create-organization") {
@@ -66,8 +72,8 @@ const Navigations = () => {
   };
   const save = () => {
     dispatch(setEditMode(false));
-    dispatch(setToggleToSave())
-  }
+    dispatch(setToggleToSave());
+  };
   const back = () => {
     if (params.pageid) {
       navigate(-1);
@@ -76,18 +82,36 @@ const Navigations = () => {
     }
   };
   const findClosestIndex = (val: number, arr: string[]) =>
-   arr.reduce((ci, v, i) => (Math.abs(i - (val / 100) * (arr.length - 1)) < Math.abs(ci - (val / 100) * (arr.length - 1)) ? i : ci), 0);
+    arr.reduce(
+      (ci, v, i) =>
+        Math.abs(i - (val / 100) * (arr.length - 1)) <
+        Math.abs(ci - (val / 100) * (arr.length - 1))
+          ? i
+          : ci,
+      0
+    );
   return (
     <>
       {userId && (
         <Box className="bottom-navigation">
-          {params.pageid && <Box className={`timetravel-slider ${history.length<1 && "hidden"}`}>
-            <Slider color="gray" value={[timetravelIndex]} defaultValue={[100]} size={"3"} onValueChange={(e)=>{
-              dispatch(setTimetravelIndex(findClosestIndex(e[0], history)))
-              dispatch(setSelectFromHistory(true))
-            }} style={{width:"100%", height:"10px"}}/>
-          </Box>}
-          
+          {params.pageid && (
+            <Box
+              className={`timetravel-slider ${history.length < 1 && "hidden"}`}
+            >
+              <Slider
+                color="gray"
+                value={[timetravelIndex]}
+                defaultValue={[100]}
+                size={"3"}
+                onValueChange={(e) => {
+                  dispatch(setTimetravelIndex(findClosestIndex(e[0], history)));
+                  dispatch(setSelectFromHistory(true));
+                }}
+                style={{ width: "100%", height: "10px" }}
+              />
+            </Box>
+          )}
+
           <Box className="buttons-wrapper">
             <Box
               onClick={back}
@@ -105,9 +129,7 @@ const Navigations = () => {
             </Box>
             {params.pageid ? (
               <Box
-                onClick={() =>
-                  editMode ? save() : edit()
-                }
+                onClick={() => (editMode ? save() : edit())}
                 style={{
                   background: unsaved ? "#fff" : "#000",
                   color: unsaved ? "#000" : "#fff",
@@ -120,10 +142,11 @@ const Navigations = () => {
               >
                 {/* {JSON.stringify(editMode)}
                 {JSON.stringify(unsaved)} */}
-                {editMode===false && unsaved===true && <Spinner/>}
-                {editMode===true && <BsSave size={23}/>}
-                {editMode===false && unsaved===false && <GoPencil size={23} />}
-                
+                {editMode === false && unsaved === true && <Spinner />}
+                {editMode === true && <BsSave size={23} />}
+                {editMode === false && unsaved === false && (
+                  <GoPencil size={23} />
+                )}
               </Box>
             ) : (
               <Box onClick={add} style={{ background: "#fff", marginRight: 0 }}>
@@ -154,9 +177,9 @@ const Navigations = () => {
                   </DropdownMenu.SubContent>
                 </DropdownMenu.Sub>
                 <DropdownMenu.Separator />
-                <DropdownMenu.Item>
+                <DropdownMenu.Item asChild>
                   <Link
-                    to={location.pathname + "/settings#people-settings"}
+                    to={`dashboard/org/${params.id}/settings#people-settings`}
                     relative="path"
                   >
                     Share this organization
@@ -175,4 +198,4 @@ const Navigations = () => {
     </>
   );
 };
-export default Navigations
+export default Navigations;

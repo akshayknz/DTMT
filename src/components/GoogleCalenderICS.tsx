@@ -1,5 +1,6 @@
-import { Button } from '@radix-ui/themes';
+import { Button, IconButton } from '@radix-ui/themes';
 import React from 'react';
+import { IoCalendarClearOutline } from 'react-icons/io5';
 
 interface GoogleCalendarICSProps {
   event: {
@@ -50,9 +51,9 @@ const GoogleCalendarICS: React.FC<GoogleCalendarICSProps> = ({ event }) => {
   };
 
   return (
-    <Button onClick={handleDownloadICS}>
-      Add to Google Calendar
-    </Button>
+    <IconButton>
+    <IoCalendarClearOutline width="18" height="18" onClick={handleDownloadICS}/>
+  </IconButton>
   );
 };
 

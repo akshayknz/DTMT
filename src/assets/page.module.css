@@ -9,13 +9,19 @@
     outline: 0;
     box-shadow: none;
     width: 100%;
-    font-size: 20px;
     margin-bottom: 14px;
     box-shadow: 0 1px 0px 0 #00000024;
     padding-bottom: 8px;
     border-radius: 0;
     resize: none;
 }
+.textarea{
+  font-size: 18px;
+}
+.title{
+  font-size: 28px;
+}
+
 .linebreak{
     white-space: pre-line;
 }
@@ -70,5 +76,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .todoWrapper input{
+    background-color: transparent;
+    border:0;
+    outline: 0;
+    box-shadow: none;
+    color:#000;
+    font-family: inherit;
   }
 

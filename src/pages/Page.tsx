@@ -53,6 +53,7 @@ export function Component() {
   const { userId } = useContext(AuthContext);
   const navigate = useNavigate();
   const itemsRef = useRef([]);
+  const titleRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     editMode,
     unsaved,
@@ -62,8 +63,26 @@ export function Component() {
     selectFromHistory,
   } = useSelector((state: RootState) => state.app);
   const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    if (params.pageid != "new-page") {
+  useEffect(() => { //Set heights of all body elements to content height
+    if (itemsRef.current.every((ref) => ref)) {
+      itemsRef.current.forEach((ref) => {
+        ref.style.height = `auto`;
+        ref.style.height = `${ref.scrollHeight + 5}px`;
+      });
+    }
+  if (titleRef.current) { //Set height of title textarea 
+    titleRef.current.style.height = `auto`;
+    titleRef.current.style.height = `${titleRef.current.scrollHeight + 5}px`;
+  }
+  }, [itemsRef.current.length, loading]);
+  useEffect(()=>{
+    if (titleRef.current) { //Set height of title textarea 
+      titleRef.current.style.height = `auto`;
+      titleRef.current.style.height = `${titleRef.current.scrollHeight + 5}px`;
+    }
+  }, [name])
+  useEffect(() => { //Check slug and show new-page or view page
+    if (params.pageid != "new-page") { //View Page
       dispatch(setEditMode(editMode));
       /**
        * IIFE
@@ -84,23 +103,20 @@ export function Component() {
         console.log(dispatch(setTimetravelIndex(-1)), timetravelIndex);
         dispatch(clearHistory());
       })();
-    } else {
+    } else { //New page
       dispatch(clearHistory());
-
       setLoading(false);
     }
-  }, [params.pageid]);
-  useEffect(() => {
+  }, [params.pageid]); //Runs on pageid change in path
+  useEffect(() => { //Chnage body on slider move
     if (
       timetravelIndex != history.length - 1 &&
       history[timetravelIndex] != JSON.stringify(body)
     ) {
-      console.log("going", timetravelIndex);
-
       setBody(JSON.parse(history[timetravelIndex]));
     }
   }, [timetravelIndex]);
-  useEffect(() => {
+  useEffect(() => {  //Save to history
     if (
       (JSON.stringify(initBody) != JSON.stringify(body) || initName != name) &&
       !selectFromHistory
@@ -110,28 +126,32 @@ export function Component() {
       }
       dispatch(setUnsaved(true)); //TODO: FIX SETUNSAVED
     }
-  }, [body, name]);
-  useEffect(() => {
-    // itemsRef.current.forEach((e) => {
-    //   e.style.height = `${e.scrollHeight}px`;
-    // });
-    console.log(`unsaved ${unsaved}
-    editMode ${editMode}
-    toggleToSave ${toggleToSave}
-    timetravelIndex ${timetravelIndex}`);
-
+  }, [body, name]); //Onchange of body and name
+  useEffect(() => { //Save page
+    // console.log(`Detailed Log:unsaved ${unsaved},editMode ${editMode},toggleToSave ${toggleToSave}, timetravelIndex ${timetravelIndex}`);
     if (unsaved) {
       if (editMode === false) {
         console.log("initBody and body are not equal and editmode is false");
         handleSavePage();
       }
     }
-  }, [toggleToSave]);
-  const handleSavePage = () => {
+    /**
+     * toggleToSave: This state triggers a page save
+     * Bool
+     * from appSlice
+     * triggered from the Navigation bar on save button click
+     */
+  }, [toggleToSave]); 
+  /**
+   * Save and may or maynot redirect to the saved url
+   * - If no slug: new page created, redirected
+   * - If path has slug/pageid: Update page, not redirected
+   */
+  const handleSavePage = () => { 
     console.log("saving started");
     dispatch(setEditMode(false));
     let noslug = slug === "";
-    const page = savePage(
+    savePage(
       {
         name: name,
         body: body,
@@ -143,16 +163,16 @@ export function Component() {
     ).then((slug) => {
       dispatch(setUnsaved(false));
 
-      if (noslug) {
+      if (noslug) { //redirect if its a new page
         console.log("saved");
         navigate(`/dashboard/org/${params.id}/page/${slug}`);
       }
     });
-    //Take all element data and save
-    //Automatically save
+    //TODO: Automatically save, Save history logs
   };
 
   const addElement = async (type: ElementType, body?: string) => {
+    //Add a block
     /**
      * Call to firebase: add an element
      * Type is body
@@ -160,6 +180,7 @@ export function Component() {
      * id gets saved to the body state
      * the page saves automatically to write the addition of a new element to database
      */
+    //Add block of body by default
     let elem: ElementProps = {
       body: body || "",
       order: 0,
@@ -197,6 +218,7 @@ export function Component() {
   };
 
   const addLink = (bodyIndex) => {
+    //Add a block of links
     setBody((prev) => {
       return {
         ...prev,
@@ -216,6 +238,7 @@ export function Component() {
   };
 
   const addTodo = (bodyIndex) => {
+    //Add a block of todos
     setBody((prev) => {
       return {
         ...prev,
@@ -235,6 +258,7 @@ export function Component() {
     });
   };
   const updateLinkOrTodo = (dataObject, todoIndex, bodyIndex) => {
+    //Update array based block
     dispatch(setSelectFromHistory(false));
     setBody((prev) => {
       return {
@@ -254,6 +278,7 @@ export function Component() {
     });
   };
   const handleElementChange = (elem, value, type, id) => {
+    //Update value based block
     dispatch(setSelectFromHistory(false));
     elem.style.height = `auto`;
     elem.style.height = `${elem.scrollHeight + 5}px`;
@@ -344,14 +369,15 @@ export function Component() {
         ) : (
           <>
             <Box pb={"3"}>
-              <input
+              <textarea
                 placeholder="New Page"
                 autoFocus={editMode}
                 value={name}
+                ref={titleRef}
                 readOnly={!editMode}
                 className={styles.title}
                 onChange={(v) => setName(v.target.value)}
-              />
+              >{name}</textarea>
             </Box>
             {Object.keys(body)
               .sort((a, b) => body[a].order - body[b].order)
@@ -477,7 +503,7 @@ export function Component() {
                       <Card>
                         {Array.isArray(body[key].body) &&
                           body[key].body.map((todo: TodoProps, index) => (
-                            <Flex gap="3" align="center">
+                            <Flex gap="3" align="center" className={styles.todoWrapper}>
                               <Checkbox
                                 defaultChecked={
                                   todo.status == TodoStatus.COMPLETED
@@ -504,11 +530,9 @@ export function Component() {
                               />
                               <Flex gap="3" align="center">
                                 <Box>
-                                  <TextField.Input
-                                    size="2"
+                                  <input
                                     placeholder="New Page"
                                     value={todo.title}
-                                    variant="soft"
                                     readOnly={!editMode}
                                     onChange={(e) =>
                                       updateLinkOrTodo(
@@ -518,11 +542,9 @@ export function Component() {
                                       )
                                     }
                                   />
-                                  <TextField.Input
-                                    size="1"
+                                  <input
                                     placeholder="New Page"
                                     value={todo.description}
-                                    variant="soft"
                                     readOnly={!editMode}
                                     onChange={(e) =>
                                       updateLinkOrTodo(

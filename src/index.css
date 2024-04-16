@@ -169,7 +169,7 @@ html {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
   display: flex;
-  width: auto;
+  width: 100%;
 }
 .my-masonry-grid_column {
   background-clip: padding-box;
@@ -184,3 +184,7 @@ html {
     bottom: -67px;
 }
 
+.rt-DropdownMenuItem a{
+  text-decoration: none;
+  color: inherit
+}
