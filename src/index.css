@@ -182,8 +182,12 @@ html {
     color:#000;
     right: -20px;
     bottom: -67px;
+    z-index: 0;
 }
-
+.org-back-letter ~ .rt-Flex {
+  z-index: 1;
+  position: relative;
+}
 .rt-DropdownMenuItem a{
   text-decoration: none;
   color: inherit

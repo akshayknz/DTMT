@@ -7,21 +7,32 @@ import {
   getPages,
   getUser,
 } from "../db";
-import ReactJson from '@microlink/react-json-view'
+import ReactJson from "@microlink/react-json-view";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios, { AxiosResponse } from "axios";
+import { Controlled as CodeMirror } from "react-codemirror2";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/material.css";
+import "codemirror/mode/javascript/javascript";
 export function ApiSettingsBlock() {
   const navigate = useNavigate();
   const params = useParams();
   let location = useLocation();
   const { userId } = useContext(AuthContext);
   const [name, setName] = useState("");
-  const [endpoint, setEndpoint] = useState("https://app.ecwid.com/api/v3/26494476/products");
+  const [endpoint, setEndpoint] = useState(
+    "https://app.ecwid.com/api/v3/26494476/products"
+  );
   const [body, setBody] = useState({});
   const [response, setResponse] = useState<AxiosResponse<any, any>>();
   const [take, setTake] = useState("");
   const [parsedResponse, setParsedResponse] = useState({});
+  const [code, setCode] = useState("");
+
+  const handleChange = (editor, data, value) => {
+    setCode(value);
+  };
   const test = async () => {
     /**
      * https://app.ecwid.com/api/v3/26494476/products
@@ -29,13 +40,18 @@ export function ApiSettingsBlock() {
      */
     const response = await axios.get(endpoint, body);
     console.log(endpoint, body, response);
-    setResponse(response)
-  }; 
-  useEffect(()=>{
-    console.log("settingParsedResonposnes", response?.['data.items'.split('.').reduce((obj, key) => obj?.[key], response)]);
-    
-    setParsedResponse(response?.data?.[take])
-  }, [take])
+    setResponse(response);
+  };
+  useEffect(() => {
+    console.log(
+      "settingParsedResonposnes",
+      response?.[
+        "data.items".split(".").reduce((obj, key) => obj?.[key], response)
+      ]
+    );
+
+    setParsedResponse(response?.data?.[take]);
+  }, [take]);
   return (
     <>
       <Card>
@@ -61,6 +77,15 @@ export function ApiSettingsBlock() {
         >
           {JSON.stringify(body)}
         </textarea>
+        <CodeMirror
+          value={code}
+          onBeforeChange={handleChange}
+          options={{
+            mode: "javascript",
+            theme: "material",
+            lineNumbers: true,
+          }}
+        />
         <Button onClick={test}>Test</Button>
         <ReactJson src={response} collapsed={true} />
         <TextField.Input
