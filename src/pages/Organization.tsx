@@ -169,7 +169,7 @@ export function Component() {
               ))}
             </Masonry>
             {/* For demo purposes */}
-            <Box
+            {/* <Box
               onClick={() => navigate(`/dashboard`)}
               style={{
                 userSelect: "none",
@@ -257,7 +257,7 @@ export function Component() {
                   </Box>
                 </Box>
               </Box>
-            </Box>
+            </Box> 
             <Box
               onClick={() => navigate(`/dashboard`)}
               style={{
@@ -383,7 +383,7 @@ export function Component() {
                   </Box>
                 </Box>
               </Box>
-            </Box>
+              </Box>*/}
             {/* <Block h="120px" w="70%" bg="#DB3A34" head="Page 1 (Pages)" body="Page body (Content)" />
             <Block h="120px" w="29.5%" bg="#333333" head="Page 1 (Pages)" body="Page body (Content)" />
             <Block h="120px" w="50%" bg="#E3F2FD" head="Page 1 (Pages)" body="Page body (Content)" />

@@ -111,7 +111,8 @@ export function Component() {
   useEffect(() => { //Chnage body on slider move
     if (
       timetravelIndex != history.length - 1 &&
-      history[timetravelIndex] != JSON.stringify(body)
+      history[timetravelIndex] != JSON.stringify(body) &&
+      history[timetravelIndex]
     ) {
       setBody(JSON.parse(history[timetravelIndex]));
     }

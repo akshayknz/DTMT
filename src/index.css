@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 :root {
   color-scheme: light dark;
@@ -6,15 +6,14 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
- 
 }
-.radix-themes{
-  --default-font-family: "Open Sans", sans-serif !important;  /* Your custom default font */
-  --heading-font-family: "Open Sans", sans-serif !important ;  /* Your custom font for <Heading> components */
-  --code-font-family: "Open Sans", sans-serif !important ;     /* Your custom font for <Code> components */
-  --strong-font-family: "Open Sans", sans-serif !important ;   /* Your custom font for <Strong> components */
-  --em-font-family: "Open Sans", sans-serif !important ;       /* Your custom font for <Em> components */
-  --quote-font-family: "Open Sans", sans-serif !important ; 
+.radix-themes {
+  --default-font-family: "Open Sans", sans-serif !important; /* Your custom default font */
+  --heading-font-family: "Open Sans", sans-serif !important ; /* Your custom font for <Heading> components */
+  --code-font-family: "Open Sans", sans-serif !important ; /* Your custom font for <Code> components */
+  --strong-font-family: "Open Sans", sans-serif !important ; /* Your custom font for <Strong> components */
+  --em-font-family: "Open Sans", sans-serif !important ; /* Your custom font for <Em> components */
+  --quote-font-family: "Open Sans", sans-serif !important ;
 }
 
 body {
@@ -41,7 +40,7 @@ html {
   z-index: 10;
   align-items: center;
 }
-.timetravel-slider{
+.timetravel-slider {
   width: 91%;
   height: 40px;
   background: #000;
@@ -51,10 +50,10 @@ html {
   padding: 13px;
   margin-bottom: 11px;
   border-radius: 11px;
-  opacity:1;
+  opacity: 1;
 }
-.timetravel-slider.hidden{
-  opacity:0;
+.timetravel-slider.hidden {
+  opacity: 0;
 }
 .buttons-wrapper {
   background-color: #000;
@@ -106,22 +105,22 @@ html {
     transform: translateY(200px);
     font-size: 0;
     padding: 0px;
-  margin: 0px;
+    margin: 0px;
   }
   10% {
     transform: translateY(200px);
     font-size: 30;
     padding: 10px;
-  margin: 6px;
+    margin: 6px;
   }
   100% {
     transform: translateY(0px);
   }
 }
 
-.card{
-  border:1px solid #000;
-  height:10px;
+.card {
+  border: 1px solid #000;
+  height: 10px;
 }
 .btn {
   background: none;
@@ -134,32 +133,30 @@ html {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all .3s;
+  transition: all 0.3s;
   background-color: #fff;
 }
 .btn-secondary {
   background-color: transparent;
-
 }
 .btn:hover {
   box-shadow: 0 0 3px 3px #0000000f;
-
 }
 
-.avatar-group{
+.avatar-group {
   margin-left: 15px;
 }
 .avatar-group .rt-AvatarRoot {
   margin-left: -21px;
 }
 
-.block-body{
+.block-body {
   font-weight: 200;
   content: "";
 }
-.block-body::after{
+.block-body::after {
   content: "";
-  background:linear-gradient(to bottom, #00000000,#00000000);
+  background: linear-gradient(to bottom, #00000000, #00000000);
   position: absolute;
   top: 0;
   left: 0;
@@ -175,20 +172,26 @@ html {
   background-clip: padding-box;
 }
 
-.org-back-letter{
+.org-back-letter {
   position: absolute;
-    font-size: 190px;
-    opacity: .05;
-    color:#000;
-    right: -20px;
-    bottom: -67px;
-    z-index: 0;
+  font-size: 190px;
+  opacity: 0.05;
+  color: #000;
+  right: -20px;
+  bottom: -67px;
+  z-index: 0;
 }
 .org-back-letter ~ .rt-Flex {
   z-index: 1;
   position: relative;
 }
-.rt-DropdownMenuItem a{
+
+.rt-DropdownMenuItem a {
   text-decoration: none;
-  color: inherit
+  color: inherit;
+}
+
+.CodeMirror {
+  border-radius: 10px;
+  margin-bottom: 13px;
 }

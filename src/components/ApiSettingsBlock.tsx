@@ -24,7 +24,7 @@ export function ApiSettingsBlock() {
   const [endpoint, setEndpoint] = useState(
     "https://app.ecwid.com/api/v3/26494476/products"
   );
-  const [body, setBody] = useState({});
+  const [body, setBody] = useState("");
   const [response, setResponse] = useState<AxiosResponse<any, any>>();
   const [take, setTake] = useState("");
   const [parsedResponse, setParsedResponse] = useState({});
@@ -32,13 +32,15 @@ export function ApiSettingsBlock() {
 
   const handleChange = (editor, data, value) => {
     setCode(value);
+    setBody(value);
   };
+
   const test = async () => {
     /**
      * https://app.ecwid.com/api/v3/26494476/products
      * {"headers":{"Authorization":"Bearer public_fYqp6KGkgvuzexRw82Ez7kLhAE3UBYSb","Accept":"application/json"},"params":{"responseFields":"count,items(name,quantity)","enabled":"true","offset":1}}
      */
-    const response = await axios.get(endpoint, body);
+    const response = await axios.get(endpoint, JSON.parse(body));
     console.log(endpoint, body, response);
     setResponse(response);
   };
@@ -52,6 +54,7 @@ export function ApiSettingsBlock() {
 
     setParsedResponse(response?.data?.[take]);
   }, [take]);
+
   return (
     <>
       <Card>
@@ -67,23 +70,14 @@ export function ApiSettingsBlock() {
           value={endpoint}
           onChange={(v) => setEndpoint(v.target.value)}
         ></TextField.Input>
-        <textarea
-          placeholder="Enter GET Request"
-          value={JSON.stringify(body)}
-          onChange={(v) => {
-            setBody(JSON.parse(v.target.value));
-            console.log(JSON.parse(v.target.value));
-          }}
-        >
-          {JSON.stringify(body)}
-        </textarea>
         <CodeMirror
-          value={code}
+          value={body}
           onBeforeChange={handleChange}
           options={{
             mode: "javascript",
             theme: "material",
             lineNumbers: true,
+            lineWrapping:true
           }}
         />
         <Button onClick={test}>Test</Button>
