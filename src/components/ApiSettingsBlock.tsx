@@ -6,6 +6,7 @@ import {
   getOrganization,
   getPages,
   getUser,
+  saveAPIConnection,
 } from "../db";
 import ReactJson from "@microlink/react-json-view";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -50,86 +51,132 @@ export function ApiSettingsBlock() {
     setResponse(response);
   };
   useEffect(() => {
-    console.log(
-      "settingParsedResonposnes",
-      response?.[
-        "data.items".split(".").reduce((obj, key) => obj?.[key], response)
-      ]
-    );
+    if (take && take.length > 0 && response) {
+      const keys = take.split(".");
+      const value = keys.reduce(
+        (acc, key) => (acc && acc[key] !== "undefined" ? acc[key] : undefined),
+        response
+      );
+      setParsedResponse(value);
 
-    setParsedResponse(response?.data?.[take]);
+      console.log(
+        value &&
+          Object.keys(value).length > 0 &&
+          value.length > 0 &&
+          value
+            .map((item) => `${item.name} value:${item.quantity} value`)
+            .join("\n")
+      ); //as string
+    }
   }, [take]);
+
+  const handleSave = async () => {
+    await saveAPIConnection(userId, params.id, name, endpoint, body, take)
+  }
+
+  const handleDelete = async () => {
+    await deleteAPIConnection(userId, params.id, id)
+  }
 
   return (
     <>
-      <Card>
+      <Card onClick={expanded ? () => null : () => setExpanded(true)}>
         <Box style={{ display: "flex", gap: "$2" }}>
           <Box style={{ flex: "1" }}>
             <TextField.Input
               placeholder="Enter API Name"
               value={name}
-              className={expanded?"ghostInput":"ghostInputInvisible"}
-              mb={expanded?"3":"0"}
-              style={{fontSize:"20px"}}
+              className={expanded ? "ghostInput" : "ghostInputInvisible"}
+              mb={expanded ? "3" : "0"}
+              style={{ fontSize: "20px" }}
               onChange={(v) => setName(v.target.value)}
             ></TextField.Input>
           </Box>
           {!false && (
-            <Box style={{ width:"20%" }}>
-            <Button
-              variant="soft"
-              onClick={() => setExpanded(!expanded)}
-              style={{ justifySelf: "flex-end", width:"100%", background:"transparent" }}
-            >
-              {expanded ? (
-                <MdExpandLess size={24} />
-              ) : (
-                <MdExpandMore size={24} />
-              )}
-            </Button>
-          </Box>
+            <Box style={{ width: "20%" }}>
+              <Button
+                variant="soft"
+                onClick={() => setExpanded(!expanded)}
+                style={{
+                  justifySelf: "flex-end",
+                  width: "100%",
+                  background: "transparent",
+                }}
+              >
+                {expanded ? (
+                  <MdExpandLess size={24} />
+                ) : (
+                  <MdExpandMore size={24} />
+                )}
+              </Button>
+            </Box>
           )}
-          
         </Box>
         {expanded && (
           <>
-          <Text size={"1"}>Endpoint</Text>
-        <TextField.Input
-          mb="3"
-          placeholder="Enter API Endpoint"
-          value={endpoint}
-          onChange={(v) => setEndpoint(v.target.value)}
-        ></TextField.Input>
-        <Text size={"1"}>JSON Body</Text>
-        <CodeMirror
-          value={body}
-          onBeforeChange={handleChange}
-          options={{
-            mode: "javascript",
-            theme: "material",
-            lineNumbers: true,
-            lineWrapping:true
-          }}
-        />
-        <Box mb={"3"}>
-        <Button onClick={test} style={{width:"100%"}}> <FiPlay /> Test</Button>
-        </Box>
-        <Text size={"1"}>Response</Text>
-        <ReactJson src={response} collapsed={true} style={{marginBlock:".4em"}}/>
-        <Text size={"1"}>What values to take from the response</Text>
-        <TextField.Input
-          mb="3"
-          placeholder="Enter Takes"
-          value={take}
-          onChange={(v) => setTake(v.target.value)}
-        ></TextField.Input>
-        <Text size={"1"}>Traken values</Text>
-        <ReactJson src={parsedResponse} collapsed={true} style={{marginBlock:".4em"}}/>
-        <Button onClick={test} style={{width:"100%"}} my={"3"} size={"3"}> Save</Button>
-        <Button onClick={test} style={{width:"100%"}} size={"3"} color="red"> Delete</Button>
+            <Text size={"1"}>Endpoint</Text>
+            <TextField.Input
+              mb="3"
+              placeholder="Enter API Endpoint"
+              value={endpoint}
+              onChange={(v) => setEndpoint(v.target.value)}
+            ></TextField.Input>
+            <Text size={"1"}>JSON Body</Text>
+            <CodeMirror
+              value={body}
+              onBeforeChange={handleChange}
+              options={{
+                mode: "javascript",
+                theme: "material",
+                lineNumbers: true,
+                lineWrapping: true,
+              }}
+            />
+            <Box mb={"3"}>
+              <Button onClick={test} style={{ width: "100%" }}>
+                {" "}
+                <FiPlay /> Test
+              </Button>
+            </Box>
+            <Text size={"1"}>Response</Text>
+            <ReactJson
+              src={response}
+              collapsed={true}
+              style={{ marginBlock: ".4em" }}
+            />
+            <Text size={"1"}>What values to take from the response</Text>
+            <TextField.Input
+              mb="3"
+              placeholder="Enter Takes"
+              value={take}
+              onChange={(v) => setTake(v.target.value)}
+            ></TextField.Input>
+            <Text size={"1"}>Traken values</Text>
+            <ReactJson
+              src={parsedResponse}
+              collapsed={true}
+              style={{ marginBlock: ".4em" }}
+            />
+            <Button
+              onClick={handleSave}
+              style={{ width: "100%" }}
+              my={"3"}
+              size={"3"}
+            >
+              {" "}
+              Save
+            </Button>
+            <Button
+              onClick={handleDelete}
+              style={{ width: "100%" }}
+              size={"3"}
+              color="red"
+            >
+              {" "}
+              Delete
+            </Button>
           </>
         )}
-        
       </Card>
     </>
   );

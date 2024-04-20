@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch, arrayUnion, startAt } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch, arrayUnion, startAt, updateDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
 import {
   ElementProps,
@@ -402,4 +402,26 @@ export const getOrganizaionUsers = async (slug, userId) =>{
     const userPages = (await getDocs(query(collection(db, "Users", userId, "Pages"), where("id", "in", arrayOf30)))).docs.map(v => v.data())
     return userPages
   }))).flat() as UserPageProps[];
+}
+
+export const saveAPIConnection = async (userId, slug, name, endpoint, body, take, apiConnectionId = null) => {
+  const orgId = (await getUserOrganization(slug, userId)).id
+  let docRef;
+  if (apiConnectionId) {
+    docRef = doc(db, "Organizations", orgId, "APIConnections", apiConnectionId);
+  } else {
+    const newDocRef = await addDoc(collection(db, "Organizations", orgId, "APIConnections"), {
+      name: name,
+      endpoint: endpoint,
+      body: body,
+      take: take
+    });
+    docRef = newDocRef;
+  }
+  await setDoc(docRef, {
+    name: name,
+    endpoint: endpoint,
+    body: body,
+    take: take
+  }, { merge: true });
 }
