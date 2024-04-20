@@ -11,6 +11,7 @@ import {
   Switch,
   Table,
   Text,
+  
   TextField,
 } from "@radix-ui/themes";
 import {
@@ -131,7 +132,7 @@ export function Component() {
           <Button onClick={submitEmail}>Share</Button>
         </Box>
         <Box mb="8">
-          <Heading mb="3" ref={peopleSettingsRef}>
+          <Heading mb="3">
             Connect APIs
           </Heading>
           <ApiSettingsBlock/>

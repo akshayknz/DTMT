@@ -1,4 +1,4 @@
-import { Button, Card, TextField } from "@radix-ui/themes";
+import { Button, Card, TextField, Text, Box } from "@radix-ui/themes";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   addEmailToShareList,
@@ -15,6 +15,10 @@ import { Controlled as CodeMirror } from "react-codemirror2";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import "codemirror/mode/javascript/javascript";
+import { IoPlayOutline } from "react-icons/io5";
+import { FiPlay } from "react-icons/fi";
+import { BsSave } from "react-icons/bs";
+import { MdExpandLess, MdExpandMore } from "react-icons/md";
 export function ApiSettingsBlock() {
   const navigate = useNavigate();
   const params = useParams();
@@ -29,6 +33,7 @@ export function ApiSettingsBlock() {
   const [take, setTake] = useState("");
   const [parsedResponse, setParsedResponse] = useState({});
   const [code, setCode] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const handleChange = (editor, data, value) => {
     setCode(value);
@@ -58,18 +63,44 @@ export function ApiSettingsBlock() {
   return (
     <>
       <Card>
-        <TextField.Input
-          mb="3"
-          placeholder="Enter API Name"
-          value={name}
-          onChange={(v) => setName(v.target.value)}
-        ></TextField.Input>
+        <Box style={{ display: "flex", gap: "$2" }}>
+          <Box style={{ flex: "1" }}>
+            <TextField.Input
+              placeholder="Enter API Name"
+              value={name}
+              className={expanded?"ghostInput":"ghostInputInvisible"}
+              mb={expanded?"3":"0"}
+              style={{fontSize:"20px"}}
+              onChange={(v) => setName(v.target.value)}
+            ></TextField.Input>
+          </Box>
+          {!false && (
+            <Box style={{ width:"20%" }}>
+            <Button
+              variant="soft"
+              onClick={() => setExpanded(!expanded)}
+              style={{ justifySelf: "flex-end", width:"100%", background:"transparent" }}
+            >
+              {expanded ? (
+                <MdExpandLess size={24} />
+              ) : (
+                <MdExpandMore size={24} />
+              )}
+            </Button>
+          </Box>
+          )}
+          
+        </Box>
+        {expanded && (
+          <>
+          <Text size={"1"}>Endpoint</Text>
         <TextField.Input
           mb="3"
           placeholder="Enter API Endpoint"
           value={endpoint}
           onChange={(v) => setEndpoint(v.target.value)}
         ></TextField.Input>
+        <Text size={"1"}>JSON Body</Text>
         <CodeMirror
           value={body}
           onBeforeChange={handleChange}
@@ -80,15 +111,25 @@ export function ApiSettingsBlock() {
             lineWrapping:true
           }}
         />
-        <Button onClick={test}>Test</Button>
-        <ReactJson src={response} collapsed={true} />
+        <Box mb={"3"}>
+        <Button onClick={test} style={{width:"100%"}}> <FiPlay /> Test</Button>
+        </Box>
+        <Text size={"1"}>Response</Text>
+        <ReactJson src={response} collapsed={true} style={{marginBlock:".4em"}}/>
+        <Text size={"1"}>What values to take from the response</Text>
         <TextField.Input
           mb="3"
-          placeholder="Enter Take"
+          placeholder="Enter Takes"
           value={take}
           onChange={(v) => setTake(v.target.value)}
         ></TextField.Input>
-        <ReactJson src={parsedResponse} collapsed={true} />
+        <Text size={"1"}>Traken values</Text>
+        <ReactJson src={parsedResponse} collapsed={true} style={{marginBlock:".4em"}}/>
+        <Button onClick={test} style={{width:"100%"}} my={"3"} size={"3"}> Save</Button>
+        <Button onClick={test} style={{width:"100%"}} size={"3"} color="red"> Delete</Button>
+          </>
+        )}
+        
       </Card>
     </>
   );

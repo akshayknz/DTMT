@@ -15,6 +15,7 @@ interface AppState {
   timetravelIndex: number;
   toggleToSave: boolean;
   selectFromHistory: boolean;
+  netab:boolean;
 }
 
 const initialState: AppState = {
@@ -29,6 +30,9 @@ const initialState: AppState = {
   timetravelIndex: -1,
   toggleToSave: false,
   selectFromHistory: false,
+  netab: false,
+  
+
 };
 const appSlice = createSlice({
   name: 'app',
@@ -70,10 +74,15 @@ const appSlice = createSlice({
     },
     setSelectFromHistory: (state, action: PayloadAction<boolean>) => {
       state.selectFromHistory = action.payload;
-    }
+    },
+    
+
+
+    
+    
   }
 });
 
-export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId, setEditMode, setUnsaved, setHistory, setTimetravelIndex, setToggleToSave, clearHistory, setSelectFromHistory } = appSlice.actions;
+export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId, setEditMode, setUnsaved, setHistory, setTimetravelIndex, setToggleToSave, clearHistory, setSelectFromHistory} = appSlice.actions;
 export default appSlice.reducer;
 

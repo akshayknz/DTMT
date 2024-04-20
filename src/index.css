@@ -195,3 +195,13 @@ html {
   border-radius: 10px;
   margin-bottom: 13px;
 }
+
+.ghostInputInvisible ~ .rt-TextFieldChrome {
+  box-shadow: none;
+    border-radius: 0;
+}
+
+.ghostInput ~ .rt-TextFieldChrome {
+  box-shadow: 0px 1px 0 0 #00000047;
+  border-radius: 0;
+}
