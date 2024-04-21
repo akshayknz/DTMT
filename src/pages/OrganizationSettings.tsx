@@ -23,6 +23,7 @@ import {
 } from "react-router-dom";
 import {
   addEmailToShareList,
+  getAllAPIConnections,
   getOrganizaionUsers,
   getOrganization,
   getPages,
@@ -86,6 +87,17 @@ export function Component() {
     }
   };
 
+  const [apiConnections, setApiConnections] = useState([]);
+
+  useEffect(() => {
+    const fetchApiConnections = async () => {
+      const connections = await getAllAPIConnections(userId, params.id);
+      setApiConnections(connections);
+    };
+
+    fetchApiConnections();
+  }, []);
+
   return (
     <>
       <Container px="3">
@@ -135,7 +147,12 @@ export function Component() {
           <Heading mb="3">
             Connect APIs
           </Heading>
-          <ApiSettingsBlock/>
+          {apiConnections.map((apiConnection) => (
+          <ApiSettingsBlock key={apiConnection.id} apiConnection={apiConnection} setApiConnection={setApiConnections} />
+        ))}
+        <Button mt={"4"} onClick={() => setApiConnections([...apiConnections, { id: null, name: "", endpoint: "", body: "", take: 0 }])}>
+          <IoAddCircleOutline /> Connect a new API
+        </Button>
           <Button mt={"4"}>
             <IoAddCircleOutline /> Connect a new API
           </Button>

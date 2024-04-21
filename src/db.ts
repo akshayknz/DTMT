@@ -1,6 +1,7 @@
-import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch, arrayUnion, startAt, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, addDoc, getDoc, query, where, documentId, runTransaction, writeBatch, arrayUnion, startAt, updateDoc, deleteDoc, QuerySnapshot, CollectionReference } from "firebase/firestore";
 import { db } from "./firebase/config";
 import {
+  APIConnectionProps,
   ElementProps,
   ElementType,
   OrganizationProps,
@@ -425,3 +426,40 @@ export const saveAPIConnection = async (userId, slug, name, endpoint, body, take
     take: take
   }, { merge: true });
 }
+
+export const deleteAPIConnection = async (userId, slug, apiConnectionId) => {
+  const orgId = (await getUserOrganization(slug, userId)).id;
+  const docRef = doc(db, "Organizations", orgId, "APIConnections", apiConnectionId);
+  await deleteDoc(docRef);
+  console.log("Deleted API Connection: " + apiConnectionId);
+  
+}
+
+export const getAPIConnection = async (userId, slug, apiConnectionId) => {
+  const orgId = (await getUserOrganization(slug, userId)).id;
+  const docRef = doc(db, "Organizations", orgId, "APIConnections", apiConnectionId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    return null;
+  }
+};
+
+/**
+ * Retrieves all API connections for a given user and organization.
+ * 
+ * @param userId The ID of the user.
+ * @param slug The slug of the organization.
+ * @returns An array of APIConnection objects with id included.
+ */
+export const getAllAPIConnections = async (userId: string, slug: string): Promise<APIConnectionProps[]> => {
+  const orgId: string = (await getUserOrganization(slug, userId)).id;
+  const querySnapshot: QuerySnapshot<APIConnectionProps> = await getDocs(query(collection(db, "Organizations", orgId, "APIConnections") as CollectionReference<APIConnectionProps>));
+  const apiConnections: APIConnectionProps[] = [];
+  querySnapshot.forEach((doc) => {
+    const apiConnection = doc.data();
+    apiConnections.push({ id: doc.id, ...apiConnection });
+  });
+  return apiConnections;
+};

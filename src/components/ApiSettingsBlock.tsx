@@ -2,6 +2,7 @@ import { Button, Card, TextField, Text, Box } from "@radix-ui/themes";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   addEmailToShareList,
+  deleteAPIConnection,
   getOrganizaionUsers,
   getOrganization,
   getPages,
@@ -20,15 +21,14 @@ import { IoPlayOutline } from "react-icons/io5";
 import { FiPlay } from "react-icons/fi";
 import { BsSave } from "react-icons/bs";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
-export function ApiSettingsBlock() {
+import { APIConnectionProps } from "../interfaces/interfaces";
+export function ApiSettingsBlock({apiConnection, setApiConnection}: {apiConnection: APIConnectionProps, setApiConnection: Function}) {
   const navigate = useNavigate();
   const params = useParams();
   let location = useLocation();
   const { userId } = useContext(AuthContext);
   const [name, setName] = useState("");
-  const [endpoint, setEndpoint] = useState(
-    "https://app.ecwid.com/api/v3/26494476/products"
-  );
+  const [endpoint, setEndpoint] = useState("");
   const [body, setBody] = useState("");
   const [response, setResponse] = useState<AxiosResponse<any, any>>();
   const [take, setTake] = useState("");
@@ -36,6 +36,14 @@ export function ApiSettingsBlock() {
   const [code, setCode] = useState("");
   const [expanded, setExpanded] = useState(false);
 
+  useEffect(() => {
+    if (apiConnection) {
+      setName(apiConnection.name);
+      setEndpoint(apiConnection.endpoint);
+      setBody(apiConnection.body);
+      setTake(apiConnection.take.toString());
+    }
+  },[apiConnection])
   const handleChange = (editor, data, value) => {
     setCode(value);
     setBody(value);
@@ -75,12 +83,14 @@ export function ApiSettingsBlock() {
   }
 
   const handleDelete = async () => {
-    await deleteAPIConnection(userId, params.id, id)
+    // Update the state with the filtered array
+    setApiConnection(prev => prev.filter((conn) => conn.id !== apiConnection.id));
+    await deleteAPIConnection(userId, params.id, apiConnection.id)
   }
-
+  
   return (
     <>
-      <Card onClick={expanded ? () => null : () => setExpanded(true)}>
+      <Card onClick={expanded ? () => null : () => setExpanded(true)} my={"3"}>
         <Box style={{ display: "flex", gap: "$2" }}>
           <Box style={{ flex: "1" }}>
             <TextField.Input

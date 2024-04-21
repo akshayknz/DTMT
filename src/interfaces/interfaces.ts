@@ -107,7 +107,9 @@ export interface LinkProps {
 }
 
 export interface APIConnectionProps {
-  url: string;
+  id?: string;
+  name: string;
+  endpoint: string;
   body: string;
   take:string[];
 }
