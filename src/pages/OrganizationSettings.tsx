@@ -153,10 +153,8 @@ export function Component() {
         <Button mt={"4"} onClick={() => setApiConnections([...apiConnections, { id: null, name: "", endpoint: "", body: "", take: 0 }])}>
           <IoAddCircleOutline /> Connect a new API
         </Button>
-          <Button mt={"4"}>
-            <IoAddCircleOutline /> Connect a new API
-          </Button>
         </Box>
+        <Box style={{ minHeight: "20vh" }}></Box>
       </Container>
     </>
   );
