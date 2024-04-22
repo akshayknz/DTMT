@@ -1,37 +1,38 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { saveUserOrganization } from '../db';
-import { UserOrganizationProps, PageStatus, OrganizationProps, PageBodyProps } from '../interfaces/interfaces';
+import { UserOrganizationProps, PageStatus, OrganizationProps, PageBodyProps, APIConnectionProps } from '../interfaces/interfaces';
 import { RootState } from './store';
+import { log } from '../components/utils';
 
 interface AppState {
   userId: string;
   createOrgName: string;
-  organization:UserOrganizationProps;
+  organization: UserOrganizationProps;
   saveCreateOrganization: number;
   navigateTo: string;
-  editMode:boolean;
-  unsaved:boolean;
-  history:string[];
+  editMode: boolean;
+  unsaved: boolean;
+  history: string[];
   timetravelIndex: number;
   toggleToSave: boolean;
   selectFromHistory: boolean;
-  netab:boolean;
+  apiConnectionDataForPage: APIConnectionProps;
+
 }
 
 const initialState: AppState = {
   createOrgName: "",
   userId: "",
-  organization:null,
+  organization: null,
   saveCreateOrganization: 0,
   navigateTo: "",
-  editMode:false,
-  unsaved:false,
-  history:[],
+  editMode: false,
+  unsaved: false,
+  history: [],
   timetravelIndex: -1,
   toggleToSave: false,
   selectFromHistory: false,
-  netab: false,
-  
+  apiConnectionDataForPage: null,
 
 };
 const appSlice = createSlice({
@@ -44,14 +45,14 @@ const appSlice = createSlice({
     setCreateOrgName: (state, action) => {
       state.createOrgName = action.payload;
     },
-    saveUserId: (state,action:PayloadAction<string>) => {
+    saveUserId: (state, action: PayloadAction<string>) => {
       state.userId = action.payload
     },
     saveCreateOrganization: (state, action: PayloadAction<number>) => {
-      state.saveCreateOrganization +=1
+      state.saveCreateOrganization += 1
     },
     setNavigateTo: (state, action: PayloadAction<string>) => {
-      state.navigateTo =action.payload;
+      state.navigateTo = action.payload;
     },
     setEditMode: (state, action: PayloadAction<boolean>) => {
       state.editMode = action.payload;
@@ -61,7 +62,7 @@ const appSlice = createSlice({
     },
     setHistory: (state, action: PayloadAction<string>) => {
       state.history.push(action.payload)
-      state.timetravelIndex = state.history.length-1
+      state.timetravelIndex = state.history.length - 1
     },
     clearHistory: (state) => {
       state.history = []
@@ -75,14 +76,27 @@ const appSlice = createSlice({
     setSelectFromHistory: (state, action: PayloadAction<boolean>) => {
       state.selectFromHistory = action.payload;
     },
-    
+    setApiConnectionDataForPage: (state, action: PayloadAction<APIConnectionProps>) => {
+      state.apiConnectionDataForPage = action.payload
+    },
 
-
-    
-    
   }
 });
 
-export const { setNavigateTo,saveCreateOrganization, setCreateOrgName, saveUserId, setEditMode, setUnsaved, setHistory, setTimetravelIndex, setToggleToSave, clearHistory, setSelectFromHistory} = appSlice.actions;
+export const { 
+  setNavigateTo, 
+  saveCreateOrganization, 
+  setCreateOrgName, 
+  saveUserId, 
+  setEditMode, 
+  setUnsaved, 
+  setHistory, 
+  setTimetravelIndex, 
+  setToggleToSave, 
+  clearHistory, 
+  setSelectFromHistory,
+  setApiConnectionDataForPage, 
+
+} = appSlice.actions;
 export default appSlice.reducer;
 

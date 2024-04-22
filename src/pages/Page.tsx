@@ -17,7 +17,13 @@ import { RiAddCircleFill, RiDeleteBin7Line, RiEditFill } from "react-icons/ri";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { changePageStatus, getPage, saveElement, savePage } from "../db";
+import {
+  changePageStatus,
+  getAllAPIConnections,
+  getPage,
+  saveElement,
+  savePage,
+} from "../db";
 import {
   ElementProps,
   ElementType,
@@ -40,20 +46,21 @@ import {
 } from "../context/appSlice";
 import { AppDispatch, RootState } from "../context/store";
 import Masonry from "react-masonry-css";
+import { motion } from "framer-motion";
+import { log } from "../components/utils";
 export function Component() {
   const params = useParams();
-  const [name, setName] = useState("");
-  const [initName, setInitName] = useState("");
-  const [id, setId] = useState("");
-  const [slug, setSlug] = useState("");
-  // const [editMode, setEditMode] = useState(false);
+  const [name, setName] = useState(""); //Name of the page
+  const [initName, setInitName] = useState(""); //Initial name of the page (For unsaved check)
+  const [body, setBody] = useState({} as PageBodyProps | string[]); //Body of the page
+  const [initBody, setInitBody] = useState({} as PageBodyProps | string[]); //Initial body of the page (For unsaved check)
+  const [id, setId] = useState(""); //Id of the page
+  const [slug, setSlug] = useState(""); //Slug of the page
   const [loading, setLoading] = useState(true);
-  const [body, setBody] = useState({} as PageBodyProps | string[]);
-  const [initBody, setInitBody] = useState({} as PageBodyProps | string[]);
   const { userId } = useContext(AuthContext);
   const navigate = useNavigate();
-  const itemsRef = useRef([]);
-  const titleRef = useRef<HTMLTextAreaElement | null>(null);
+  const itemsRef = useRef([]); //Reference to all body elements (For height calculation)
+  const titleRef = useRef<HTMLTextAreaElement | null>(null); //Reference to title textarea
   const {
     editMode,
     unsaved,
@@ -61,28 +68,29 @@ export function Component() {
     timetravelIndex,
     toggleToSave,
     selectFromHistory,
-  } = useSelector((state: RootState) => state.app);
+    apiConnectionDataForPage,
+  } = useSelector((state: RootState) => state.app); //Redux states
   const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => { //Set heights of all body elements to content height
+
+  //Set heights of all elements to content height
+  useEffect(() => {
     if (itemsRef.current.every((ref) => ref)) {
       itemsRef.current.forEach((ref) => {
         ref.style.height = `auto`;
         ref.style.height = `${ref.scrollHeight + 5}px`;
       });
     }
-  if (titleRef.current) { //Set height of title textarea 
-    titleRef.current.style.height = `auto`;
-    titleRef.current.style.height = `${titleRef.current.scrollHeight + 5}px`;
-  }
-  }, [itemsRef.current.length, loading]);
-  useEffect(()=>{
-    if (titleRef.current) { //Set height of title textarea 
+    if (titleRef.current) {
       titleRef.current.style.height = `auto`;
       titleRef.current.style.height = `${titleRef.current.scrollHeight + 5}px`;
     }
-  }, [name])
-  useEffect(() => { //Check slug and show new-page or view page
-    if (params.pageid != "new-page") { //View Page
+  }, [itemsRef.current.length, loading, name]); //After loading and onchange of elements. And the name
+
+  useEffect(() => {
+    //Check slug and show new-page or view page
+    if (params.pageid != "new-page") {
+      //Run if page exists
+      //View Page
       dispatch(setEditMode(editMode));
       /**
        * IIFE
@@ -100,15 +108,40 @@ export function Component() {
         setSlug(page.slug);
         setLoading(false);
         dispatch(setTimetravelIndex(-1));
-        console.log(dispatch(setTimetravelIndex(-1)), timetravelIndex);
         dispatch(clearHistory());
       })();
-    } else { //New page
+    } else {
+      //Run if page does not exist
+      //New page
       dispatch(clearHistory());
       setLoading(false);
     }
+    //Run either way
   }, [params.pageid]); //Runs on pageid change in path
-  useEffect(() => { //Chnage body on slider move
+
+  //TIMETRAVEL LOGIC
+  /**
+   * A hook that handles time travel functionality.
+   *
+   * This hook updates the body state when the slider is moved.
+   * It is triggered when the `timetravelIndex` changes.
+   * It compares the current `timetravelIndex` with the `history` array
+   * and updates the `body` state if there is a difference.
+   *
+   * @param {number} timetravelIndex - The current index of the time travel history.
+   * @param {Array<string>} history - The history of time travel states.
+   * @param {any} body - The current body state.
+   * @param {any} initBody - The initial body state.
+   * @param {string} initName - The initial name state.
+   * @param {boolean} selectFromHistory - A flag indicating whether a state is being selected from the history.
+   * @param {function} setBody - A function to update the body state.
+   * @param {function} dispatch - A function to dispatch actions.
+   */
+  useEffect(() => {
+    //Chnage body on slider move
+    // If the timetravelIndex is not at the latest index in the history
+    // and the current body state is different from the history state at timetravelIndex
+    // Update the body state with the history state at timetravelIndex
     if (
       timetravelIndex != history.length - 1 &&
       history[timetravelIndex] != JSON.stringify(body) &&
@@ -117,7 +150,9 @@ export function Component() {
       setBody(JSON.parse(history[timetravelIndex]));
     }
   }, [timetravelIndex]);
-  useEffect(() => {  //Save to history
+
+  useEffect(() => {
+    //Save to history
     if (
       (JSON.stringify(initBody) != JSON.stringify(body) || initName != name) &&
       !selectFromHistory
@@ -128,7 +163,10 @@ export function Component() {
       dispatch(setUnsaved(true)); //TODO: FIX SETUNSAVED
     }
   }, [body, name]); //Onchange of body and name
-  useEffect(() => { //Save page
+  //[END] TIMETRAVEL LOGIC
+
+  useEffect(() => {
+    //Save page
     // console.log(`Detailed Log:unsaved ${unsaved},editMode ${editMode},toggleToSave ${toggleToSave}, timetravelIndex ${timetravelIndex}`);
     if (unsaved) {
       if (editMode === false) {
@@ -142,13 +180,32 @@ export function Component() {
      * from appSlice
      * triggered from the Navigation bar on save button click
      */
-  }, [toggleToSave]); 
+  }, [toggleToSave]);
+
+  useEffect(() => {
+    (async () => {
+      if(apiConnectionDataForPage){
+        log("apiConnectionDataForPage",apiConnectionDataForPage);
+        const response = await axios.get(requestURL, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            Accept: "application/json",
+          },
+          params: {
+            responseFields: "count,items(name,quantity)",
+            enabled: "true",
+            offset,
+          },
+        }
+    })();
+  },[apiConnectionDataForPage])
+
   /**
    * Save and may or maynot redirect to the saved url
    * - If no slug: new page created, redirected
    * - If path has slug/pageid: Update page, not redirected
    */
-  const handleSavePage = () => { 
+  const handleSavePage = () => {
     console.log("saving started");
     dispatch(setEditMode(false));
     let noslug = slug === "";
@@ -164,7 +221,8 @@ export function Component() {
     ).then((slug) => {
       dispatch(setUnsaved(false));
 
-      if (noslug) { //redirect if its a new page
+      if (noslug) {
+        //redirect if its a new page
         console.log("saved");
         navigate(`/dashboard/org/${params.id}/page/${slug}`);
       }
@@ -258,6 +316,7 @@ export function Component() {
       };
     });
   };
+
   const updateLinkOrTodo = (dataObject, todoIndex, bodyIndex) => {
     //Update array based block
     dispatch(setSelectFromHistory(false));
@@ -278,6 +337,7 @@ export function Component() {
       };
     });
   };
+
   const handleElementChange = (elem, value, type, id) => {
     //Update value based block
     dispatch(setSelectFromHistory(false));
@@ -292,11 +352,11 @@ export function Component() {
     });
   };
 
-  const handleDeletePage = async () => {
-    changePageStatus(params.pageid, userId, PageStatus.DELETED);
-    navigate(`/dashboard/org/${params.id}/`);
-  };
-
+  /**
+   * TODO
+   *
+   * Remove this and make it dynamic
+   */
   const getShoppingItems = async () => {
     setLoading(true);
     const userToken = import.meta.env.VITE_ECWID_PUBLIC_TOKEN;
@@ -353,10 +413,6 @@ export function Component() {
                 <DropdownMenu.Item onClick={getShoppingItems}>
                   Get low stock items from store
                 </DropdownMenu.Item>
-                <DropdownMenu.Item>Get full menu from store</DropdownMenu.Item>
-                <DropdownMenu.Item onClick={handleDeletePage} color="red">
-                  Delete Page
-                </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </Flex>
@@ -370,15 +426,19 @@ export function Component() {
         ) : (
           <>
             <Box pb={"3"}>
-              <textarea
-                placeholder="New Page"
-                autoFocus={editMode}
-                value={name}
-                ref={titleRef}
-                readOnly={!editMode}
-                className={styles.title}
-                onChange={(v) => setName(v.target.value)}
-              >{name}</textarea>
+              <motion.div layoutId={`card-${id}`}>
+                <textarea
+                  placeholder="New Page"
+                  autoFocus={editMode}
+                  value={name}
+                  ref={titleRef}
+                  readOnly={!editMode}
+                  className={styles.title}
+                  onChange={(v) => setName(v.target.value)}
+                >
+                  {name}
+                </textarea>
+              </motion.div>
             </Box>
             {Object.keys(body)
               .sort((a, b) => body[a].order - body[b].order)
@@ -504,7 +564,12 @@ export function Component() {
                       <Card>
                         {Array.isArray(body[key].body) &&
                           body[key].body.map((todo: TodoProps, index) => (
-                            <Flex gap="3" align="center" className={styles.todoWrapper}>
+                            <Flex
+                              key={index}
+                              gap="3"
+                              align="center"
+                              className={styles.todoWrapper}
+                            >
                               <Checkbox
                                 defaultChecked={
                                   todo.status == TodoStatus.COMPLETED

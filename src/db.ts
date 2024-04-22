@@ -135,7 +135,8 @@ export const getOrganization = async (slug, userId): Promise<OrganizationProps> 
   if (organizationId) {
     docSnap2 = await getDoc(doc(db, "Organizations", organizationId));
 
-    data = docSnap2.data();
+    const resultData = docSnap2.data();
+    data = { ...resultData, id: organizationId };
   } else {
     //The organization: doesnt exist/youre not the owner/not shared to you
   }

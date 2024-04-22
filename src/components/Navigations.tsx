@@ -21,12 +21,19 @@ import {
   useParams,
 } from "react-router-dom";
 import {
+  changePageStatus,
+  getAllAPIConnections,
   getLastSelectedOrganization,
   getOrganization,
   getUser,
   saveUserOrganization,
 } from "../db";
-import { OrganizationProps, UserProps } from "../interfaces/interfaces";
+import {
+  APIConnectionProps,
+  OrganizationProps,
+  PageStatus,
+  UserProps,
+} from "../interfaces/interfaces";
 import {
   IoIosAdd,
   IoIosArrowRoundBack,
@@ -36,6 +43,7 @@ import {
 import { GoPencil } from "react-icons/go";
 import { PiPencilSimpleLight } from "react-icons/pi";
 import {
+  setApiConnectionDataForPage,
   setEditMode,
   setSelectFromHistory,
   setTimetravelIndex,
@@ -45,6 +53,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../context/store";
 import { BsSave } from "react-icons/bs";
 import { Spinner } from "../assets/Spinner";
+import { log } from "./utils";
 
 const Navigations = () => {
   const { handleLogOut } = useContext(AuthContext);
@@ -55,6 +64,16 @@ const Navigations = () => {
   const { editMode, unsaved, history, timetravelIndex, selectFromHistory } =
     useSelector((state: RootState) => state.app);
   const dispatch = useDispatch<AppDispatch>();
+  const [apiConnections, setApiConnections] = useState<APIConnectionProps[]>(
+    []
+  );
+
+  useEffect(() => {
+    if (userId) getApiConnections();
+    // based on userId because of reload bug
+    // API connections not loading when page is reloaded.
+  }, [userId]);
+
   const add = () => {
     if (location.pathname == "/create-organization") {
       saveUserOrganization();
@@ -90,6 +109,22 @@ const Navigations = () => {
           : ci,
       0
     );
+
+  const handleDeletePage = async () => {
+    changePageStatus(params.pageid, userId, PageStatus.DELETED);
+    navigate(`/dashboard/org/${params.id}`);
+  };
+
+  const getApiConnections = async () => {
+    if (params.pageid) {
+      //If on a page, display API connections
+      let data = await getAllAPIConnections(userId, params.id);
+      log("API Connections", data);
+      setApiConnections(data);
+      // Push new API connections to the previous array
+    }
+  };
+
   return (
     <>
       {userId && (
@@ -161,6 +196,20 @@ const Navigations = () => {
                 </Box>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content size="2">
+                {apiConnections.map((apiConnection) => (
+                  <DropdownMenu.Item
+                    key={apiConnection.id}
+                    onClick={() =>
+                      dispatch(setApiConnectionDataForPage(apiConnection))
+                    }
+                  >
+                    {apiConnection.name}
+                  </DropdownMenu.Item>
+                ))}
+                <DropdownMenu.Item color="red" onClick={handleDeletePage}>
+                  Delete Page
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
                 <DropdownMenu.Item>About Deckhouse</DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item>Export</DropdownMenu.Item>

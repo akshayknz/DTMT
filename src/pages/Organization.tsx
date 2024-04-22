@@ -30,30 +30,49 @@ import { RiAddFill, RiMore2Fill, RiSearchLine } from "react-icons/ri";
 import Block from "../components/Block";
 import { GoKebabHorizontal } from "react-icons/go";
 import Masonry from "react-masonry-css";
+import { motion } from "framer-motion";
+import { log } from "../components/utils";
 
 export function Component() {
   const navigate = useNavigate();
   const params = useParams();
   let location = useLocation();
-  const [user, setUser] = useState({} as UserProps);
   const [organizationData, setOrganizationData] = useState(
     {} as OrganizationProps
-  );
-  const [pages, setPages] = useState({} as { [key: string]: PageProps });
+  ); //organization data
+  const [pages, setPages] = useState({} as { [key: string]: PageProps }); //all the pages belonging to the organization
   const { userId } = useContext(AuthContext);
+
+  //Set states
   useEffect(() => {
-    getUser(userId).then((v) => setUser(v as UserProps));
-    getOrganization(params.id, userId).then((v) => setOrganizationData(v));
+    //Set organization data
+    getOrganization(params.id, userId).then((v) => {
+      setOrganizationData(v)
+    });
   }, []);
+
+  //Logger
   useEffect(() => {
+    log("seperator", "Organization.tsx")
+    log("userId",userId)
+    log("OrganizationData",organizationData)
+    log("seperator", "[END] Organization.tsx")
+  },[organizationData])
+  //logger end
+
+  useEffect(() => {
+    //if no pageid, get list of pages (Page outlet is within the organization outlet)
     if (!params.pageid) getPageList(userId);
   }, [location]);
-  const height = 120;
+
+  //Get pages if the view is organization
   const getPageList = async (userId) => {
     const pageList = await getPages(params.id, userId);
     setPages(pageList);
+
     return pageList;
   };
+
   return (
     <>
       {params.pageid ? (
@@ -117,13 +136,14 @@ export function Component() {
               className="my-masonry-grid"
               columnClassName="my-masonry-grid_column"
             >
-              {Object.keys(pages).map((v) => (
+              {Object.keys(pages).map((v, i) => (
                 <Box
                   onClick={() =>
                     navigate(
                       `/dashboard/org/${params.id}/page/${pages[v].slug}`
                     )
                   }
+                  key={i}
                   style={{
                     userSelect: "none",
                     WebkitUserSelect: "none",
@@ -151,7 +171,12 @@ export function Component() {
                           fontWeight: "400",
                         }}
                       >
+                        <motion.div
+                          layoutId={`card-${pages[v].id}`}
+                          
+                        >
                         {pages[v].name}
+                        </motion.div>
                       </Text>
                       <Box width={"auto"} p={"0"} className="block-body">
                         <Text
