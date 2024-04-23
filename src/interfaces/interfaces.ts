@@ -111,5 +111,5 @@ export interface APIConnectionProps {
   name: string;
   endpoint: string;
   body: string;
-  take:string[];
+  take:string;
 }

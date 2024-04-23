@@ -72,7 +72,7 @@ export function Component() {
   } = useSelector((state: RootState) => state.app); //Redux states
   const dispatch = useDispatch<AppDispatch>();
 
-  //Set heights of all elements to content height
+  //Set heights of all elements to content height (onchange and on initial render)
   useEffect(() => {
     if (itemsRef.current.every((ref) => ref)) {
       itemsRef.current.forEach((ref) => {
@@ -185,17 +185,22 @@ export function Component() {
   useEffect(() => {
     (async () => {
       if(apiConnectionDataForPage){
+        setLoading(true);
         log("apiConnectionDataForPage",apiConnectionDataForPage);
-        const response = await axios.get(requestURL, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-            Accept: "application/json",
-          },
-          params: {
-            responseFields: "count,items(name,quantity)",
-            enabled: "true",
-            offset,
-          },
+        const response = await axios.get(apiConnectionDataForPage.endpoint, JSON.parse(apiConnectionDataForPage.body));
+        const keys = apiConnectionDataForPage.take.split(".");
+      const value = keys.reduce(
+        (acc, key) => (acc && acc[key] !== "undefined" ? acc[key] : undefined),
+        response
+      );
+      const sortedProducts = value
+        .filter((a) => a.quantity < 10)
+        .sort((a, b) => a.quantity - b.quantity)
+        .map((a) => "🔴 " + a.name + ": " + a.quantity);
+      addElement(ElementType.TEXT, sortedProducts.join("\n\n"));
+        log("response",response);
+        log("apiConnectionDataForPage.take",apiConnectionDataForPage.take.split("."));
+        setLoading(false);
         }
     })();
   },[apiConnectionDataForPage])
